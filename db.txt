@@ -1,0 +1,36 @@
+user
+    id
+    email
+    name
+    password
+    is_admin
+    is_banned
+
+profile
+    id
+    user_id
+    settings
+
+context
+    id
+    user_id
+    name
+    is_root
+    parent_context_id
+    enabled
+    order
+
+bookmark
+    id
+    user_id
+    context_id
+    link
+    name
+    logo
+    enabled
+    order
+
+tag
+    id
+    name
+    enabled
