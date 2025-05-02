@@ -1,4 +1,4 @@
-user
++user
     id
     email
     name
@@ -6,12 +6,12 @@ user
     is_admin
     is_banned
 
-profile
++profile
     id
     user_id
     settings
 
-context
++context
     id
     user_id
     name
@@ -20,17 +20,27 @@ context
     enabled
     order
 
-bookmark
++bookmark
     id
     user_id
     context_id
     link
     name
-    logo
-    enabled
+    thumbnail
+    is_enabled
     order
 
 tag
     id
     name
+    short_name
+    description
     enabled
+    style
+
+thumbnail
+    id
+    user_id
+    name
+    source
+    is_enabled

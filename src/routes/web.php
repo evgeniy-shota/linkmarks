@@ -1,10 +1,9 @@
 <?php
 
+use App\Http\Controllers\BookmarkController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [BookmarkController::class, 'index'])->name('home');
 
 Route::get('/add-bookmark', function () {
     return view('addBookmark');

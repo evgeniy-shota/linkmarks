@@ -2,7 +2,11 @@
     <div class="rounded-md bg-gray-600 px-4 py-3">
 
         <form action="" method="post">
+
             @csrf
+
+            {{-- <div x-data x-text="$store.bookmark.id"></div> --}}
+
             <fieldset class="fieldset text-gray-100">
                 <legend class="fieldset-legend text-gray-100 after:content-['*']">Link</legend>
                 <input type="text" class="input bg-gray-700" placeholder="www.youtube.com" />
