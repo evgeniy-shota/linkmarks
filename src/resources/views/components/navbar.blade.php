@@ -23,12 +23,28 @@
             </ul>
         </div>
         <div class="navbar-end">
-            @if (Request::routeIs('home'))
-                <button onclick="bookmarksModal.showModal()"
-                    class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
-                    Add bookmark
-                </button>
-            @endif
+            @auth
+                @if (Request::routeIs('home'))
+                    <x-html.button action='bookmarksModal.showModal()'>
+                        Add bookmark
+                    </x-html.button>
+                @endif
+
+                <x-html.link link="{{ route('logout') }}" :active="request()->is('logout') ? true : false">
+                    Logout
+                </x-html.link>
+            @endauth
+
+            @guest
+                <x-html.link link="{{ route('login') }}" :active="request()->is('login') ? true : false">
+                    Login
+                </x-html.link>
+
+                <x-html.link link="{{ route('registration.index') }}" :active="request()->is('registration') ? true : false">
+                    Registration
+                </x-html.link>
+            @endguest
+
         </div>
     </div>
 </header>

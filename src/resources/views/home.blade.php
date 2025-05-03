@@ -14,7 +14,7 @@ var_dump($bookmarks);
 
         <div x-data @@click="clickOnBookmark" class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
 
-            @php
+            {{-- @php
                 $bookmarks = [
                     [
                         'id' => 1,
@@ -64,11 +64,11 @@ var_dump($bookmarks);
                         'logo' => 'img/yt_favicon_32x32.png',
                     ],
                 ];
-            @endphp
+            @endphp --}}
 
             @forelse ($bookmarks as $bookmark)
                 <x-bookmarks.bookmark-horizontal :id="$bookmark['id']" :name="$bookmark['name']" :link="$bookmark['link']" :description="$bookmark['description']"
-                    :logo="$bookmark['logo']" />
+                    :thumbnail="$bookmark['thumbnail']" />
             @empty
                 <div class="text-gray-100">
                     You don't have any bookmarks...
@@ -102,20 +102,24 @@ var_dump($bookmarks);
                     case 'copy':
                         copyBookmarkLink(target.dataset.bookmark);
                         break;
-                    case 'open':
-                        console.log('open');
-                        openBookmark(target.dataset.bookmark)
-                        break;
                     case 'open-new-tab':
-                        console.log('try to open-new-tab');
+                        openBookmarkInNewTab(target.dataset.bookmark)
+                        break;
+                    case 'open-current-tab':
+                        openBookmarkInCurrentTab(target.dataset.bookmark)
                         break;
                     default:
                         break;
                 }
             }
 
-            function openBookmark(link) {
+            function openBookmarkInNewTab(link) {
                 window.open(link);
+            }
+
+
+            function openBookmarkInCurrentTab(link) {
+                window.location.href = link;
             }
 
             function copyBookmarkLink(link) {

@@ -16,7 +16,7 @@ class BookmarkHorizontal extends Component
         public string $name,
         public string $link,
         public string $description,
-        public string $logo,
+        public string $thumbnail,
     ) {}
 
     /**
