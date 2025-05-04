@@ -1,4 +1,4 @@
-@props(['id', 'type' => 'text', 'placeholder', 'state', 'value' => null])
+@props(['id', 'type' => 'text', 'placeholder' => null, 'state', 'value' => null])
 
 @php
     $classes = 'input bg-gray-700 ' . ($state ? '' : 'border-red-300');

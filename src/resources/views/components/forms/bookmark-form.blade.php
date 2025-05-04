@@ -6,18 +6,37 @@
             @csrf
 
             {{-- <div x-data x-text="$store.bookmark.id"></div> --}}
+            <x-html.formcontrols.fieldset title='Link'>
+                <x-slot:field>
+                    <x-html.formcontrols.input id="link" type="text" placeholder="www.youtube.com"
+                        :value="old('link')" :state="true" />
+                </x-slot:field>
+                <x-slot:legend>
+                    <x-html.formcontrols.fieldset-legend text="Enter link" />
+                </x-slot:legend>
+            </x-html.formcontrols.fieldset>
 
-            <fieldset class="fieldset text-gray-100">
+            {{-- <fieldset class="fieldset text-gray-100">
                 <legend class="fieldset-legend text-gray-100 after:content-['*']">Link</legend>
                 <input type="text" class="input bg-gray-700" placeholder="www.youtube.com" />
                 <p class="label">Enter link</p>
-            </fieldset>
+            </fieldset> --}}
 
-            <fieldset class="fieldset text-gray-100">
+            <x-html.formcontrols.fieldset title='Link'>
+                <x-slot:field>
+                    <x-html.formcontrols.input id="name" type="text" placeholder="Youtube"
+                        :value="old('name')" :state="true" />
+                </x-slot:field>
+                <x-slot:legend>
+                    <x-html.formcontrols.fieldset-legend text="Enter bookmark name" />
+                </x-slot:legend>
+            </x-html.formcontrols.fieldset>
+
+            {{-- <fieldset class="fieldset text-gray-100">
                 <legend class="fieldset-legend text-gray-100 after:content-['*']">Name</legend>
                 <input type="text" class="input bg-gray-700" minlength="3" placeholder="You tube" />
                 <p class="label">Enter bookmark name</p>
-            </fieldset>
+            </fieldset> --}}
 
             <fieldset class="fieldset">
                 <legend class="fieldset-legend text-gray-100">Thumbnail</legend>
@@ -27,7 +46,8 @@
             </fieldset>
 
             <div class="flex justify-around items-center mt-2">
-                <button class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
+                <button type="reset"
+                    class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
                     Clear
                 </button>
 

@@ -30,17 +30,21 @@
                     </x-html.button>
                 @endif
 
-                <x-html.link link="{{ route('logout') }}" :active="request()->is('logout') ? true : false">
-                    Logout
-                </x-html.link>
+                <form action="{{ route('logout') }}" method="post">
+                    @csrf
+                    <x-html.button type="submit" :active="request()->is('logout') ? true : false">
+                        Logout
+                    </x-html.button>
+                </form>
+
             @endauth
 
             @guest
-                <x-html.link link="{{ route('login') }}" :active="request()->is('login') ? true : false">
+                <x-html.link link="{{ route('login') }}" :active="Request::routeIs('login') ? true : false">
                     Login
                 </x-html.link>
 
-                <x-html.link link="{{ route('registration.index') }}" :active="request()->is('registration') ? true : false">
+                <x-html.link link="{{ route('registration.index') }}" :active="Request::routeIs('registration.index') ? true : false">
                     Registration
                 </x-html.link>
             @endguest

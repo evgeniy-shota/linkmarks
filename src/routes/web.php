@@ -1,12 +1,22 @@
 <?php
 
 use App\Http\Controllers\Auth\RegistrationController;
+use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\BookmarkController;
+use App\Mail\Notification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', [BookmarkController::class, 'index'])->name('home');
+
+Route::get('/welcom', function () {
+    return view('welcome');
+})->name('welcome');
+
+Route::get('/mailable', function () {
+    return new Notification();
+})->name('mailview');
 
 Route::get('/add-bookmark', function () {
     return view('addBookmark');
@@ -16,15 +26,11 @@ Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
 
-// Route::controller();
-
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::get('/logout', function () {
-    return view('logout');
-})->name('logout');
+Route::controller(SessionController::class)->group(function () {
+    Route::get('/login', 'index')->name('login');
+    Route::post('/login', 'store')->name('login.store');
+    Route::post('/logout', 'destroy')->name('logout');
+});
 
 Route::controller(RegistrationController::class)->group(function () {
     Route::get('/registration', 'index')->name('registration.index');
@@ -39,7 +45,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     $request->fulfill();
 
     return redirect('/');
-})->name('verification.verify');
+})->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::get('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
@@ -48,6 +54,6 @@ Route::get('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6:1'])->name('verification.send');
 
 Route::controller(BookmarkController::class)->group(function () {
-    Route::get('/', 'index')->name('home.index');
+    Route::get('/', 'index')->name('home');
     Route::get('/{id}', 'show')->name('home.show');
 });
