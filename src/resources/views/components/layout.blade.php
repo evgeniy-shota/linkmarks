@@ -27,4 +27,14 @@
     </main>
 </body>
 
+<script>
+    // override default browser behavior for drag and drop events
+    ["dragover", "drop"].forEach(function(event) {
+        document.addEventListener(event, function(evt) {
+            evt.preventDefault()
+            return false
+        })
+    })
+</script>
+
 </html>

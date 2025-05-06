@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Context;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +18,15 @@ class ContextFactory extends Factory
      */
     public function definition(): array
     {
+        $userId = array_rand(User::all()->toArray(), 1);
+
         return [
-            //
+            'user_id' => $userId,
+            'name' => fake()->word(),
+            'is_root' => false,
+            'parent_context_id' => array_rand(Context::where('user_id', $userId)->select('id')->get(), 1),
+            'enabled' => true,
+            'order' => fake()->numberBetween(1, 999),
         ];
     }
 }

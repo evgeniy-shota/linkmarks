@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\User\CreatedEvent;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,6 +51,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    protected $dispatchesEvents = [
+        'created' => CreatedEvent::class,
+    ];
 
     public function profile(): HasOne
     {

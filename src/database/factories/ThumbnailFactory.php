@@ -17,7 +17,10 @@ class ThumbnailFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => null,
+            'name' => 'someName',
+            'source' => null,
+            'is_enabled' => true,
         ];
     }
 }

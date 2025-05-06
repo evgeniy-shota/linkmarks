@@ -43,7 +43,7 @@
                     </div>
 
                     <x-html.tooltip direction='left' tip='Edit'>
-                        <div data-bookmark='{{ $id }}' data-bookmark-action='settings'
+                        <div data-bookmark='{{ $id }}' data-bookmark-action='edit'
                             class="btn btn-sm bg-gray-500 hover:bg-gray-600 border-0 text-gray-100 shadow-none px-2">
                             <img src="img/icons/three-dots-vertical.svg">
                         </div>

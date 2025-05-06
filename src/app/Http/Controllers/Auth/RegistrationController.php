@@ -9,12 +9,17 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class RegistrationController extends Controller
 {
     public function index()
     {
+        if (Auth::user()) {
+            return back();
+        }
+
         return view('auth.registration');
     }
 

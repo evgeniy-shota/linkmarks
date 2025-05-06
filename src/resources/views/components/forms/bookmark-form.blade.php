@@ -1,49 +1,33 @@
 <div class="flex justify-center items-center">
     <div class="rounded-md bg-gray-600 px-4 py-3">
 
-        <form action="" method="post">
-
+        <form x-data @@submit.prevent="submitForm" action="" method="post">
             @csrf
 
-            {{-- <div x-data x-text="$store.bookmark.id"></div> --}}
+            {{-- link input --}}
             <x-html.formcontrols.fieldset title='Link'>
                 <x-slot:field>
-                    <x-html.formcontrols.input id="link" type="text" placeholder="www.youtube.com"
-                        :value="old('link')" :state="true" />
+                    <x-html.formcontrols.input required id="link" type="text" placeholder="www.youtube.com"
+                        x-model="$store.bookmark.link" :state="true" />
                 </x-slot:field>
                 <x-slot:legend>
                     <x-html.formcontrols.fieldset-legend text="Enter link" />
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 
-            {{-- <fieldset class="fieldset text-gray-100">
-                <legend class="fieldset-legend text-gray-100 after:content-['*']">Link</legend>
-                <input type="text" class="input bg-gray-700" placeholder="www.youtube.com" />
-                <p class="label">Enter link</p>
-            </fieldset> --}}
-
-            <x-html.formcontrols.fieldset title='Link'>
+            {{-- name input --}}
+            <x-html.formcontrols.fieldset title='Name' class="mb-2">
                 <x-slot:field>
-                    <x-html.formcontrols.input id="name" type="text" placeholder="Youtube"
-                        :value="old('name')" :state="true" />
+                    <x-html.formcontrols.input required id="name" type="text" placeholder="Youtube"
+                        x-model="$store.bookmark.name" :state="true" />
                 </x-slot:field>
                 <x-slot:legend>
                     <x-html.formcontrols.fieldset-legend text="Enter bookmark name" />
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 
-            {{-- <fieldset class="fieldset text-gray-100">
-                <legend class="fieldset-legend text-gray-100 after:content-['*']">Name</legend>
-                <input type="text" class="input bg-gray-700" minlength="3" placeholder="You tube" />
-                <p class="label">Enter bookmark name</p>
-            </fieldset> --}}
-
-            <fieldset class="fieldset">
-                <legend class="fieldset-legend text-gray-100">Thumbnail</legend>
-                <input type="file"
-                    class="file:bg-gray-500 file:border-1 file:border-gray-600 file:btn file:text-gray-100 hover:file:border-gray-500 file:rounded-sm cursor-pointer file:py-3 file:px-4 file:me-3 rounded-sm bg-gray-700 text-gray-100" />
-                <label class="label text-gray-100">Max size 2MB</label>
-            </fieldset>
+            {{-- file input --}}
+            <x-html.formcontrols.input-file-drop-down id="thumbnail" />
 
             <div class="flex justify-around items-center mt-2">
                 <button type="reset"
@@ -57,6 +41,36 @@
                 </button>
             </div>
         </form>
+
+        <script>
+            async function submitForm() {
+                console.log('try submit');
+                console.log(Alpine.store('bookmark').getData())
+                let response = null;
+                try {
+                    response = await axios.post(
+                        '/bookmarks/',
+                        Alpine.store('bookmark').getData(), {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.warn(error);
+                }
+
+                if (response) {
+                    console.log(response.data)
+                }
+            }
+
+            function uploadImage() {}
+
+            function getThumbnail() {
+
+            }
+        </script>
 
     </div>
 </div>

@@ -14,58 +14,6 @@ var_dump($bookmarks);
 
         <div x-data @@click="clickOnBookmark" class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
 
-            {{-- @php
-                $bookmarks = [
-                    [
-                        'id' => 1,
-                        'name' => 'Михеев и Павлов production',
-                        'link' => 'https://www.youtube.com/',
-                        'description' => 'Oficial youtube chanel',
-                        'logo' => 'img/yt_favicon_32x32.png',
-                    ],
-
-                    [
-                        'id' => 2,
-                        'name' => 'Асафьев Стас',
-                        'link' => 'www.youtube.com',
-                        'description' => 'Oficial youtube chanel',
-                        'logo' => 'img/yt_favicon_32x32.png',
-                    ],
-
-                    [
-                        'id' => 3,
-                        'name' => 'Михеев и Павлов production',
-                        'link' => 'www.youtube.com',
-                        'description' => 'Oficial youtube chanel',
-                        'logo' => 'img/yt_favicon_32x32.png',
-                    ],
-
-                    [
-                        'id' => 4,
-                        'name' => 'Асафьев Стас',
-                        'link' => 'www.youtube.com',
-                        'description' => 'Oficial youtube chanel',
-                        'logo' => 'img/yt_favicon_32x32.png',
-                    ],
-
-                    [
-                        'id' => 5,
-                        'name' => 'Михеев и Павлов production',
-                        'link' => 'www.youtube.com',
-                        'description' => 'Oficial youtube chanel',
-                        'logo' => 'img/yt_favicon_32x32.png',
-                    ],
-
-                    [
-                        'id' => 6,
-                        'name' => 'Асафьев Стас',
-                        'link' => 'www.youtube.com',
-                        'description' => 'Oficial youtube chanel',
-                        'logo' => 'img/yt_favicon_32x32.png',
-                    ],
-                ];
-            @endphp --}}
-
             @forelse ($bookmarks as $bookmark)
                 <x-bookmarks.bookmark-horizontal :id="$bookmark['id']" :name="$bookmark['name']" :link="$bookmark['link']" :description="$bookmark['description']"
                     :thumbnail="$bookmark['thumbnail']" />
@@ -75,6 +23,12 @@ var_dump($bookmarks);
                 </div>
             @endforelse
         </div>
+        <x-flex-container>
+            <x-html.formcontrols.input-file-drop-down id='thumbnail'>
+
+            </x-html.formcontrols.input-file-drop-down>
+
+        </x-flex-container>
 
         <script>
             document.addEventListener('alpine:init', () => {
@@ -83,6 +37,39 @@ var_dump($bookmarks);
                     name: null,
                     link: null,
                     thumbnail: null,
+                    thumbnail_id: null,
+                    context_id: null,
+                    order: null,
+
+                    setData(data) {
+                        this.id = data.id;
+                        this.name = data.name;
+                        this.link = data.link;
+                        this.thumbnail = data.thumbnail;
+                        this.thumbnail_id = data.thumbnail_id;
+                        this.context_id = data.context_id;
+                        this.order = data.order;
+                    },
+                    getData() {
+                        return {
+                            id: this.id,
+                            name: this.name,
+                            link: this.link,
+                            thumbnail: this.thumbnail,
+                            thumbnail_id: this.thumbnail_id,
+                            context_id: 1,
+                            order: 1,
+                        }
+                    },
+                    clear() {
+                        this.id = null;
+                        this.name = null;
+                        this.link = null;
+                        this.thumbnail = null;
+                        this.thumbnail_id = null;
+                        this.context_id = null;
+                        this.order = null;
+                    }
                 })
             });
 
@@ -96,7 +83,7 @@ var_dump($bookmarks);
                 // console.log(target.dataset.bookmarkAction)
 
                 switch (target.dataset.bookmarkAction) {
-                    case 'settings':
+                    case 'edit':
                         editBookmark(target.dataset.bookmark)
                         break;
                     case 'copy':
@@ -130,21 +117,41 @@ var_dump($bookmarks);
                 })
             }
 
-            function editBookmark(id) {
-                Alpine.store('bookmark').id = id
+            async function editBookmark(id) {
+                let bookmarkData = await getBookmarkData(id);
+                console.log(bookmarkData);
+                Alpine.store('bookmark').setData(bookmarkData);
                 bookmarksModal.showModal()
             }
 
             async function getBookmarkData(id) {
-                let response = await fetch('' + id)
+                let response = await fetch('/bookmark/' + id)
 
                 if (response.ok) {
                     let res = await response.json()
+                    console.log(res.data)
+                    return res.data
                 } else {
                     console.warn('get bookmark data fail...')
                     console.warn(response.status)
+                    return null
                 }
             }
+
+            // async function submitForm() {
+            //     console.log('try submit');
+            //     try {
+            //         const response = await axios.post('/bookmarks',
+            //             Alpine.store('bookmark').getData(),
+            //         );
+            //     } catch (error) {
+            //         console.warn(error)
+            //     }
+
+            //     if (response) {
+            //         console.log(response.data)
+            //     }
+            // }
         </script>
 
     </x-slot:main>

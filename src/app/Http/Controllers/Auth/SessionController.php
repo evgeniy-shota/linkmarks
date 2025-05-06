@@ -13,6 +13,10 @@ class SessionController extends Controller
 
     public function index(Request $request)
     {
+        if (Auth::user()) {
+            return back();
+        }
+        
         return view('auth.login');
     }
 
@@ -22,7 +26,7 @@ class SessionController extends Controller
         if (Auth::attempt($request->validated())) {
             $request->session()->regenerate();
 
-            return redirect()->route('home.index');
+            return redirect()->route('home');
         }
 
         return back()->withErrors([
