@@ -6,5 +6,6 @@ Simple bookmarks site.
 - **mailhog** - `:8025`
 
 - `docker-compose run --rm container_name command`
+
 vite HMR
 - `docker-compose run --rm --service-ports npm run dev`
