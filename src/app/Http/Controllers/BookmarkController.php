@@ -6,28 +6,37 @@ use App\Http\Requests\Bookmark\StoreBookmarkRequest;
 use App\Http\Resources\BookmarkResource;
 use App\Models\Bookmark;
 use App\Models\Thumbnail;
+use App\Services\BookmarkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BookmarkController extends Controller
 {
+    public function __construct(private BookmarkService $bookmarkService) {}
+
     public function index(Request $request)
     {
         // $bookmarks = Bookmark::all();
-        $bookmarks = Bookmark::with('thumbnail')->get();
+        $bookmarks = $this->bookmarkService->allBookmarks();
 
         foreach ($bookmarks as $bookmark) {
-            $bookmark->thumbnail = $bookmark->thumbnail->name ? Storage::url($bookmark->thumbnail->name) : '';
+            $bookmark->thumbnail = $bookmark->thumbnail->name ?
+                Storage::url($bookmark->thumbnail->name) : '';
             $bookmark->description = $bookmark->description ?? '';
         }
 
-        return view('home', ['bookmarks' => $bookmarks]);
+        return new BookmarkResource($bookmarks);
+        // return view('home', ['bookmarks' => $bookmarks]);
     }
 
     public function show(string $id)
     {
-        $bookmark = Bookmark::find($id);
+        $bookmark = $this->bookmarkService->bookmark($id);
+
+        if ($bookmark) {
+            $bookmark->thumbnail = $bookmark->thumbnail->name;
+        }
 
         return new BookmarkResource($bookmark);
     }

@@ -18,13 +18,18 @@ class ContextFactory extends Factory
      */
     public function definition(): array
     {
-        $userId = array_rand(User::all()->toArray(), 1);
+        $userId = User::all()->random(1)[0]->id;
+
+        $context = Context::where('user_id', $userId)->get();
+
+        // dd($context);
+        // dd(count($context) === 1 ? $context[0]->id : $context->random(1)[0]->id);
 
         return [
             'user_id' => $userId,
             'name' => fake()->word(),
             'is_root' => false,
-            'parent_context_id' => array_rand(Context::where('user_id', $userId)->select('id')->get(), 1),
+            'parent_context_id' => (count($context) === 1 ? $context[0]->id : $context->random(1)[0]->id),
             'enabled' => true,
             'order' => fake()->numberBetween(1, 999),
         ];

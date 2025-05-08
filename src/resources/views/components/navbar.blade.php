@@ -26,17 +26,20 @@
             @auth
                 @if (Request::routeIs('home'))
                     <x-html.button action='bookmarksModal.showModal()'>
+                        Add group
+                    </x-html.button>
+
+                    <x-html.button action='bookmarksModal.showModal()'>
                         Add bookmark
                     </x-html.button>
+                @else
+                    <form action="{{ route('logout') }}" method="post">
+                        @csrf
+                        <x-html.button type="submit" :active="request()->is('logout') ? true : false">
+                            Logout
+                        </x-html.button>
+                    </form>
                 @endif
-
-                <form action="{{ route('logout') }}" method="post">
-                    @csrf
-                    <x-html.button type="submit" :active="request()->is('logout') ? true : false">
-                        Logout
-                    </x-html.button>
-                </form>
-
             @endauth
 
             @guest

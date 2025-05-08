@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\ContextController;
+use App\Http\Middleware\RedirectGuestToRoute;
 use App\Mail\Notification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -50,9 +52,13 @@ Route::get('/welcom', function () {
 })->name('welcome');
 
 Route::controller(BookmarkController::class)->group(function () {
-    Route::get('/', 'index')->name('home');
     Route::get('/bookmark/{id}', 'show')->name('home.show');
     Route::post('/bookmarks/', 'store')->name('home.store');
+});
+
+Route::controller(ContextController::class)->group(function () {
+    Route::get('/', 'index')->middleware(RedirectGuestToRoute::class . ':welcome')->name('home');
+    Route::get('/context/{id}', 'show')->name('context');
 });
 
 // Route::get('/add-bookmark', function () {

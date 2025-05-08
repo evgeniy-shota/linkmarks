@@ -26,8 +26,30 @@
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 
+            {{-- bookmark thumbnail preview --}}
+            <template x-if="$store.bookmark.thumbnail_id!==null">
+                <div class="w-full">
+                    <div class="text-base font-bold mb-1">Thumbnail</div>
+                    <div
+                        class="border-2 border-dashed rounded-sm border-gray-500 flex justify-between items-center h-32 w-full">
+                        <div class="flex-none w-1/2">
+                            <x-html.thumbnail id="bookmarkThumbnailPreview" src=""
+                                xSrc="$store.bookmark.thumbnail" />
+                        </div>
+                        <div class="w-1/2" class="flex-none">
+                            <x-html.button action="Alpine.store('bookmark').clearThumbnail()">
+                                Clear
+                            </x-html.button>
+                        </div>
+                    </div>
+                </div>
+
+            </template>
+
             {{-- file input --}}
-            <x-html.formcontrols.input-file-drop-down id="thumbnail" />
+            <div x-show="$store.bookmark.thumbnail_id===null">
+                <x-html.formcontrols.input-file-drop-down id="thumbnail" />
+            </div>
 
             <div class="flex justify-around items-center mt-2">
                 <button type="reset"
