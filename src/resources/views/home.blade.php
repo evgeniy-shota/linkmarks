@@ -18,6 +18,10 @@
             <button class="btn"
                 @@click="console.log($store.contexts.data)">1</button>
             <x-html.button action="getContexts()">Contexts</x-html.button>
+            <x-html.button action="getContexts()">Contexts</x-html.button>
+            <x-html.breadcrumbs>
+                <x-html.breadcrumbs-item />
+            </x-html.breadcrumbs>
         </div>
 
         <div x-data @@click="clickOnElement"
@@ -60,6 +64,7 @@
                     currentContext: {{ $rootContext }},
                     orderNumber: null,
                     data: {{ Js::from($contexts) }},
+                    breadcrumbs: [],
 
                     setData(data, previousContext, currentContext) {
                         this.previousContext = previousContext;
@@ -149,7 +154,6 @@
                     console.log('...')
                     return
                 }
-                // console.log(target.dataset.bookmarkAction)
 
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
@@ -176,7 +180,6 @@
                     console.log('...')
                     return
                 }
-                // console.log(target.dataset.bookmarkAction)
 
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
@@ -195,8 +198,8 @@
                 if (id == null) {
                     return
                 }
-                
-                getContext(id)
+
+                getContexts(id)
             }
 
             function editFolder(id) {
@@ -204,6 +207,8 @@
                 if (id == null) {
                     return
                 }
+
+                getContext(id);
             }
 
             function openBookmarkInNewTab(link) {
@@ -242,8 +247,8 @@
                 }
             }
 
-            async function getContexts() {
-                let response = await fetch('/')
+            async function getContexts(id) {
+                let response = await fetch('/contexts/' + id)
 
                 if (response.ok) {
                     let res = await response.json()

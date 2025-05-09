@@ -9,18 +9,18 @@ use Illuminate\Support\Facades\Request;
 
 class ContextService
 {
-    public function rootContext(int $userId): ?Context
+    public function getRootContext(int $userId): ?Context
     {
         $context = Context::where('user_id', $userId)->where('is_root', true)->first();
         return $context;
     }
 
-    public function context(int $id): ?Context
+    public function getContext(int $id): ?Context
     {
         return Context::find($id);
     }
 
-    public function contexts(int $idCurrentContext): Collection|Context|null
+    public function getContexts(int $idCurrentContext): Collection|Context|null
     {
         $context = Context::where('parent_context_id', $idCurrentContext)->orderBy('order')->get();
         return $context;

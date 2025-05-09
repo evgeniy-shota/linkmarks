@@ -58,6 +58,7 @@ Route::controller(BookmarkController::class)->group(function () {
 
 Route::controller(ContextController::class)->group(function () {
     Route::get('/', 'index')->middleware(RedirectGuestToRoute::class . ':welcome')->name('home');
+    Route::get('/contexts/{id}', 'showContextData')->name('showContextData');
     Route::get('/context/{id}', 'show')->name('context');
 });
 

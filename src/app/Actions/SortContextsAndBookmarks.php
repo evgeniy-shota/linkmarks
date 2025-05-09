@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Storage;
 
 class SortContextsAndBookmarks
 {
-    public static function sort($contexts, $bookmarks): array
+    // change to quick sort?
+    public static function mixInOrder(array $contexts, array $bookmarks): array
     {
         $result = [];
         $contextsCounter = 0;
@@ -31,6 +32,17 @@ class SortContextsAndBookmarks
             }
 
             if (
+                $contextsCount == 0 ||
+                ($contextsCounter > $contextsCount - 1)
+            ) {
+                $result = array_merge(
+                    $result,
+                    array_slice($bookmarks, $bookmarksCounter)
+                );
+                break;
+            }
+
+            if (
                 $contexts[$contextsCounter]['order']
                 < $bookmarks[$bookmarksCounter]['order']
             ) {
@@ -43,8 +55,6 @@ class SortContextsAndBookmarks
                 || ($contexts[$contextsCounter]['order']
                     > $bookmarks[$bookmarksCounter]['order'])
             ) {
-                $bookmarks[$bookmarksCounter]['thumbnail'] =
-                    Storage::url($bookmarks[$bookmarksCounter]['thumbnail']['name']);
                 $result[] = $bookmarks[$bookmarksCounter];
                 $bookmarksCounter += 1;
             }
