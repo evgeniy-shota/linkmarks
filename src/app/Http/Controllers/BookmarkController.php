@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Bookmark\StoreBookmarkRequest;
 use App\Http\Resources\BookmarkResource;
 use App\Models\Bookmark;
+use App\Models\Context;
 use App\Models\Thumbnail;
 use App\Services\BookmarkService;
 use Illuminate\Http\Request;
@@ -43,11 +44,12 @@ class BookmarkController extends Controller
 
     public function store(StoreBookmarkRequest $request)
     {
-        $data = array_merge($request->validated(), ['user_id' => Auth::id()]);
+        $validated = $request->validated();
+        $validated['user_id'] = Auth::id();
 
-        if (isset($data['thumbnail'])) {
+        if (isset($validated['thumbnail'])) {
 
-            $file = Storage::disk('public')->putFile('thumbnails', $data['thumbnail']);
+            $file = Storage::disk('public')->putFile('thumbnails', $validated['thumbnail']);
 
             $thumbnail = Thumbnail::create([
                 'user_id' => Auth::id(),
@@ -55,11 +57,21 @@ class BookmarkController extends Controller
                 'source' => '',
             ]);
 
-            $data['thumbnail_id'] = $thumbnail->id;
+            $validated['thumbnail_id'] = $thumbnail->id;
         }
 
-        $bookmark = Bookmark::create($data);
-        return $bookmark;
+        if (!isset($validated['order'])) {
+            $maxContextsOrder = Context::where('parent_context_id', $validated['parent_context_id'])->max('order');
+            $maxBookmarksOrder = Bookmark::where('context_id', $validated['parent_context_id'])->max('order');
+            $validated['order'] =
+                ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
+                    $maxBookmarksOrder) + 1;
+        }
+
+        $validated['order'] += 1;
+        $bookmark = Bookmark::create($validated);
+        $bookmark->thumbnail = $bookmark->thumbnail->name;
+        return new BookmarkResource($bookmark);
     }
 
     public function update(Request $request, string $id)

@@ -16,7 +16,9 @@ class BookmarkService
 
     public function bookmark(string $id): ?Bookmark
     {
-        return Bookmark::where('id', $id)->with('thumbnail')->get();
+        $bookmark = Bookmark::where('id', $id)->with('thumbnail')->first();
+        // dd($bookmark->thumbnail);
+        return $bookmark;
     }
 
     public function bookmarksFromContext(string $idContext): ?Collection

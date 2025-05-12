@@ -8,9 +8,10 @@
     'elementAttributeType' => 'data-element-type',
 ])
 
-<div x-data
-    class="relative inline-block bg-gray-600 text-gray-100 hover:bg-gray-500 hover:text-gray-50 box-border rounded-md w-full px-1 py-1 my-1 transition duration-150">
+{{-- <div x-data
+    class="relative inline-block bg-gray-600 text-gray-100 hover:bg-gray-500 hover:text-gray-50 box-border rounded-md w-full px-1 py-1 transition duration-150"> --}}
 
+<x-horizontal-container>
     <div x-bind:id="'boormarkContainer-' + {{ $id }}"
         x-bind:{{ $elementAttribute }}='{{ $link }}'
         {{ $elementAttributeAction }}='open-new-tab'
@@ -73,5 +74,5 @@
             </div>
         </div>
     </div>
-
-</div>
+</x-horizontal-container>
+{{-- </div> --}}

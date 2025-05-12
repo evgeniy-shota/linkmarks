@@ -15,6 +15,7 @@ class ContextResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'isRoot' => $this->is_root,
             'parentContextId' => $this->parent_context_id,

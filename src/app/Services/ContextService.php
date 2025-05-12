@@ -26,8 +26,9 @@ class ContextService
         return $context;
     }
 
-    public function createContext(array $data): Context
+    public function createContext(array $data, int $userId): Context
     {
+        $data['user_id'] = $userId;
         $context = Context::create($data);
         return $context;
     }

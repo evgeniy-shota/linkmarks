@@ -1,7 +1,7 @@
 <div class="flex justify-center items-center">
     <div class="rounded-md bg-gray-600 px-4 py-3">
 
-        <form x-data @@submit.prevent="submitBookmarkForm"
+        <form x-data @@submit.prevent="submitFolderForm"
             action="" method="post">
             @csrf
 
@@ -10,46 +10,33 @@
                 <div x-text="$store.contexts.currentContext.name"></div>
             </div>
 
-            {{-- link input --}}
-            <x-html.formcontrols.fieldset title='Link'>
-                <x-slot:field>
-                    <x-html.formcontrols.input required id="link"
-                        type="text" placeholder="www.youtube.com"
-                        x-model="$store.bookmark.link" :state="true" />
-                </x-slot:field>
-                <x-slot:legend>
-                    <x-html.formcontrols.fieldset-legend text="Enter link" />
-                </x-slot:legend>
-            </x-html.formcontrols.fieldset>
-
             {{-- name input --}}
             <x-html.formcontrols.fieldset title='Name' class="mb-2">
                 <x-slot:field>
                     <x-html.formcontrols.input required id="name"
                         type="text" placeholder="Youtube"
-                        x-model="$store.bookmark.name" :state="true" />
+                        x-model="$store.context.name" :state="true" />
                 </x-slot:field>
                 <x-slot:legend>
                     <x-html.formcontrols.fieldset-legend
-                        text="Enter bookmark name" />
+                        text="Enter folder name" />
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 
             {{-- bookmark thumbnail preview --}}
-            <div class="font-bold">Thumbnail</div>
-            <template x-if="$store.bookmark.thumbnail_id!==null">
+            <template x-if="$store.context.thumbnail_id!==null">
                 <div class="w-full">
                     <div class="text-base font-bold mb-1">Thumbnail</div>
                     <div
                         class="border-2 border-dashed rounded-sm border-gray-500 flex justify-between items-center h-32 w-full">
                         <div class="flex-none w-1/2">
-                            <x-html.thumbnail id="bookmarkThumbnailPreview"
+                            <x-html.thumbnail id="contextThumbnailPreview"
                                 src=""
-                                xSrc="$store.bookmark.thumbnail" />
+                                xSrc="$store.context.thumbnail" />
                         </div>
                         <div class="w-1/2" class="flex-none">
                             <x-html.button
-                                action="Alpine.store('bookmark').clearThumbnail()">
+                                action="Alpine.store('context').clearThumbnail()">
                                 Clear
                             </x-html.button>
                         </div>
@@ -59,8 +46,10 @@
             </template>
 
             {{-- file input --}}
-            <div x-show="$store.bookmark.thumbnail_id===null">
-                <x-html.formcontrols.input-file-drop-down id="thumbnail" />
+            <div class="font-bold">Thumbnail</div>
+            <div x-show="$store.context.thumbnail_id===null">
+                <x-html.formcontrols.input-file-drop-down id="thumbnail"
+                    :required="false" />
             </div>
 
             <div class="flex justify-around items-center mt-2">
@@ -77,21 +66,14 @@
         </form>
 
         <script>
-            async function submitBookmarkForm() {
-                let data = Alpine.store('bookmark').getData()
+            async function submitFolderForm() {
+                let data = Alpine.store('context').getData();
 
                 submitForm(
                     data,
-                    '/bookmarks/',
-                    (bookmark) => Alpine.store('contexts').data.push(bookmark))
+                    '/context/',
+                    (context) => Alpine.store('contexts').data.push(context))
                 console.log(Alpine.store('contexts').data)
-
-            }
-
-            function uploadImage() {}
-
-            function getThumbnail() {
-
             }
         </script>
 

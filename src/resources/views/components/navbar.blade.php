@@ -1,13 +1,13 @@
-<header class="sticky top-0 mb-2 z-2">
-    <div class="navbar bg-gray-600 shadow-sm text-gray-100">
+<header class="sticky top-0 mb-3 z-2">
+    <div class="navbar rounded-sm bg-gray-700 shadow-sm text-gray-100">
         <div class="navbar-start">
             <div class="dropdown">
                 <div tabindex="0" role="button"
                     class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md lg:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h8m-8 6h16" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
                     </svg>
                 </div>
                 <ul tabindex="0"
@@ -25,11 +25,11 @@
         <div class="navbar-end">
             @auth
                 @if (Request::routeIs('home'))
-                    <x-html.button action='bookmarksModal.showModal()'>
-                        Add group
+                    <x-html.button action='openModal(folderModal)'>
+                        Add folder
                     </x-html.button>
 
-                    <x-html.button action='bookmarksModal.showModal()'>
+                    <x-html.button action='openModal(bookmarksModal)'>
                         Add bookmark
                     </x-html.button>
                 @else
@@ -47,7 +47,10 @@
                     Login
                 </x-html.link>
 
-                <x-html.link link="{{ route('registration.index') }}" :active="Request::routeIs('registration.index') ? true : false">
+                <x-html.link link="{{ route('registration.index') }}"
+                    :active="Request::routeIs('registration.index')
+                        ? true
+                        : false">
                     Registration
                 </x-html.link>
             @endguest

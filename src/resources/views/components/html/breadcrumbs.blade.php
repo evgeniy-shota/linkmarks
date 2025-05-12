@@ -3,13 +3,13 @@
 
 @endphp
 
-<div class="breadcrumbs text-sm ">
+<div class="breadcrumbs text-sm bg-gray-700 px-2 rounded-sm">
     <ul>
-        <li>
-            {{ $slot }}
-        </li>
-        <li><a>Home</a></li>
-        <li><a>Documents</a></li>
-        <li>Add Document</li>
+        <template x-for="(item,index) in {{ $breadcrumbs }}">
+            <li @@click="{{ $onclick }}"
+                x-bind:data-breadcrumb="index">
+                <x-html.breadcrumbs-item text="item.name" index="index" />
+            </li>
+        </template>
     </ul>
 </div>

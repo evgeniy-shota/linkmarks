@@ -1,9 +1,8 @@
 <x-layout>
 
     <x-slot:main>
-        <div class="flex justify-center items-center">
-            <div class="rounded-md bg-gray-600 w-1/1 md:w-1/2 px-4 py-3">
-                <div class="text-gray-100">Profile</div>
+        <x-flex-container class="sm:w-1/2 mt-2">
+            <div class="text-gray-100">Profile</div>
 
                 <fieldset class="fieldset text-gray-100">
                     <legend class="fieldset-legend text-gray-100">Email</legend>
@@ -65,9 +64,8 @@
                     </div>
 
                 </form>
+        </x-flex-container>
 
-            </div>
-        </div>
     </x-slot:main>
 
 </x-layout>

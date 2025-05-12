@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\SetUrlForBookmarksThumbnail;
 use App\Actions\SortContextsAndBookmarks;
+use App\Http\Requests\Context\StoreContext;
 use App\Http\Resources\ContextResource;
 use App\Models\Bookmark;
 use App\Models\Context;
@@ -35,7 +36,7 @@ class ContextController extends Controller
 
         return view(
             'home',
-            ['contexts' => $result, 'rootContext' => $rootContext->id]
+            ['contexts' => $result, 'rootContext' => $rootContext->toArray()]
         );
     }
 
@@ -59,7 +60,23 @@ class ContextController extends Controller
         return response()->json(['data' => $result], 200);
     }
 
-    public function store(Request $request) {}
+    public function store(StoreContext $request)
+    {
+        $validated = $request->validated();
+
+        if (!isset($validated['order'])) {
+            $maxContextsOrder = Context::where('parent_context_id', $validated['parent_context_id'])->max('order');
+            $maxBookmarksOrder = Bookmark::where('context_id', $validated['parent_context_id'])->max('order');
+            $validated['order'] =
+                ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
+                    $maxBookmarksOrder) + 1;
+        }
+
+        $validated['order'] += 1;
+        $context = $this->contextService->createContext($validated, Auth::id());
+
+        return new ContextResource($context);
+    }
 
     public function update(Request $request, string $id) {}
 

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('parent_context_id')->nullable();
             $table->boolean('enabled')->default(true);
             $table->integer('order')->nullable();
+            // $table->integer('context_thumbnail_id')->nullable();
 
             $table->timestamps();
         });

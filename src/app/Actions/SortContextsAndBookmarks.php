@@ -14,6 +14,9 @@ class SortContextsAndBookmarks
         $bookmarksCounter = 0;
         $contextsCount = count($contexts);
         $bookmarksCount = count($bookmarks);
+        // dump($contexts);
+        // dump($bookmarks);
+        // dd();
 
         while (
             $contextsCounter + $bookmarksCounter !=
