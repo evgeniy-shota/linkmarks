@@ -9,14 +9,14 @@
 @endphp
 
 <div x-data=""
-    class="box-border  flex flex-col w-full justify-center items-center mb-2">
+    class="box-border flex flex-col w-full justify-center items-center mb-2">
     <div class="flex justify-between items-center h-32 w-full mb-1">
 
         {{-- <div x-show="thumbnail" x-transition class="peer w-1/2 h-full">
             <x-html.thumbnail id="uploadFilePreview" src="" xSrc="thumbnail" />
         </div> --}}
         <div x-show="$store.fileInput.thumbnail" x-transition
-            class="peer w-1/2 h-full">
+            class="peer flex-none w-1/2 h-full">
             <x-html.thumbnail id="uploadFilePreview" src=""
                 xSrc="$store.fileInput.thumbnail" />
         </div>
@@ -47,7 +47,7 @@
     <div class="w-full">
         <x-html.formcontrols.input-file
             x-on:change="$store.fileInput.fileChosen($event, (file)=>Alpine.store('bookmark').thumbnail=file)"
-            :id="$id" :required="true" accept="image/*" />
+            :id="$id" :required="$required" accept="image/*" />
     </div>
 </div>
 

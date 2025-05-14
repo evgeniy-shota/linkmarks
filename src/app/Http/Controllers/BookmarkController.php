@@ -8,13 +8,17 @@ use App\Models\Bookmark;
 use App\Models\Context;
 use App\Models\Thumbnail;
 use App\Services\BookmarkService;
+use App\Services\ThumbnailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BookmarkController extends Controller
 {
-    public function __construct(private BookmarkService $bookmarkService) {}
+    public function __construct(
+        private BookmarkService $bookmarkService,
+        private ThumbnailService $thumbnailService
+    ) {}
 
     public function index(Request $request)
     {
@@ -49,7 +53,7 @@ class BookmarkController extends Controller
 
         if (isset($validated['thumbnail'])) {
 
-            $file = Storage::disk('public')->putFile('thumbnails', $validated['thumbnail']);
+            $file = $this->thumbnailService->saveToThumbnailsTemp($validated['thumbnail']);
 
             $thumbnail = Thumbnail::create([
                 'user_id' => Auth::id(),

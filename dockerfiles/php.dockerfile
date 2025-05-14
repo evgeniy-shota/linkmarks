@@ -6,6 +6,56 @@ ARG GID
 ENV UID=${UID}
 ENV GID=${GID}
 
+# RUN apk add imagemagick git autoconf
+
+# WORKDIR /var/lib
+
+# RUN git clone https://github.com/Imagick/imagick \
+# && cd imagick \
+# && phpize && ./configure \
+# && make \
+# && make install \
+# && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini
+
+# RUN apk add --no-cache --virtual .imagick-build-dependencies \
+# autoconf \
+# # curl \
+# g++ \
+# gcc \
+# git \
+# # imagemagick-dev \
+# libtool \
+# make \
+# tar \
+# && apk add --virtual .imagick-runtime-dependencies \
+# imagemagick 
+
+RUN apk add --no-cache --virtual .imagick-build-dependencies \
+  autoconf \
+  curl \
+  g++ \
+  gcc \
+  git \
+  imagemagick-dev \
+  libtool \
+  make \
+  tar \
+&& apk add --virtual .imagick-runtime-dependencies \
+  imagemagick \
+
+&& IMAGICK_TAG="3.8.0" \
+&& git clone -o ${IMAGICK_TAG} --depth 1 https://github.com/mkoppanen/imagick.git /tmp/imagick \
+&& cd /tmp/imagick \
+
+&& phpize \
+&& ./configure \
+&& make \
+&& make install \
+
+&& echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini \
+
+&& apk del .imagick-build-dependencies
+
 RUN mkdir -p /var/www/html
 
 WORKDIR /var/www/html

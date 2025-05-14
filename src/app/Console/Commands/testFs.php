@@ -26,6 +26,6 @@ class testFs extends Command
      */
     public function handle()
     {
-        dump(Storage::files('thumbnail/'));
+        dump(Storage::disk('public')->files('thumbnails'));
     }
 }

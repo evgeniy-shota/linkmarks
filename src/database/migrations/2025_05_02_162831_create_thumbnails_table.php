@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->string('name', 150);
             $table->string('source', 400)->nullable();
+            $table->string('associations', 100)->nullable();
+            $table->boolean('is_processed')->default(false);
             $table->boolean('is_enabled')->default(true);
 
             $table->timestamps();

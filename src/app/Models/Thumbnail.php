@@ -18,6 +18,8 @@ class Thumbnail extends Model
         'user_id',
         'name',
         'source',
+        'associations',
+        'is_processed',
         'is_enabled',
     ];
 

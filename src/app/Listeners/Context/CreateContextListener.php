@@ -24,10 +24,10 @@ class CreateContextListener
     {
         Context::create([
             'user_id' => $event->user->id,
-            'name' => null,
+            'name' => "Root",
             'is_root' => true,
             'parent_context_id' => null,
-            'enabled' => true,
+            'is_enabled' => true,
             'order' => null,
         ]);
     }

@@ -9,59 +9,20 @@ class SortContextsAndBookmarks
     // change to quick sort?
     public static function mixInOrder(array $contexts, array $bookmarks): array
     {
-        $result = [];
-        $contextsCounter = 0;
-        $bookmarksCounter = 0;
-        $contextsCount = count($contexts);
-        $bookmarksCount = count($bookmarks);
-        // dump($contexts);
-        // dump($bookmarks);
-        // dd();
-
-        while (
-            $contextsCounter + $bookmarksCounter !=
-            $contextsCount + $bookmarksCount
-        ) {
-
-            if (
-                $bookmarksCount == 0 ||
-                ($bookmarksCounter > $bookmarksCount - 1)
-            ) {
-                $result = array_merge(
-                    $result,
-                    array_slice($contexts, $contextsCounter)
-                );
-                break;
-            }
-
-            if (
-                $contextsCount == 0 ||
-                ($contextsCounter > $contextsCount - 1)
-            ) {
-                $result = array_merge(
-                    $result,
-                    array_slice($bookmarks, $bookmarksCounter)
-                );
-                break;
-            }
-
-            if (
-                $contexts[$contextsCounter]['order']
-                < $bookmarks[$bookmarksCounter]['order']
-            ) {
-                $result[] = $contexts[$contextsCounter];
-                $contextsCounter += 1;
-            }
-
-            if (
-                $contextsCounter > $contextsCount - 1
-                || ($contexts[$contextsCounter]['order']
-                    > $bookmarks[$bookmarksCounter]['order'])
-            ) {
-                $result[] = $bookmarks[$bookmarksCounter];
-                $bookmarksCounter += 1;
-            }
+        if (count($contexts) === 0) {
+            return $bookmarks;
         }
+
+        if (count($bookmarks) === 0) {
+            return $contexts;
+        }
+
+        $result = array_merge($contexts, $bookmarks);
+        // $contextsOrders = array_column($contexts, 'order');
+        // $bookmarksOrders = array_column($bookmarks, 'order');
+        $orders = array_column($result, 'order');
+
+        array_multisort($orders, $result);
 
         return $result;
     }
