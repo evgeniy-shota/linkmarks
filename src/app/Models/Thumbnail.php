@@ -28,10 +28,10 @@ class Thumbnail extends Model
         return $this->hasMany(Bookmark::class);
     }
 
-    protected function name(): Attribute
-    {
-        return Attribute::make(
-            get: fn(string $value) => Storage::url($value),
-        );
-    }
+    // protected function name(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn(string $value) => Storage::url($value),
+    //     );
+    // }
 }

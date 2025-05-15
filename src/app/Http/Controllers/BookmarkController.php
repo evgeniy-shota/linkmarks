@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Bookmark\StoreBookmarkRequest;
 use App\Http\Resources\BookmarkResource;
+use App\Jobs\ProcessThumbnail;
 use App\Models\Bookmark;
 use App\Models\Context;
 use App\Models\Thumbnail;
@@ -53,12 +54,14 @@ class BookmarkController extends Controller
 
         if (isset($validated['thumbnail'])) {
 
-            $file = $this->thumbnailService->saveToThumbnailsTemp($validated['thumbnail']);
+            $file = $this->thumbnailService->saveToTemp($validated['thumbnail']);
 
             $thumbnail = Thumbnail::create([
                 'user_id' => Auth::id(),
                 'name' => $file,
                 'source' => '',
+                // 'associations' => '',
+                // 'is_processed' => '',
             ]);
 
             $validated['thumbnail_id'] = $thumbnail->id;
@@ -74,7 +77,8 @@ class BookmarkController extends Controller
 
         $validated['order'] += 1;
         $bookmark = Bookmark::create($validated);
-        $bookmark->thumbnail = $bookmark->thumbnail->name;
+        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+        ProcessThumbnail::dispatch($thumbnail);
         return new BookmarkResource($bookmark);
     }
 

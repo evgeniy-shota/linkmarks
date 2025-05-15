@@ -6,6 +6,7 @@ ARG GID
 ENV UID=${UID}
 ENV GID=${GID}
 
+RUN apk add libjpeg libpng libwebp
 # RUN apk add imagemagick git autoconf
 
 # WORKDIR /var/lib
@@ -30,32 +31,6 @@ ENV GID=${GID}
 # && apk add --virtual .imagick-runtime-dependencies \
 # imagemagick 
 
-RUN apk add --no-cache --virtual .imagick-build-dependencies \
-  autoconf \
-  curl \
-  g++ \
-  gcc \
-  git \
-  imagemagick-dev \
-  libtool \
-  make \
-  tar \
-&& apk add --virtual .imagick-runtime-dependencies \
-  imagemagick \
-
-&& IMAGICK_TAG="3.8.0" \
-&& git clone -o ${IMAGICK_TAG} --depth 1 https://github.com/mkoppanen/imagick.git /tmp/imagick \
-&& cd /tmp/imagick \
-
-&& phpize \
-&& ./configure \
-&& make \
-&& make install \
-
-&& echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini \
-
-&& apk del .imagick-build-dependencies
-
 RUN mkdir -p /var/www/html
 
 WORKDIR /var/www/html
@@ -73,6 +48,34 @@ RUN sed -i "s/group = www-data/group = laravel/g" /usr/local/etc/php-fpm.d/www.c
 RUN echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf
 
 RUN docker-php-ext-install pdo pdo_mysql
+
+RUN apk add --no-cache --virtual .imagick-build-dependencies \
+  autoconf \
+  curl \
+  g++ \
+  gcc \
+  git \
+  imagemagick-dev \
+  libtool \
+  make \
+  tar \
+&& apk add --virtual .imagick-runtime-dependencies \
+  imagemagick \
+
+&& IMAGICK_TAG="3.7.0" \
+&& git clone -o ${IMAGICK_TAG} --depth 1 https://github.com/mkoppanen/imagick.git /tmp/imagick \
+&& cd /tmp/imagick \
+
+&& phpize \
+&& ./configure \
+&& make \
+&& make install \
+
+# && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini \
+&& touch /usr/local/etc/php/conf.d/php.ini \
+&& echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/php.ini \
+
+&& apk del .imagick-build-dependencies
 
 #RUN mkdir -p /usr/src/php/ext/redis \
 #    && curl -L https://github.com/phpredis/phpredis/archive/5.3.4.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
