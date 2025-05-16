@@ -9,6 +9,7 @@ use App\Models\Bookmark;
 use App\Models\Context;
 use App\Models\Thumbnail;
 use App\Services\BookmarkService;
+use App\Services\ImageService;
 use App\Services\ThumbnailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +66,9 @@ class BookmarkController extends Controller
             ]);
 
             $validated['thumbnail_id'] = $thumbnail->id;
+            if (ImageService::fileCanProcessed($file)) {
+                ProcessThumbnail::dispatch($thumbnail);
+            }
         }
 
         if (!isset($validated['order'])) {
@@ -78,7 +82,6 @@ class BookmarkController extends Controller
         $validated['order'] += 1;
         $bookmark = Bookmark::create($validated);
         $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
-        ProcessThumbnail::dispatch($thumbnail);
         return new BookmarkResource($bookmark);
     }
 

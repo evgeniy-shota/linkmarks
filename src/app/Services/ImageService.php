@@ -2,56 +2,115 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\EncodedImage;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Str;
+use Imagick;
 use Intervention\Image\Interfaces\ImageInterface;
 
 class ImageService
 {
+
+    const SUPPORTED_FORMATS = [
+        "image/webp" => 'webp',
+        "image/png" => 'png',
+        "image/jpeg" => "jpeg",
+    ];
+
     public function scale(string $img, int $size = 90)
     {
-        // $manager = new ImageManager(new Driver);
-        $manager = ImageManager::withDriver(new Driver);
+        $manager = ImageManager::imagick();
         $image = $manager->read($img);
         $imagick = $image->core()->native();
-        dump($imagick->getFormat());
-        dump('----');
-        dd();
-        if ($image->height() > $image->width()) {
-            $image->scale(height: $size);
-        } else {
-            $image->scale(width: $size);
+        $type =  $imagick->getImageMimeType();
+
+        $extension = $this->getSupportedExtension($type);
+
+        if (!$extension) {
+            return;
         }
-        dd($this->getSupportedExtension($type));
-        $encoded = $image->encodeByExtension(quality: 80);
+
+        $imagick->stripImage();
+
+        if ($imagick->getNumberImages() > 1) {
+            $image = $manager->read($this->getImageFromList($imagick));
+        }
+
+        if ($image->height() > $size || $image->width() > $size) {
+            if ($image->height() > $image->width()) {
+                $image->scale(height: $size);
+            } else {
+                $image->scale(width: $size);
+            }
+        }
+
+        $encoded = $image->encodeByExtension($extension, quality: 85);
         return $encoded;
     }
 
     public function convertToWebp(string $path, $quality = 20): EncodedImage
     {
-        // dd(Storage::disk('public')->path('') . 'thumbnails/');
         $manager = new ImageManager(new Driver());
         $image = $manager->read($path);
         $encoded = $image->toWebp($quality);
 
-        // $filePath = Storage::disk('public')->put($newPath, $encoded);
-        // dump($newPath);
-        // dd($filePath);
         return $encoded;
     }
 
-    public function getSupportedExtension(string $type): string
+    public function getSupportedExtension(string $type): ?string
     {
+        // $arrayExt = [
+        //     image_type_to_mime_type(IMAGETYPE_WEBP) => "webp",
+        //     image_type_to_mime_type(IMAGETYPE_PNG) => "png",
+        //     image_type_to_mime_type(IMAGETYPE_ICO) => "png",
+        //     image_type_to_mime_type(IMAGETYPE_JPEG) => "jpeg",
+        //     "image/x-ico" => "webp",
+        // ];
+
         $extension = match ($type) {
-            image_type_to_mime_type(IMAGETYPE_WEBP) => image_type_to_extension(IMAGETYPE_WEBP),
-            image_type_to_mime_type(IMAGETYPE_PNG) => image_type_to_extension(IMAGETYPE_PNG),
+            image_type_to_mime_type(IMAGETYPE_WEBP) => 'webp',
+            image_type_to_mime_type(IMAGETYPE_PNG) => 'png',
+            image_type_to_mime_type(IMAGETYPE_JPEG) => "jpeg",
             // image_type_to_mime_type(IMAGETYPE_JPEG) => image_type_to_extension(IMAGETYPE_JPEG),
-            // image_type_to_mime_type(IMAGETYPE_ICO) => image_type_to_extension(IMAGETYPE_PNG),
-            default => image_type_to_extension(IMAGETYPE_JPEG),
+            default => null,
         };
 
         return $extension;
+    }
+
+    public static function fileCanProcessed(string $absolutePath): bool
+    {
+        $type = Storage::disk('public')->mimeType($absolutePath);
+        return array_key_exists($type, self::SUPPORTED_FORMATS);
+    }
+
+    private function getImageFromList($imagick)
+    {
+        // $imagick->setLastIterator();
+        $image = null;
+        $imgCount = $imagick->getNumberImages();
+        $size = 0;
+
+        for ($i = 0; $i < $imgCount; $i++) {
+            $currentImageSize = $imagick->height + $imagick->width;
+
+            if ($currentImageSize > $size) {
+                $image = $imagick->getImage();
+                $size = $currentImageSize;
+            }
+
+            $imagick->previousImage();
+        }
+        return $image;
+    }
+
+    public function encodeFromString(string $str): EncodedImage
+    {
+        $manager = ImageManager::imagick();
+        $image = $manager->read($str);
+        $encoded = $image->encode();
+        return $encoded;
     }
 }

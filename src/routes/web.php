@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\AutofillForms\BookmarksFormController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ContextController;
 use App\Http\Middleware\RedirectGuestToRoute;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/mailable', function () {
     return new Notification();
 })->name('mailview');
+
+Route::get('/autofill-bf', BookmarksFormController::class)->name('autofillBookmarksFrorm');
 
 Route::get('/profile', function () {
     return view('profile');

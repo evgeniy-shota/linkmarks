@@ -29,7 +29,6 @@ class ProcessThumbnail implements ShouldQueue
     {
         $absoluteThumbnailPath = Storage::disk('public')->path($this->thumbnail->name);
         $scaledImage = $imageService->scale($absoluteThumbnailPath);
-        dd($scaledImage);
         $newPath = $thumbnailService->saveFromEncodedImage($scaledImage);
 
         if ($newPath) {
@@ -40,7 +39,8 @@ class ProcessThumbnail implements ShouldQueue
                 'is_processed' => true,
             ]);
 
-            Storage::disk('public')->delete($oldThumbnail);
+            $deleteRes = Storage::disk('public')->delete($oldThumbnail);
+            dump("delete result: " . $deleteRes);
         }
     }
 }
