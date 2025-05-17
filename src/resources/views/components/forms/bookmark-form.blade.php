@@ -1,12 +1,19 @@
-<div class="flex justify-center items-center">
+@props(['modalId', 'canDeleted' => false])
+@php
+    $thumbnailInput = 'thumbnailInput';
+@endphp
+
+<div class="flex justify-center items-center  w-full">
     <div class="rounded-md bg-gray-600 px-4 py-3">
 
         <form x-data @@submit.prevent="submitBookmarkForm"
             action="" method="post">
             @csrf
 
-            <div>
-                <div>Location: </div>
+            <div class="flex items-center gap-1">
+                <div class="font-medium">Location:
+                </div>
+                <x-html.icons.four-square />
                 <div x-text="$store.contexts.currentContext.name"></div>
             </div>
 
@@ -39,7 +46,7 @@
             <div class="font-bold">Thumbnail</div>
             <template x-if="$store.bookmark.thumbnail_id!==null">
                 <div class="w-full">
-                    <div class="text-base font-bold mb-1">Thumbnail</div>
+                    {{-- <div class="text-base font-bold mb-1">Thumbnail</div> --}}
                     <div
                         class="border-2 border-dashed rounded-sm border-gray-500 flex justify-between items-center h-32 w-full">
                         <div class="flex-none w-1/2">
@@ -60,10 +67,11 @@
 
             {{-- file input --}}
             <div x-show="$store.bookmark.thumbnail_id===null">
-                <x-html.formcontrols.input-file-drop-down id="thumbnail" />
+                <x-html.formcontrols.input-file-drop-down
+                    id="{{ $thumbnailInput }}" />
             </div>
 
-            <div class="flex justify-around items-center mt-2">
+            {{-- <div class="flex justify-around items-center mt-2">
                 <button type="reset"
                     class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
                     Clear
@@ -73,6 +81,21 @@
                     class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
                     Submit
                 </button>
+            </div> --}}
+
+            <div class="flex gap-4 mt-2 justify-center w-full">
+                <x-html.button-out-orange x-show="{{ $canDeleted }}">
+                    Delete
+                </x-html.button-out-orange>
+
+                <x-html.button-out-gray type="reset"
+                    action="clearForm({{ $thumbnailInput }})">
+                    Clear
+                </x-html.button-out-gray>
+
+                <x-html.button-out-green type="submit">
+                    Save
+                </x-html.button-out-green>
             </div>
         </form>
 
@@ -80,18 +103,28 @@
             async function submitBookmarkForm() {
                 let data = Alpine.store('bookmark').getData()
 
-                submitForm(
+                let result = await submitForm(
                     data,
                     '/bookmarks/',
                     (bookmark) => Alpine.store('contexts').data.push(bookmark))
                 console.log(Alpine.store('contexts').data)
 
+                if (result) {
+                    {{ $modalId }}.close()
+                    closeModal()
+                }
             }
 
             function uploadImage() {}
 
             function getThumbnail() {
 
+            }
+
+            function clearForm(fileInput) {
+                console.log(fileInput);
+                Alpine.store('bookmark').clearThumbnail()
+                Alpine.store('fileInput').clearData(fileInput)
             }
         </script>
 

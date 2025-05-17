@@ -42,7 +42,7 @@
                 @endif
             @endauth
 
-            @guest
+            {{-- @guest
                 <x-html.link link="{{ route('login') }}" :active="Request::routeIs('login') ? true : false">
                     Login
                 </x-html.link>
@@ -53,7 +53,7 @@
                         : false">
                     Registration
                 </x-html.link>
-            @endguest
+            @endguest --}}
 
         </div>
     </div>

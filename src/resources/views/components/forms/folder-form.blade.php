@@ -1,3 +1,5 @@
+@props(['modalId'])
+
 <div class="flex justify-center items-center">
     <div class="rounded-md bg-gray-600 px-4 py-3">
 
@@ -5,8 +7,10 @@
             action="" method="post">
             @csrf
 
-            <div>
-                <div>Location: </div>
+             <div class="flex items-center gap-1">
+                <div class="font-medium">Location:
+                </div>
+                <x-html.icons.four-square />
                 <div x-text="$store.contexts.currentContext.name"></div>
             </div>
 
@@ -69,11 +73,14 @@
             async function submitFolderForm() {
                 let data = Alpine.store('context').getData();
 
-                submitForm(
+                let result = await submitForm(
                     data,
                     '/context/',
                     (context) => Alpine.store('contexts').data.push(context))
                 console.log(Alpine.store('contexts').data)
+                if (result) {
+                    {{ $modalId }}.close()
+                }
             }
         </script>
 

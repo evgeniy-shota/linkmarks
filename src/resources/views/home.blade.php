@@ -8,16 +8,18 @@
 <x-layout>
     <x-slot:main>
 
-        <x-modal-window id="bookmarksModal" title="Add Bookmarks"
+        <x-modal-window id="bookmarksModal"
+            title="$store.bookmark.id===null?'Add Bookmark':'Edit bookmark'"
             closeButtonAction="closeModal()">
-            <x-forms.bookmark-form>
-
+            <x-forms.bookmark-form modalId="bookmarksModal"
+                canDeleted="$store.bookmark.id!==null?true:false">
             </x-forms.bookmark-form>
         </x-modal-window>
 
-        <x-modal-window id="folderModal" title="Add folder"
+        <x-modal-window id="folderModal"
+            title="$store.context.id===null?'Add Folder':'Edit folder'"
             closeButtonAction="closeModal()">
-            <x-forms.folder-form>
+            <x-forms.folder-form modalId="folderModal">
 
             </x-forms.folder-form>
         </x-modal-window>
@@ -72,6 +74,8 @@
 
 
         <script>
+            bookmarksModal.showModal()
+
             document.addEventListener('alpine:init', () => {
                 Alpine.store('contexts', {
                     rootContext: {{ Js::from($rootContext) }},
@@ -280,14 +284,14 @@
                     return
                 }
 
+                let index = target.dataset.{{ $attributeName }}
+                let context = Alpine.store('contexts').data[index];
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
-                        editFolder(target.dataset.{{ $attributeName }})
+                        editFolder(context)
                         break;
 
                     case 'open':
-                        let index = target.dataset.{{ $attributeName }}
-                        let context = Alpine.store('contexts').data[index];
                         openFolder(context)
                         Alpine.store('contexts').pushToBreadcrumbs(context)
                         break;
@@ -314,13 +318,10 @@
                     data.lenght > 0 ? data[data.lenght - 1].order : 0)
             }
 
-            function editFolder(id) {
-
-                if (id == null) {
-                    return
-                }
-
-                getContext(id);
+            async function editFolder(data) {
+                let context = await getContext(data.id);
+                Alpine.store('context').setData(context);
+                folderModal.showModal()
             }
 
             function openBookmarkInNewTab(link) {
@@ -339,9 +340,8 @@
                 })
             }
 
-            async function editBookmark(id) {
-                let bookmarkData = await getBookmarkData(id);
-                console.log(bookmarkData);
+            async function editBookmark(data) {
+                let bookmarkData = await getBookmarkData(data.id);
                 Alpine.store('bookmark').setData(bookmarkData);
                 bookmarksModal.showModal()
             }
@@ -394,7 +394,7 @@
             function closeModal() {
                 Alpine.store('bookmark').clear()
                 Alpine.store('context').clear()
-                console.log(Alpine.store('fileInput'))
+                // console.log(Alpine.store('fileInput'))
                 Alpine.store('fileInput').clearData()
             }
 
@@ -414,6 +414,7 @@
                     );
                 } catch (error) {
                     console.warn(error);
+                    return false
                 }
 
                 if (response) {
@@ -421,6 +422,7 @@
                     if (callback !== null) {
                         callback(response.data.data)
                     }
+                    return true;
                 }
             }
         </script>

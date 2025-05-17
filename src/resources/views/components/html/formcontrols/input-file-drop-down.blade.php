@@ -125,7 +125,9 @@
                 console.log('clear')
                 this.file = null;
                 this.thumbnail = null;
-                fileInput.value = null
+                if (fileInput !== null) {
+                    fileInput.value = null
+                }
             }
         })
     })

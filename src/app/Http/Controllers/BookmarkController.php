@@ -42,7 +42,7 @@ class BookmarkController extends Controller
         $bookmark = $this->bookmarkService->bookmark($id);
 
         if ($bookmark) {
-            $bookmark->thumbnail = $bookmark->thumbnail->name;
+            $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
         }
 
         return new BookmarkResource($bookmark);

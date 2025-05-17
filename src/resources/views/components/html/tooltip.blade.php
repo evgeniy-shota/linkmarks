@@ -9,7 +9,7 @@
     };
 @endphp
 
-<div {{ $attributes->merge(['class' => 'tooltip ' . $tooltipDirection]) }}>
+<div {{ $attributes->merge(['class' => 'w-full tooltip ' . $tooltipDirection]) }}>
     <div class="tooltip-content bg-gray-600">
         {{ $tip }}
     </div>

@@ -16,13 +16,13 @@
         x-bind:{{ $elementAttribute }}='{{ $link }}'
         {{ $elementAttributeAction }}='open-new-tab'
         {{ $elementAttributeType }}="bookmark" class="h-20 flex">
-        <div class="w-1/4 flex-none overflow-hidden">
+        <div class="w-1/4 flex-none overflow-hidden me-1">
 
             <div class="absolute top-0 left-0">
                 <x-html.tooltip direction='right' tip='open in current tab'>
                     <div x-bind:{{ $elementAttribute }}='{{ $link }}'
                         {{ $elementAttributeAction }}='open-current-tab'
-                        class="btn btn-sm bg-gray-500 hover:bg-gray-600 border-0 text-gray-100 shadow-none opacity-50 hover:opacity-100 px-2">
+                        class="btn btn-sm bg-gray-600 border-0 text-gray-100 shadow-none opacity-50 hover:opacity-100 px-2">
                         <img src="img/icons/box-arrow-in-down-left.svg">
                     </div>
                 </x-html.tooltip>
@@ -42,30 +42,34 @@
 
         <div class="w-3/4 flex-none overflow-hidden">
             <div class="grid h-full grid-cols-1 content-between">
-                <div class="truncate text-lg" x-text="{{ $name }}">
+
+                <div class="truncate text-lg/6 font-medium py-1 pe-2"
+                    x-text="{{ $name }}">
                 </div>
-                <div class="flex justify-between items-center">
-                    <div>
-                        <x-html.tooltip direction='top'
-                            tip='click to copy link'>
+
+                <div class="w-7/8">
+                    <div class="w-full">
+                        <x-html.tooltip direction='top' tip='click to copy link'
+                            class="w-full">
                             <small x-text="{{ $link }}"
                                 x-bind:{{ $elementAttribute }}='{{ $link }}'
                                 {{ $elementAttributeAction }}='copy'
-                                class="px-1 rounded-sm bg-gray-500 text-gray-100 cursor-pointer hover:bg-gray-600 transition duration-150">
+                                class="flex-none inline-block max-w-full px-1 rounded-sm text-gray-100 truncate cursor-pointer hover:bg-gray-600 transition duration-150">
 
                             </small>
                         </x-html.tooltip>
                     </div>
 
-                    <x-html.tooltip direction='left' tip='Edit'
-                        class="flex-none">
-                        <div x-bind:{{ $elementAttribute }}='{{ $id }}'
-                            {{ $elementAttributeAction }}='edit'
-                            class="flex-none btn btn-sm bg-gray-500 hover:bg-gray-600 border-0 text-gray-100 shadow-none px-2">
-                            <img src="img/icons/three-dots-vertical.svg">
-                        </div>
-                    </x-html.tooltip>
-
+                    <div class="absolute bottom-0 right-0">
+                        <x-html.tooltip direction='left' tip='Edit'
+                            class="flex-none">
+                            <div x-bind:{{ $elementAttribute }}='{{ $id }}'
+                                {{ $elementAttributeAction }}='edit'
+                                class="flex-none btn btn-sm bg-gray-600 opacity-50 hover:opacity-100 border-0 text-gray-100 shadow-none px-2">
+                                <img src="img/icons/three-dots-vertical.svg">
+                            </div>
+                        </x-html.tooltip>
+                    </div>
                     {{-- <div class="tooltip tooltip-left">
                         <div class="tooltip-content bg-gray-600"></div>
 
