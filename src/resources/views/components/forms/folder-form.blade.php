@@ -1,13 +1,17 @@
-@props(['modalId'])
+@props(['modalId', 'canDeleted' => false])
 
-<div class="flex justify-center items-center">
-    <div class="rounded-md bg-gray-600 px-4 py-3">
+@php
+    $folderThumbnailInput = 'folderThumbnailInput';
+@endphp
+
+<div class="flex justify-center items-center w-full">
+    <div class="rounded-md bg-gray-600 p-1 w-full">
 
         <form x-data @@submit.prevent="submitFolderForm"
             action="" method="post">
             @csrf
 
-             <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1">
                 <div class="font-medium">Location:
                 </div>
                 <x-html.icons.four-square />
@@ -52,11 +56,11 @@
             {{-- file input --}}
             <div class="font-bold">Thumbnail</div>
             <div x-show="$store.context.thumbnail_id===null">
-                <x-html.formcontrols.input-file-drop-down id="thumbnail"
-                    :required="false" />
+                <x-html.formcontrols.input-file-drop-down
+                    id="{{ $folderThumbnailInput }}" :required="false" />
             </div>
 
-            <div class="flex justify-around items-center mt-2">
+            {{-- <div class="flex justify-around items-center mt-2">
                 <button type="reset"
                     class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
                     Clear
@@ -66,6 +70,25 @@
                     class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
                     Submit
                 </button>
+            </div> --}}
+
+            <div class="flex gap-4 mt-4 justify-center w-full">
+                <x-html.button-out-orange x-show="{{ $canDeleted }}"
+                    action="deleteFolder()">
+                    Delete
+                </x-html.button-out-orange>
+
+                <x-html.button-out-gray type="reset"
+                    action="clearForm({{ $folderThumbnailInput }})"
+                    class="w-1/4">
+                    <x-html.icons.x-lg />
+                    Clear
+                </x-html.button-out-gray>
+
+                <x-html.button-out-green type="submit" class="w-1/4">
+                    <x-html.icons.floppy />
+                    Save
+                </x-html.button-out-green>
             </div>
         </form>
 
@@ -80,7 +103,35 @@
                 console.log(Alpine.store('contexts').data)
                 if (result) {
                     {{ $modalId }}.close()
+                    closeModal()
+                    Alpine.store('alerts').addAlert('Folder added successfully',
+                        'success')
                 }
+            }
+
+            async function deleteFolder() {
+
+                let result = await deleteRequest(
+                    '/contexts/',
+                    Alpine.store('context').id);
+
+                if (result) {
+                    Alpine.store('contexts').data.splice(
+                        Alpine.store('context').indexInContexts,
+                        1);
+                    {{ $modalId }}.close()
+                    closeModal()
+                    Alpine.store('alerts').addAlert('Folder removed!', 'success');
+                } else {
+                    Alpine.store('alerts').addAlert('Failed! Folder not removed!',
+                        'warning')
+                }
+            }
+
+            function clearForm(fileInput) {
+                console.log(fileInput);
+                Alpine.store('context').clearThumbnail()
+                Alpine.store('fileInput').clearData(fileInput)
             }
         </script>
 

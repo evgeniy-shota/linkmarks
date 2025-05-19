@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('parent_context_id')->nullable();
             $table->boolean('is_enabled')->default(true);
             $table->integer('order')->nullable();
-            // $table->integer('context_thumbnail_id')->nullable();
+            // $table->foreignId('thumbnail_id')->nullable()->constrained('thumbnails')->onDelete('set null');
 
             $table->timestamps();
         });

@@ -3,8 +3,8 @@
     $thumbnailInput = 'thumbnailInput';
 @endphp
 
-<div class="flex justify-center items-center  w-full">
-    <div class="rounded-md bg-gray-600 px-4 py-3">
+<div class="flex justify-center items-center w-full">
+    <div class="rounded-md bg-gray-600 p-1 w-full">
 
         <form x-data @@submit.prevent="submitBookmarkForm"
             action="" method="post">
@@ -68,7 +68,7 @@
             {{-- file input --}}
             <div x-show="$store.bookmark.thumbnail_id===null">
                 <x-html.formcontrols.input-file-drop-down
-                    id="{{ $thumbnailInput }}" />
+                    id="{{ $thumbnailInput }}" :required="false" />
             </div>
 
             {{-- <div class="flex justify-around items-center mt-2">
@@ -83,17 +83,20 @@
                 </button>
             </div> --}}
 
-            <div class="flex gap-4 mt-2 justify-center w-full">
-                <x-html.button-out-orange x-show="{{ $canDeleted }}">
+            <div class="flex gap-4 mt-4 justify-center w-full">
+                <x-html.button-out-orange x-show="{{ $canDeleted }}"
+                    action="deleteBookmark()">
                     Delete
                 </x-html.button-out-orange>
 
                 <x-html.button-out-gray type="reset"
-                    action="clearForm({{ $thumbnailInput }})">
+                    action="clearForm({{ $thumbnailInput }})" class="w-1/4">
+                    <x-html.icons.x-lg />
                     Clear
                 </x-html.button-out-gray>
 
-                <x-html.button-out-green type="submit">
+                <x-html.button-out-green type="submit" class="w-1/4">
+                    <x-html.icons.floppy />
                     Save
                 </x-html.button-out-green>
             </div>
@@ -112,6 +115,11 @@
                 if (result) {
                     {{ $modalId }}.close()
                     closeModal()
+                    Alpine.store('alerts').addAlert('Bookmark added successfully',
+                        'success')
+                } else {
+                    Alpine.store('alerts').addAlert('Failed! Bookmark not added!',
+                        'warning')
                 }
             }
 
@@ -119,6 +127,26 @@
 
             function getThumbnail() {
 
+            }
+
+            async function deleteBookmark() {
+
+                let result = await deleteRequest(
+                    '/bookmarks/',
+                    Alpine.store('bookmark').id);
+
+                if (result) {
+
+                    Alpine.store('contexts').data.splice(
+                        Alpine.store('bookmark').indexInContext,
+                        1);
+                    {{ $modalId }}.close()
+                    closeModal()
+                    Alpine.store('alerts').addAlert('Bookmark removed!', 'success');
+                } else {
+                    Alpine.store('alerts').addAlert('Failed! Bookmark not removed!',
+                        'warning')
+                }
             }
 
             function clearForm(fileInput) {

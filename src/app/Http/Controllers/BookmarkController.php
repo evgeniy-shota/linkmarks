@@ -92,7 +92,8 @@ class BookmarkController extends Controller
 
     public function destroy(string $id)
     {
-        Bookmark::destroy($id);
+        $res = $this->bookmarkService->deleteBookmark($id);
+        dump($res);
 
         return response()->json(['message' => 'deleted successfully', 200]);
     }

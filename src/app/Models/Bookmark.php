@@ -38,4 +38,9 @@ class Bookmark extends Model
     {
         return $this->BelongsTo(Thumbnail::class);
     }
+
+    public function style(): HasOne
+    {
+        return $this->hasOne(BookmarkStyle::class);
+    }
 }

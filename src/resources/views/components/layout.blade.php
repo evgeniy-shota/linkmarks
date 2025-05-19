@@ -18,7 +18,6 @@
 </head>
 
 <body class="p-2">
-    <!-- @csrf -->
     <x-navbar></x-navbar>
 
     <main>
@@ -26,6 +25,9 @@
         {{ $main }}
 
     </main>
+
+    <x-html.alerts.alerts ref="alert" />
+
 </body>
 
 <script>

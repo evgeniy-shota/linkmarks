@@ -57,6 +57,7 @@ Route::get('/welcom', function () {
 Route::controller(BookmarkController::class)->group(function () {
     Route::get('/bookmark/{id}', 'show')->name('home.show');
     Route::post('/bookmarks/', 'store')->name('home.store');
+    Route::delete('/bookmarks/{id}', 'destroy')->name('home.destroy');
 });
 
 Route::controller(ContextController::class)->group(function () {
@@ -64,6 +65,7 @@ Route::controller(ContextController::class)->group(function () {
     Route::get('/contexts/{id}', 'showContextData')->name('showContextData');
     Route::get('/context/{id}', 'show')->name('context');
     Route::post('/context/', 'store')->name('newContext');
+    Route::delete('/contexts/{id}', 'destroy')->name('context.destroy');
 });
 
 // Route::get('/add-bookmark', function () {

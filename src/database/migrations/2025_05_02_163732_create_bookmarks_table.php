@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('context_id')->constrained('contexts')->onDelete('cascade');
             $table->string('link', 400);
             $table->string('name', 150);
-            $table->foreignId('thumbnail_id')->constrained('thumbnails');
+            $table->foreignId('thumbnail_id')->nullable()->constrained('thumbnails')->onDelete('set null');
             $table->boolean('is_enabled')->default(true);
             $table->integer('order');
 

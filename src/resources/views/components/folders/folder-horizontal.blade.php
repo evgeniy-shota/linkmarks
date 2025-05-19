@@ -59,8 +59,9 @@
                         class="flex-none">
                         <div x-bind:{{ $elementAttribute }}='{{ $id }}'
                             {{ $elementAttributeAction }}='edit'
-                            class="flex-none btn btn-sm bg-gray-600 opacity-50 hover:opacity-100 border-0 text-gray-100 shadow-none px-2">
-                            <img src="img/icons/three-dots-vertical.svg">
+                            class="flex-none btn btn-sm bg-gray-600 opacity-20 hover:opacity-100 border-0 text-gray-100 shadow-none px-2 transition">
+                            {{-- <img src="img/icons/three-dots-vertical.svg"> --}}
+                            <x-html.icons.three-dots/>
                         </div>
                     </x-html.tooltip>
                 </div>

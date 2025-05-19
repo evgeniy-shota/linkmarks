@@ -12,19 +12,6 @@
 
     <x-slot:main>
 
-        @if (session('message'))
-            <div role="alert" class="alert alert-success font-bold mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 shrink-0 stroke-current" fill="none"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{{ session('message') }}</span>
-            </div>
-        @endif
-
         <x-flex-container class="sm:w-1/3 mt-2">
             <div class="text-gray-100 font-bold">Log In</div>
 
@@ -48,9 +35,8 @@
 
                 <x-html.formcontrols.fieldset title='Password'>
                     <x-slot:field>
-                        <x-html.formcontrols.input id="password"
-                            type="password" class="w-full" placeholder=""
-                            :state="$inputHelpers['passwordErrors']
+                        <x-html.formcontrols.input id="password" type="password"
+                            class="w-full" placeholder="" :state="$inputHelpers['passwordErrors']
                                 ? false
                                 : true" />
                     </x-slot:field>
@@ -73,6 +59,15 @@
                     </button>
                 </div>
             </form>
+
+            @if (session('message'))
+                <script>
+                    console.log('log');
+                    Alpine.store('alerts').addAlert({{ session('message') }},
+                        'success')
+                </script>
+            @endif
+
         </x-flex-container>
     </x-slot:main>
 

@@ -19,16 +19,18 @@
         <x-modal-window id="folderModal"
             title="$store.context.id===null?'Add Folder':'Edit folder'"
             closeButtonAction="closeModal()">
-            <x-forms.folder-form modalId="folderModal">
+            <x-forms.folder-form modalId="folderModal"
+                canDeleted="$store.context.id!==null?true:false">
 
             </x-forms.folder-form>
         </x-modal-window>
 
         {{-- <div class="text-gray-100">Bookmarks filter</div> --}}
         <div x-data class="mb-3 sticky z-2 top-16">
-            {{-- <button class="btn"
-                @@click="console.log($store.contexts.data)">1</button>
-            <x-html.button action="getContexts()">Contexts</x-html.button> --}}
+            {{-- <x-html.button
+                action="Alpine.store('alerts').addAlert('test message')">Contexts</x-html.button>
+            <x-html.button
+                action="Alpine.store('alerts').getAlert('test message')">Contexts</x-html.button> --}}
 
             <x-html.breadcrumbs onclick="clickOnBreadcrumb"
                 breadcrumbs="Alpine.store('contexts').breadcrumbs">
@@ -63,9 +65,11 @@
                 <div
                     class="flex justify-around items-center border-2 border-dashed border-gray-400 rounded-sm w-full h-full p-3">
                     <x-html.button action="openModal(folderModal)">
+                        <x-html.icons.folder-plus />
                         Add folder
                     </x-html.button>
                     <x-html.button action="openModal(bookmarksModal)">
+                        <x-html.icons.bookmarks-plus />
                         Add bookmark
                     </x-html.button>
                 </div>
@@ -74,8 +78,6 @@
 
 
         <script>
-            bookmarksModal.showModal()
-
             document.addEventListener('alpine:init', () => {
                 Alpine.store('contexts', {
                     rootContext: {{ Js::from($rootContext) }},
@@ -131,6 +133,7 @@
                     thumbnail: null,
                     thumbnail_id: null,
                     context_id: null,
+                    indexInContext: null,
                     order: null,
 
                     setData(data) {
@@ -169,6 +172,7 @@
                         this.thumbnail_id = null;
                         this.context_id = null;
                         this.order = null;
+                        this.indexInContext = null
                     }
                 })
             });
@@ -180,6 +184,7 @@
                     thumbnail: null,
                     thumbnail_id: null,
                     parent_context_id: null,
+                    indexInContexts: null,
                     order: null,
 
                     setData(data) {
@@ -217,6 +222,7 @@
                         this.thumbnail_id = null;
                         this.parent_context_id = null;
                         this.order = null;
+                        this.indexInContexts = null;
                     }
                 })
             });
@@ -259,6 +265,7 @@
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
                         let index = target.dataset.{{ $attributeName }};
+                        Alpine.store('bookmark').indexInContext = index
                         editBookmark(
                             Alpine.store('contexts').data[index])
                         break;
@@ -285,6 +292,7 @@
                 }
 
                 let index = target.dataset.{{ $attributeName }}
+                Alpine.store('context').indexInContexts = index
                 let context = Alpine.store('contexts').data[index];
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
@@ -424,6 +432,24 @@
                     }
                     return true;
                 }
+            }
+
+            async function deleteRequest(url, id) {
+                let response = null;
+
+                try {
+                    response = axios.delete(url + id)
+                } catch (error) {
+                    console.log('Delete bookmark fail')
+                    console.log(error);
+                    return false
+                }
+
+                if (response) {
+                    return true
+                }
+
+                return false
             }
         </script>
 
