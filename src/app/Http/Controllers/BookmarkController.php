@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Bookmark\StoreBookmarkRequest;
+use App\Http\Requests\Bookmark\UpdateBookmarkRequest;
 use App\Http\Resources\BookmarkResource;
 use App\Jobs\ProcessThumbnail;
 use App\Models\Bookmark;
@@ -53,22 +54,27 @@ class BookmarkController extends Controller
         $validated = $request->validated();
         $validated['user_id'] = Auth::id();
 
-        if (isset($validated['thumbnail'])) {
-
-            $file = $this->thumbnailService->saveToTemp($validated['thumbnail']);
-
-            $thumbnail = Thumbnail::create([
-                'user_id' => Auth::id(),
-                'name' => $file,
-                'source' => '',
-                // 'associations' => '',
-                // 'is_processed' => '',
-            ]);
-
+        if (isset($validated['thumbnailFile'])) {
+            $thumbnail = $this->thumbnailService->store($validated['thumbnailFile']);
             $validated['thumbnail_id'] = $thumbnail->id;
-            if (ImageService::fileCanProcessed($file)) {
-                ProcessThumbnail::dispatch($thumbnail);
-            }
+            // $file = $this->thumbnailService->saveToTemp($validated['thumbnailFile']);
+
+            // $thumbnail = Thumbnail::create([
+            //     'user_id' => Auth::id(),
+            //     'name' => $file,
+            //     'source' => '',
+            //     // 'associations' => '',
+            //     // 'is_processed' => '',
+            // ]);
+            // $validated['thumbnail_id'] = $thumbnail->id;
+
+            // if (ImageService::fileCanProcessed($file)) {
+            //     ProcessThumbnail::dispatch($thumbnail);
+            // }
+
+            unset($validated['thumbnailFile']);
+        } else if (!isset($validated['thumbnail_id'])) {
+            $validated['thumbnail_id'] = $this->thumbnailService->getDefault()->id;
         }
 
         if (!isset($validated['order'])) {
@@ -85,9 +91,31 @@ class BookmarkController extends Controller
         return new BookmarkResource($bookmark);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateBookmarkRequest $request, string $id)
     {
-        dd('try update: ' . $id);
+        $validated = $request->validated();
+        if (isset($validated['thumbnailFile'])) {
+            $thumbnail = $this->thumbnailService->store($validated['thumbnailFile']);
+            $validated['thumbnail_id'] = $thumbnail->id;
+
+            unset($validated['thumbnailFile']);
+        } else if (!isset($validated['thumbnail_id'])) {
+            $validated['thumbnail_id'] = $this->thumbnailService->getDefault()->id;
+        }
+
+        $result = $this->bookmarkService->updateBookmark($id, $validated);
+
+        if (!$result) {
+            return response()->json(['message' => 'Bookmark not updated...'], 400);
+        }
+
+        $bookmark = $this->bookmarkService->bookmark($id);
+
+        if ($bookmark) {
+            $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+        }
+
+        return new BookmarkResource($bookmark);
     }
 
     public function destroy(string $id)

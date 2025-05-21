@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
+
+use App\Models\User;
 use Tests\TestCase;
 
 class LoginRouteTest extends TestCase
@@ -10,9 +12,10 @@ class LoginRouteTest extends TestCase
 
     public function test_authorized_user_can_browse_login(): void
     {
-        $response = $this->get('/login');
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->get('/login');
 
-        $response->assertStatus(200);
+        $response->assertRedirectToRoute('home');
     }
 
     public function test_unauthorized_user_can_browse_login(): void

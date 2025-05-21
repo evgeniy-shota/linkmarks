@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title> {{ $title ?? 'Bookmarks' }} </title>
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ asset('/favicon.svg') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

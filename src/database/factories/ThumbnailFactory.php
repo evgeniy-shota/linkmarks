@@ -18,7 +18,8 @@ class ThumbnailFactory extends Factory
     {
         return [
             'user_id' => null,
-            'name' => 'someName',
+            'name' => '',
+            'associations' => null,
             'source' => null,
             'is_enabled' => true,
         ];

@@ -46,7 +46,7 @@
 
     <div class="w-full">
         <x-html.formcontrols.input-file
-            x-on:change="$store.fileInput.fileChosen($event, (file)=>Alpine.store('bookmark').thumbnail=file)"
+            x-on:change="$store.fileInput.fileChosen($event, (file)=>Alpine.store('bookmark').thumbnailFile=file)"
             :id="$id" :required="$required" accept="image/*" />
     </div>
 </div>

@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Jobs\ProcessThumbnail;
 use App\Models\Thumbnail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
@@ -52,6 +54,36 @@ class ThumbnailService
         $result = Storage::disk('public')->put($path, (string)$image);
 
         return $result ? $path : null;
+    }
+
+    public function getDefault(bool $idOnly = true): Thumbnail|int
+    {
+        $defaultThumbnail = Thumbnail::where('source', 'default')->where('associations', 'default');
+
+        if ($idOnly) {
+            $defaultThumbnail = $defaultThumbnail->select('id');
+        }
+
+        return $defaultThumbnail->first();
+    }
+
+    public function store($file)
+    {
+        $file = $this->saveToTemp($file);
+
+        $thumbnail = Thumbnail::create([
+            'user_id' => Auth::id(),
+            'name' => $file,
+            'source' => '',
+            // 'associations' => '',
+            // 'is_processed' => '',
+        ]);
+
+        if (ImageService::fileCanProcessed($file)) {
+            ProcessThumbnail::dispatch($thumbnail);
+        }
+
+        return $thumbnail;
     }
 
     public function update(string $id, array $data)

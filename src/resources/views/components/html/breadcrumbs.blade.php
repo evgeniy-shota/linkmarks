@@ -3,7 +3,7 @@
 
 @endphp
 
-<div class="breadcrumbs text-sm bg-gray-700 px-2 rounded-sm">
+<div class="breadcrumbs text-md font-semibold bg-gray-700 px-2 rounded-sm">
     <ul>
         <template x-for="(item,index) in {{ $breadcrumbs }}">
             <li @@click="{{ $onclick }}"

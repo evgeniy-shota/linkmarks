@@ -35,7 +35,7 @@ class ContextService
 
     public function updateContext(array $data, int $id): bool
     {
-        $context = Context::update(['id' => $id], $data);
+        $context = Context::where('id', $id)->update($data);
         return $context;
     }
 

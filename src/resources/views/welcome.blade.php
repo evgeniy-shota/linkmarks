@@ -1,7 +1,7 @@
 
 <x-layout>
     <x-slot:main>
-        <x-flex-container width="w-1/2">
+        <x-flex-container width="w-full">
             <div class="text-gray-100 mb-2">Welcome to Bookmarks!</div>
             <div>
                 Here you can save links to useful (and not so...) resources, and

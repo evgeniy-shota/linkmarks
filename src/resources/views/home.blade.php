@@ -8,6 +8,7 @@
 <x-layout>
     <x-slot:main>
 
+    {{-- Modal window with Bookmarks form --}}
         <x-modal-window id="bookmarksModal"
             title="$store.bookmark.id===null?'Add Bookmark':'Edit bookmark'"
             closeButtonAction="closeModal()">
@@ -16,15 +17,16 @@
             </x-forms.bookmark-form>
         </x-modal-window>
 
+    {{-- Modal window with Folder form --}}
         <x-modal-window id="folderModal"
             title="$store.context.id===null?'Add Folder':'Edit folder'"
             closeButtonAction="closeModal()">
             <x-forms.folder-form modalId="folderModal"
                 canDeleted="$store.context.id!==null?true:false">
-
             </x-forms.folder-form>
         </x-modal-window>
 
+        {{-- Tool bar --}}
         {{-- <div class="text-gray-100">Bookmarks filter</div> --}}
         <div x-data class="mb-3 sticky z-2 top-16">
             {{-- <x-html.button
@@ -34,7 +36,6 @@
 
             <x-html.breadcrumbs onclick="clickOnBreadcrumb"
                 breadcrumbs="Alpine.store('contexts').breadcrumbs">
-
             </x-html.breadcrumbs>
         </div>
 
@@ -78,159 +79,16 @@
 
 
         <script>
-            document.addEventListener('alpine:init', () => {
-                Alpine.store('contexts', {
-                    rootContext: {{ Js::from($rootContext) }},
-                    previousContext: null,
-                    currentContext: {{ Js::from($rootContext) }},
-                    orderNumber: null,
-                    data: {{ Js::from($contexts) }},
-                    breadcrumbs: [{{ Js::from($rootContext) }}],
-
-                    getLastOrder() {
-                        return this.data.length > 0 ? this.data[this
-                            .data.length - 1].order : 0;
-                    },
-
-                    pushToBreadcrumbs(data) {
-                        this.breadcrumbs.push(data);
-                    },
-
-                    spliceBreadcrumbs(
-                        index,
-                        count = this.breadcrumbs.length) {
-                        console.log(index + 1)
-                        this.breadcrumbs.splice(
-                            Number(index) + 1,
-                            count
-                        );
-
-                    },
-
-                    setData(data, previousContext, currentContext,
-                        orderNumber) {
-                        this.previousContext = previousContext;
-                        this.currentContext = currentContext;
-                        this.orderNumber = orderNumber;
-                        this.data = data;
-                    },
-
-                    clearData() {
-                        this.previousContext = null;
-                        this.currentContext = this.rootContext;
-                        this.orderNumber = null;
-                        this.data = [];
-                        this.breadcrumbs = [];
-                    },
-                })
-            });
-
-            document.addEventListener('alpine:init', () => {
-                Alpine.store('bookmark', {
-                    id: null,
-                    name: null,
-                    link: null,
-                    thumbnail: null,
-                    thumbnail_id: null,
-                    context_id: null,
-                    indexInContext: null,
-                    order: null,
-
-                    setData(data) {
-                        this.id = data.id;
-                        this.name = data.name;
-                        this.link = data.link;
-                        this.thumbnail = data.thumbnail;
-                        this.thumbnail_id = data.thumbnail_id;
-                        this.context_id = data.context_id;
-                        this.order = data.order;
-                    },
-
-                    getData() {
-                        return {
-                            id: this.id,
-                            name: this.name,
-                            link: this.link,
-                            thumbnail: this.thumbnail,
-                            thumbnail_id: this.thumbnail_id,
-                            context_id: Alpine.store('contexts')
-                                .currentContext.id,
-                            order: this.order,
-                        }
-                    },
-
-                    clearThumbnail() {
-                        this.thumbnail = null;
-                        this.thumbnail_id = null;
-                    },
-
-                    clear() {
-                        this.id = null;
-                        this.name = null;
-                        this.link = null;
-                        this.thumbnail = null;
-                        this.thumbnail_id = null;
-                        this.context_id = null;
-                        this.order = null;
-                        this.indexInContext = null
-                    }
-                })
-            });
-
-            document.addEventListener('alpine:init', () => {
-                Alpine.store('context', {
-                    id: null,
-                    name: null,
-                    thumbnail: null,
-                    thumbnail_id: null,
-                    parent_context_id: null,
-                    indexInContexts: null,
-                    order: null,
-
-                    setData(data) {
-                        this.id = data.id;
-                        this.name = data.name;
-                        this.thumbnail = data.thumbnail;
-                        this.thumbnail_id = data.thumbnail_id;
-                        this.parent_context_id = data
-                            .parent_context_id;
-                        this.order = data.order;
-                    },
-
-                    getData() {
-                        return {
-                            id: this.id,
-                            name: this.name,
-                            link: this.link,
-                            thumbnail: this.thumbnail,
-                            thumbnail_id: this.thumbnail_id,
-                            parent_context_id: Alpine.store('contexts')
-                                .currentContext.id,
-                            order: this.order,
-                        }
-                    },
-
-                    clearThumbnail() {
-                        this.thumbnail = null;
-                        this.thumbnail_id = null;
-                    },
-
-                    clear() {
-                        this.id = null;
-                        this.name = null;
-                        this.thumbnail = null;
-                        this.thumbnail_id = null;
-                        this.parent_context_id = null;
-                        this.order = null;
-                        this.indexInContexts = null;
-                    }
-                })
-            });
+            document.addEventListener('alpine:init', () => Alpine.store('contexts')
+                .initial(
+                    {{ Js::from($rootContext) }},
+                    {{ Js::from($rootContext) }},
+                    {{ Js::from($contexts) }},
+                    {{ Js::from($rootContext) }},
+                ));
 
             function clickOnBreadcrumb(event) {
                 let breadcrumb = event.target.closest('[data-breadcrumb]');
-                console.log('breadcrumb: ')
-                console.log(breadcrumb)
                 let breadcrumbIndex = breadcrumb.dataset.breadcrumb
                 let context = Alpine.store('contexts').breadcrumbs[breadcrumbIndex]
                 openFolder(context)
@@ -265,7 +123,7 @@
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
                         let index = target.dataset.{{ $attributeName }};
-                        Alpine.store('bookmark').indexInContext = index
+                        Alpine.store('bookmark').indexInContexts = index
                         editBookmark(
                             Alpine.store('contexts').data[index])
                         break;
@@ -310,7 +168,6 @@
             }
 
             async function openFolder(context) {
-                console.log(context)
 
                 if (context.id == null) {
                     return
@@ -434,14 +291,41 @@
                 }
             }
 
+            async function updateRequest(url, data) {
+                let response = null;
+
+                try {
+                    response = await axios.post(
+                        url, {
+                            ...data,
+                            _method: 'PUT',
+                        }, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.warn('Update fail...')
+                    console.warn(error)
+                    return false
+                }
+
+                if (response) {
+                    return response.data.data
+                }
+
+                return false
+            }
+
             async function deleteRequest(url, id) {
                 let response = null;
 
                 try {
                     response = axios.delete(url + id)
                 } catch (error) {
-                    console.log('Delete bookmark fail')
-                    console.log(error);
+                    console.warn('Delete bookmark fail')
+                    console.warn(error);
                     return false
                 }
 
@@ -450,6 +334,18 @@
                 }
 
                 return false
+            }
+
+            function objToFormdata(obj) {
+                let formdata = new FormData();
+
+                for (let data of Object.entries(obj)) {
+                    let value = typeof data[1] !== 'object' ? String(data[1]) : data[1];
+
+                    formdata.append(data[0], data[1]);
+                }
+
+                return formdata;
             }
         </script>
 

@@ -14,8 +14,16 @@ class ThumbnailSeeder extends Seeder
      */
     public function run(): void
     {
-        $files = Storage::disk('public')->allDirectories('/thumbnails');
-        dd($files);
-        Thumbnail::factory()->count(5)->create();
+        $files = Storage::disk('public')->allFiles('/thumbnails-default');
+
+        foreach ($files as $file) {
+            $associations = substr($file, $start = strrpos($file, '/') + 1, strrpos($file, '.') - $start);
+
+            Thumbnail::factory()->create([
+                'name' => $file,
+                'source' => 'default',
+                'associations' => $associations,
+            ]);
+        }
     }
 }

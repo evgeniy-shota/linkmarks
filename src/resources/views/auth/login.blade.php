@@ -47,7 +47,10 @@
                     </x-slot:legend>
                 </x-html.formcontrols.fieldset>
 
-                <div class="flex justify-around items-center">
+                <a class="text-sm underline text-gray-200"
+                    href="{{ route('password.request') }}">Forgot password?</a>
+
+                <div class="flex justify-around items-center mt-2">
                     <button type="reset"
                         class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
                         Clear

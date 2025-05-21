@@ -21,19 +21,19 @@
                 <div
                     class="flex flex-none w-full h-1/2 justify-center items-center">
                     <div class="flex-none w-1/2 h-full p-1">
-                        <div class="w-full h-full bg-sky-600 rounded-sm"></div>
+                        <div class="w-full h-full bg-gray-400 rounded-sm"></div>
                     </div>
                     <div class="flex-none w-1/2 h-full p-1">
-                        <div class="w-full h-full bg-sky-600 rounded-sm"></div>
+                        <div class="w-full h-full bg-gray-400 rounded-sm"></div>
                     </div>
                 </div>
                 <div
                     class="flex flex-none w-full h-1/2 justify-center items-center">
                     <div class="flex-none w-1/2 h-full p-1">
-                        <div class="w-full h-full bg-sky-600 rounded-sm"></div>
+                        <div class="w-full h-full bg-gray-400 rounded-sm"></div>
                     </div>
                     <div class="flex-none w-1/2 h-full p-1">
-                        <div class="w-full h-full bg-sky-600 rounded-sm"></div>
+                        <div class="w-full h-full bg-gray-400 rounded-sm"></div>
                     </div>
                 </div>
             </div>

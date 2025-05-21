@@ -52,10 +52,15 @@ class BookmarkService
     //     return $bookmarks;
     // }
 
-    public function updateBookmark(array $data, string $id): bool
+    public function updateBookmark(string $id, array $data): bool
     {
-        $result = Bookmark::update(['id' => $id], $data);
-        return $result;
+        $bookmark = Bookmark::where('id', $id)->update($data);
+
+        if ($bookmark) {
+            return true;
+        }
+
+        return false;
     }
 
     public function deleteBookmark(string $id): ?bool

@@ -14,7 +14,7 @@
             <div class="flex items-center gap-1">
                 <div class="font-medium">Location:
                 </div>
-                <x-html.icons.four-square />
+                <x-html.icons.folder />
                 <div x-text="$store.contexts.currentContext.name"></div>
             </div>
 
@@ -96,6 +96,15 @@
             async function submitFolderForm() {
                 let data = Alpine.store('context').getData();
 
+                if (Alpine.store('context').id === null) {
+                    createFolder(data)
+                } else {
+                    updateFolder(data)
+                }
+            }
+
+            async function createFolder(data) {
+
                 let result = await submitForm(
                     data,
                     '/context/',
@@ -106,6 +115,26 @@
                     closeModal()
                     Alpine.store('alerts').addAlert('Folder added successfully',
                         'success')
+                }
+            }
+
+            async function updateFolder(data) {
+                let index = Alpine.store('context').indexInContexts
+
+                let result = await updateRequest(
+                    '/contexts/' + data.id,
+                    data,
+                    (context) => Alpine.store('contexts').data.push(context))
+
+                if (result) {
+                    Alpine.store('contexts').data[index] = result
+                    {{ $modalId }}.close()
+                    closeModal()
+                    Alpine.store('alerts').addAlert('Folder updated successfully',
+                        'success')
+                } else {
+                    Alpine.store('alerts').addAlert('Failed! Folder not updated!',
+                        'warning')
                 }
             }
 

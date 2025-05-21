@@ -13,7 +13,7 @@
             <div class="flex items-center gap-1">
                 <div class="font-medium">Location:
                 </div>
-                <x-html.icons.four-square />
+                <x-html.icons.folder />
                 <div x-text="$store.contexts.currentContext.name"></div>
             </div>
 
@@ -106,6 +106,15 @@
             async function submitBookmarkForm() {
                 let data = Alpine.store('bookmark').getData()
 
+                if (Alpine.store('bookmark').id === null) {
+                    createBookmark(data)
+                } else {
+                    updateBookmark(data)
+                }
+
+            }
+
+            async function createBookmark(data) {
                 let result = await submitForm(
                     data,
                     '/bookmarks/',
@@ -123,10 +132,24 @@
                 }
             }
 
-            function uploadImage() {}
+            async function updateBookmark(data) {
+                let index = Alpine.store('bookmark').indexInContexts
 
-            function getThumbnail() {
+                let result = await updateRequest(
+                    '/bookmarks/' + data.id,
+                    data,
+                    (bookmark) => Alpine.store('contexts').data.push(bookmark))
 
+                if (result) {
+                    Alpine.store('contexts').data[index] = result
+                    {{ $modalId }}.close()
+                    closeModal()
+                    Alpine.store('alerts').addAlert('Bookmark updated successfully',
+                        'success')
+                } else {
+                    Alpine.store('alerts').addAlert('Failed! Bookmark not updated!',
+                        'warning')
+                }
             }
 
             async function deleteBookmark() {
@@ -138,7 +161,7 @@
                 if (result) {
 
                     Alpine.store('contexts').data.splice(
-                        Alpine.store('bookmark').indexInContext,
+                        Alpine.store('bookmark').indexInContexts,
                         1);
                     {{ $modalId }}.close()
                     closeModal()
