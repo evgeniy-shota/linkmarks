@@ -53,9 +53,9 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    protected $dispatchesEvents = [
-        'created' => CreatedEvent::class,
-    ];
+    // protected $dispatchesEvents = [
+    //     'created' => CreatedEvent::class,
+    // ];
 
     public function profile(): HasOne
     {

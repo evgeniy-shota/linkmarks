@@ -1,7 +1,20 @@
+@php
+    $verified = $userData->email_verified_at ? true : false;
+    $changePasswordModalName = 'changePasswordModal';
+@endphp
+
+
 <x-layout>
     <x-slot:main>
         <x-flex-container class="sm:w-1/2 mt-2">
             <div class="text-gray-100 text-lg font-bold mb-2">Profile</div>
+
+            @if (!$verified)
+                <x-captions.warning class="mb-2">
+                    Your email is not verified. Some functionality is not
+                    available.
+                </x-captions.warning>
+            @endif
 
             <div class="flex flex-col justify-start items-start mb-2">
                 <div class="font-bold mb-1">Name</div>
@@ -15,18 +28,38 @@
                     <div class="me-2">Email</div>
                     <x-html.tooltip>
                         <x-slot:tip>
-                            {{ $userData->email_verified_at ? 'email verified' : 'email not verified' }}
+                            {{ $verified ? 'email verified' : 'email not verified' }}
                         </x-slot:tip>
-                        @if ($userData->email_verified_at)
+                        @if ($verified)
                             <x-html.icons.check-square />
                         @else
                             <x-html.icons.exclamation-square />
                         @endif
                     </x-html.tooltip>
+
                 </div>
-                <div class="input bg-gray-700">
+
+                <div class="input bg-gray-700 mb-1">
                     {{ $userData->email ?? 'not found' }}
                 </div>
+
+                @if (session('verificationStatus'))
+                    <x-captions.success class="mb-1 w-full">
+                        {{ session('verificationStatus') }}
+                    </x-captions.success>
+                @endif
+
+                @if (!$verified)
+                    <div class="flex-none">
+                        <form action="{{ route('verification.send') }}"
+                            method="get">
+                            <x-html.button-out-yellow type="submit"
+                                href="{{ route('verification.send') }}">
+                                Send verification link
+                            </x-html.button-out-yellow>
+                        </form>
+                    </div>
+                @endif
             </div>
 
             <div class="flex flex-col justify-start items-start mb-1">
@@ -36,20 +69,53 @@
                 </div>
             </div>
 
-            <div class="flex flex-col justify-start items-start mb-1">
-                <div class="font-bold mb-1">Reset password</div>
-                <div class="mb-1">
-                    A password reset link will be sent to your email address.
+            {{-- change password --}}
+            <div x-data class="flex flex-col justify-start items-start mb-1">
+                <div class="font-bold mb-1">
+                    Change password
+                    @if (!$verified)
+                        <x-html.badges.warning>
+                            not available
+                        </x-html.badges.warning>
+                    @endif
                 </div>
-                <x-html.button-out-gray>
-                    Send link
+
+                <x-html.button-out-gray
+                    action="{{ $changePasswordModalName }}.showModal()"
+                    :disabled="!$verified">
+                    Change password
                 </x-html.button-out-gray>
+
+
+                {{-- <div class="mb-1">
+                    A password change link will be sent to your email address.
+                </div>
+
+                @error('changePassword')
+                    <div class="text-amber-300 mb-1">{{ $message }}</div>
+                @enderror
+
+                <form action="{{ route('changePassword.request') }}"
+                    method="post">
+                    @csrf
+                    <x-html.formcontrols.input id="email" hidden readonly
+                        type="email" :value="$userData->email" />
+                    <x-html.button-out-gray :disabled="!$verified" type="submit">
+                        <span>Send link</span>
+                    </x-html.button-out-gray>
+                </form> --}}
             </div>
 
+            <div class="flex flex-col justify-center items-start">
+                <div class="divider divider-start font-bold text-gray-100">
+                    Settings
+                </div>
 
-            <div class="divider divider-start font-bold text-gray-100">Settings</div>
+                <x-captions.info class="w-full">
+                    In development ...
+                </x-captions.info>
+            </div>
 
-            <div class="italic text-sky-200">In development ...</div>
 
             {{-- <form action="" method="post">
                 @csrf
@@ -104,26 +170,81 @@
 
 
             <div class="flex flex-col justify-start items-start mb-1">
-                <div class="divider divider-error divider-start font-bold mb-1 text-rose-400">
-                    Delete accouut
+                <div
+                    class="divider divider-error divider-start font-bold mb-1 text-rose-400">
+                    Delete account
+                    @if (!$verified)
+                        <x-html.badges.warning>
+                            not available
+                        </x-html.badges.warning>
+                    @endif
                 </div>
                 <div>
                     To delete your account, click the "Send deletion link"
                     button. After that, a letter will be sent to your email,
                     confirm the deletion by clicking on the link in the letter.
                 </div>
-                <div class="mb-1 text-rose-300">
+
+                <x-captions.warning class="w-full my-2">
                     All your data will be deleted without the possibility of
                     recovery.
-                </div>
-                <x-html.button-out-red>
-                    Send deletion link
-                </x-html.button-out-red>
+                </x-captions.warning>
+
+                @if (session('deleteAccount'))
+                    <x-captions.success class="w-full mb-2">
+                        {{ session('deleteAccount') }}
+                    </x-captions.success>
+                @endif
+
+                @error('deleteAccount')
+                    <x-captions.warning class="mb-1">
+                        {{ $message }}
+                    </x-captions.warning>
+                @enderror
+
+                <form action="{{ route('deleteAccount.email') }}"
+                    method="post">
+                    @csrf
+                    <x-html.button-out-red type="submit" :disabled="!$verified">
+                        Send deletion link
+                    </x-html.button-out-red>
+                </form>
             </div>
-
-
         </x-flex-container>
 
-    </x-slot:main>
+        <x-modal-window :id="$changePasswordModalName" title="Change password">
+            <x-captions.warning>
+                All sessions on other devices will be closed.
+            </x-captions.warning>
 
+            <x-forms.change-password />
+        </x-modal-window>
+
+        @if ($errors->has('password') || $errors->has('current_password'))
+            <script>
+                {{ $changePasswordModalName }}.showModal()
+            </script>
+        @endif
+
+        <script>
+            document.addEventListener('alpine:init', () => addAlerts());
+
+            function addAlerts() {
+                @if (session('status'))
+                    Alpine.store('alerts')
+                        .addAlert("{{ session('status') }}", 'success');
+                @endif
+
+                @if (session('verificationStatus'))
+                    Alpine.store('alerts')
+                        .addAlert("{{ session('verificationStatus') }}", 'success');
+                @endif
+
+                @if (session('deleteAccount'))
+                    Alpine.store('alerts')
+                        .addAlert("{{ session('deleteAccount') }}", 'success');
+                @endif
+            }
+        </script>
+    </x-slot:main>
 </x-layout>

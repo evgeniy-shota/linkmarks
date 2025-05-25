@@ -1,13 +1,13 @@
 <x-layout>
     <x-slot:main>
         <x-flex-container class="sm:w-1/2">
-            <div class="text-lg font-bold">Reset password</div>
-            <form action="{{ route('password.update') }}" method="post">
+            <div class="text-lg font-bold">Change password</div>
+            <form action="{{ route('changePassword.update') }}" method="post">
                 @csrf
                 <x-html.formcontrols.fieldset title="New Password">
                     <x-slot:field>
                         <x-html.formcontrols.input required id="password"
-                            type="password" />
+                            type="password" class="w-full" />
                     </x-slot:field>
                     <x-slot:legend>
                         @error('password')
@@ -20,14 +20,14 @@
                             characters, including at least one number, letter
                             and symbol
                         </div>
-
                     </x-slot:legend>
                 </x-html.formcontrols.fieldset>
 
                 <x-html.formcontrols.fieldset title="Confirm Password">
                     <x-slot:field>
                         <x-html.formcontrols.input required
-                            id="password_confirmation" type="password" />
+                            id="password_confirmation" type="password"
+                            class="w-full" />
                     </x-slot:field>
                     <x-slot:legend>
                         @error('password_confirmation')
@@ -38,7 +38,6 @@
                         <div>
                             Enter the same password
                         </div>
-
                     </x-slot:legend>
                 </x-html.formcontrols.fieldset>
 
@@ -47,9 +46,6 @@
                         Save
                     </x-html.button-out-green>
                 </div>
-
-                <x-html.formcontrols.input id="email" hidden readonly
-                    :value="$email" />
 
                 <x-html.formcontrols.input id="token" hidden readonly
                     :value="$token" />

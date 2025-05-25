@@ -1,7 +1,7 @@
 @props(['action' => null, 'type' => 'button'])
 
 @php
-    $classes = "border-box btn bg-gray-500 border-orange-500 hover:border-orange-400 text-gray-100 shadow-md";
+    $classes = "border-box btn bg-gray-500 border-amber-400 hover:border-amber-200 text-gray-100 shadow-md";
 @endphp
 
 

@@ -4,33 +4,39 @@ use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\AutofillForms\BookmarksFormController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ContextController;
+use App\Http\Controllers\DeleteAccountController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Middleware\RedirectGuestToRoute;
+use App\Mail\ChangePassword;
+use App\Mail\DeleteAccount;
 use App\Mail\Notification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', [BookmarkController::class, 'index'])->name('home');
 
 Route::get('/mailable', function () {
-    return new Notification();
+    return new DeleteAccount('qwerty1234', Auth::user());
+    // return new Notification();
 })->name('mailview');
 
 Route::get('/autofill-bf', BookmarksFormController::class)->name('autofillBookmarksFrorm');
 
 Route::controller(ProfileController::class)->group(function () {
-    Route::get('/profile', 'show')->middleware(RedirectGuestToRoute::class . ':welcome')->name('profile');
+    Route::get('/profile', 'show')->middleware(['auth'])->name('profile');
     Route::put('/profile', 'update')->name('profile.update');
     Route::delete('/profile', 'destroy')->name('profile.destroy');
 })->middleware(['auth']);
 
 Route::controller(SessionController::class)->group(function () {
-    Route::get('/login', 'index')->name('login');
-    Route::post('/login', 'store')->name('login.store');
-    Route::post('/logout', 'destroy')->name('logout');
+    Route::get('/login', 'index')->name('login')->middleware('guest');
+    Route::post('/login', 'store')->name('login.store')->middleware('guest');
+    Route::post('/logout', 'destroy')->name('logout')->middleware('auth');
 });
 
 Route::controller(RegistrationController::class)->group(function () {
@@ -45,13 +51,15 @@ Route::get('/email/verify', function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/');
+    return redirect()->route('home')->with([
+        'verificationStatus' => 'Your email address has been successfully verified.'
+    ]);
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::get('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6:1'])->name('verification.send');
+    return back()->with(['verificationStatus' => 'Verification link sent!']);
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
 // reset password routs
@@ -69,17 +77,17 @@ Route::controller(ResetPasswordController::class)->group(function () {
         ->middleware('guest')->name('password.update');
 });
 
-// Route::get('/forgot-password', [ResetPasswordController::class, 'showEmailForm'])
-//     ->middleware('guest')->name('password.request');
+//change password routs
+Route::controller(ChangePasswordController::class)->group(function () {
+    Route::post('/change-password/', 'changePassword')
+        ->name('changePassword.update');
+})->middleware('auth');
 
-// Route::post('/forgot-password', [ResetPasswordController::class, 'sendResetLink'])
-//     ->middleware('guest')->name('passwword.email');
-
-// Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showPasswordForm'])
-//     ->middleware('guest')->name('password.reset');
-
-// Route::post('/reset-password/', [ResetPasswordController::class, 'resetPassword'])
-//     ->middleware('guest')->name('password.update');
+// delete account routs
+Route::controller(DeleteAccountController::class)->group(function () {
+    Route::get('/delete-account/{token}', 'destroy')->name('deleteAccount.delete');
+    Route::post('/delete-account/', 'sendLink')->name('deleteAccount.email');
+})->middleware('auth');
 
 
 Route::get('/welcom', function () {

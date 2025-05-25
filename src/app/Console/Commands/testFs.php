@@ -7,7 +7,10 @@ use App\Jobs\ProcessThumbnail;
 use App\Models\Thumbnail;
 use App\Services\ImageService;
 use App\Services\ThumbnailService;
+use DateTime;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
@@ -37,6 +40,19 @@ class testFs extends Command
      */
     public function handle()
     {
+
+        // dump(DB::table('delete_account_tokens')->select('created_at')->where('email', '')->first());
+        $fisrtDate = date_create('2025-05-25 16:25');
+        dump($fisrtDate);
+        $time = new DateTime();
+        dump($time);
+        $diff = date_diff($time, $fisrtDate);
+
+        if ($diff->y > 0 || $diff->m > 0 || $diff->d > 0 || $diff->h > 0 || $diff->m > 20) {
+            dd('more');
+        }
+        dd('less');
+
         $domain = 'https://pingvinus.ru';
         // $response = Http::get($domain);
         // $body = $response->body();

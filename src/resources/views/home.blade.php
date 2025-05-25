@@ -8,7 +8,7 @@
 <x-layout>
     <x-slot:main>
 
-    {{-- Modal window with Bookmarks form --}}
+        {{-- Modal window with Bookmarks form --}}
         <x-modal-window id="bookmarksModal"
             title="$store.bookmark.id===null?'Add Bookmark':'Edit bookmark'"
             closeButtonAction="closeModal()">
@@ -17,7 +17,7 @@
             </x-forms.bookmark-form>
         </x-modal-window>
 
-    {{-- Modal window with Folder form --}}
+        {{-- Modal window with Folder form --}}
         <x-modal-window id="folderModal"
             title="$store.context.id===null?'Add Folder':'Edit folder'"
             closeButtonAction="closeModal()">
@@ -65,14 +65,17 @@
             <x-horizontal-container class="px-2 py-2">
                 <div
                     class="flex justify-around items-center border-2 border-dashed border-gray-400 rounded-sm w-full h-full p-3">
-                    <x-html.button action="openModal(folderModal)">
+
+                    <x-html.button-out-gray action="openModal(folderModal)">
                         <x-html.icons.folder-plus />
                         Add folder
-                    </x-html.button>
-                    <x-html.button action="openModal(bookmarksModal)">
+                    </x-html.button-out-gray>
+
+                    <x-html.button-out-gray action="openModal(bookmarksModal)">
                         <x-html.icons.bookmarks-plus />
                         Add bookmark
-                    </x-html.button>
+                    </x-html.button-out-gray>
+
                 </div>
             </x-horizontal-container>
         </div>
@@ -86,6 +89,16 @@
                     {{ Js::from($contexts) }},
                     {{ Js::from($rootContext) }},
                 ));
+
+
+            document.addEventListener('alpine:init', () => addAlerts());
+
+            function addAlerts() {
+                @if (session('verificationStatus'))
+                    Alpine.store('alerts')
+                        .addAlert("{{ session('verificationStatus') }}", 'success');
+                @endif
+            }
 
             function clickOnBreadcrumb(event) {
                 let breadcrumb = event.target.closest('[data-breadcrumb]');

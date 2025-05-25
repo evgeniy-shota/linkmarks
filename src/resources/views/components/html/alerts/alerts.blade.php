@@ -5,7 +5,7 @@
         <div id="{{ $ref }}+index" x-refs="{{ $ref }}+index"
             role="alert"
             x-bind:class="'z-11 mb-2 bg-gray-600 alert ' + classesFromType(alert.type)"
-            x-init="timer = setTimeout(function() { $store.alerts.delAlert(alert.index) }, 3000)">
+            x-init="timer = setTimeout(function() { $store.alerts.delAlert(alert.index) }, 5000)">
             <x-html.icons.info />
             <span x-text="alert.message">
             </span>

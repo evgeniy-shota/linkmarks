@@ -13,23 +13,24 @@ class SessionController extends Controller
 
     public function index(Request $request)
     {
-        if (Auth::user()) {
-            return back();
-        }
-        
+        // if (Auth::user()) {
+        //     return back();
+        // }
+
         return view('auth.login');
     }
 
     public function store(StoreSessionRequest $request): RedirectResponse
     {
+        $validated = $request->validated();
 
-        if (Auth::attempt($request->validated())) {
+        if (Auth::attempt($validated)) {
             $request->session()->regenerate();
 
             return redirect()->route('home');
         }
 
-        return back()->withErrors([
+        return back()->withInput()->withErrors([
             'email' => 'Incorrect email address or password',
             'password' => 'Incorrect email address or password',
         ]);
