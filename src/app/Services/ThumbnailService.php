@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\ProcessThumbnail;
 use App\Models\Thumbnail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
@@ -65,6 +66,18 @@ class ThumbnailService
         }
 
         return $defaultThumbnail->first();
+    }
+
+    public function getThumbnailsIn(array $ids, array $select = []): Collection
+    {
+        $thumbnails = Thumbnail::whereIn('id', $ids);
+
+        if ($select && count($select) > 0) {
+            $thumbnails = $thumbnails->select($select);
+        }
+
+        $thumbnails = $thumbnails->get();
+        return $thumbnails;
     }
 
     public function store($file)

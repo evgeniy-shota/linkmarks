@@ -9,6 +9,8 @@ use App\Http\Controllers\ContextController;
 use App\Http\Controllers\DeleteAccountController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TagController;
 use App\Http\Middleware\RedirectGuestToRoute;
 use App\Mail\ChangePassword;
 use App\Mail\DeleteAccount;
@@ -24,6 +26,8 @@ Route::get('/mailable', function () {
     return new DeleteAccount('qwerty1234', Auth::user());
     // return new Notification();
 })->name('mailview');
+
+Route::get('/search', [SearchController::class, 'search'])->middleware('auth')->name('search');
 
 Route::get('/autofill-bf', BookmarksFormController::class)->name('autofillBookmarksFrorm');
 
@@ -108,6 +112,14 @@ Route::controller(ContextController::class)->group(function () {
     Route::post('/context/', 'store')->middleware(['auth'])->name('contexts.store');
     Route::put('/contexts/{id}', 'update')->middleware(['auth'])->name('contexts.update');
     Route::delete('/contexts/{id}', 'destroy')->middleware(['auth'])->name('contexts.destroy');
+});
+
+Route::controller(TagController::class)->group(function () {
+    Route::get('/tags/{id}', 'show')->name('tags.index');
+    Route::get('/tags', 'index')->name('tags.index');
+    Route::post('/tags', 'store')->name('tags.index');
+    Route::put('/tags/{id}', 'update')->name('tags.index');
+    Route::delete('/tags/{id}', 'destroy')->name('tags.index');
 });
 
 // Route::get('/add-bookmark', function () {

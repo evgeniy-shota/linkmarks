@@ -33,6 +33,8 @@ export default {
         this.currentContext = currentContext;
         this.orderNumber = orderNumber;
         this.data = data;
+        console.log('data')
+        console.log(data);
     },
 
     clearData() {

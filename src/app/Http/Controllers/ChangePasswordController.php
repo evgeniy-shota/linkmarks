@@ -20,6 +20,10 @@ class ChangePasswordController extends Controller
 
         $user = User::find(Auth::id());
 
+        if (!$user || $user->is_banned) {
+            abort(403, "We can't find your account or your account has been blocked");
+        }
+
         if (!Hash::check($validated['current_password'], $user->password)) {
             return back()->withErrors(['current_password' => 'Password is invalid']);
         }

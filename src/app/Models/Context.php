@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Scout\Searchable;
 
 class Context extends Model
 {
     /** @use HasFactory<\Database\Factories\ContextFactory> */
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'user_id',
@@ -22,6 +23,13 @@ class Context extends Model
         'enabled',
         'order',
     ];
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'name' => $this->name
+        ];
+    }
 
     public function user(): BelongsTo
     {

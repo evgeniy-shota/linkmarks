@@ -1,4 +1,8 @@
-@props(['action' => null, 'type' => 'button', 'disabled' => false])
+@props([
+    'action' => null,
+    'type' => 'button',
+    'disabled' => false,
+])
 
 @php
     $classes =

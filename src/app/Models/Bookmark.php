@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Scout\Searchable;
 
 class Bookmark extends Model
 {
     /** @use HasFactory<\Database\Factories\BookmarkFactory> */
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'bookmarks';
 
@@ -23,6 +24,14 @@ class Bookmark extends Model
         'is_enabled',
         'order',
     ];
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'link' => $this->link,
+        ];
+    }
 
     public function user(): BelongsTo
     {

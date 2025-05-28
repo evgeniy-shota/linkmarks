@@ -30,9 +30,9 @@ class DeleteAccountController extends Controller
 
             if (
                 $timeDiff->y > 0 || $timeDiff->m > 0 || $timeDiff->d > 0
-                || $timeDiff->h > 0 || $timeDiff->i > 2
+                || $timeDiff->h > 0 || $timeDiff->i > 20
             ) {
-                return view('errors.403', ['message' => 'The link has expired']);
+                return abort(403, 'The link has expired');
             }
 
             $user = User::where('email', $validated['email'])->first();

@@ -93,7 +93,10 @@ class BookmarkController extends Controller
 
     public function update(UpdateBookmarkRequest $request, string $id)
     {
-        $validated = $request->validated();
+        $validated = array_filter($request->validated(), function ($item) {
+            return isset($item);
+        });
+
         if (isset($validated['thumbnailFile'])) {
             $thumbnail = $this->thumbnailService->store($validated['thumbnailFile']);
             $validated['thumbnail_id'] = $thumbnail->id;

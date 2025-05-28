@@ -4,6 +4,8 @@
     'placeholder' => null,
     'state' => true,
     'value' => null,
+    'keyDown' => null,
+    'input' => null,
 ])
 
 @php
@@ -12,5 +14,5 @@
 
 <input id="{{ $id }}" name="{{ $id }}"
     type="{{ $type }}" placeholder="{{ $placeholder }}"
-    {{ $attributes->merge(['class' => $classes]) }}
-    value="{{ $value }}" />
+    {{ $attributes->merge(['class' => $classes]) }} value="{{ $value }}"
+    @@keydown='{{ $keyDown }}' @@input='{{$input}}' />

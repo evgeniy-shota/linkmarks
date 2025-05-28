@@ -28,16 +28,32 @@
 
         {{-- Tool bar --}}
         {{-- <div class="text-gray-100">Bookmarks filter</div> --}}
-        <div x-data class="mb-3 sticky z-2 top-16">
-            {{-- <x-html.button
+        {{-- <div x-data
+            class="flex justify-between items-center gap-1 mb-3 sticky z-5 top-16"> --}}
+        {{-- <x-html.button
                 action="Alpine.store('alerts').addAlert('test message')">Contexts</x-html.button>
             <x-html.button
                 action="Alpine.store('alerts').getAlert('test message')">Contexts</x-html.button> --}}
 
-            <x-html.breadcrumbs onclick="clickOnBreadcrumb"
+        {{-- <x-html.breadcrumbs onclick="clickOnBreadcrumb"
                 breadcrumbs="Alpine.store('contexts').breadcrumbs">
-            </x-html.breadcrumbs>
-        </div>
+            </x-html.breadcrumbs> --}}
+
+        {{-- <x-html.button-out-gray action='openModal(folderModal)'>
+                <x-html.icons.search />
+                <div class="hidden sm:block">
+                    Search
+                </div>
+            </x-html.button-out-gray>
+
+            <x-html.button-out-gray action='openModal(folderModal)'>
+                <x-html.icons.funnel />
+                <div class="hidden sm:block">
+                    Filter
+                </div>
+            </x-html.button-out-gray> --}}
+        {{-- </div> --}}
+
 
         <div x-data @@click="clickOnElement"
             class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
@@ -80,8 +96,9 @@
             </x-horizontal-container>
         </div>
 
-
         <script>
+            let searchTimeId = null;
+
             document.addEventListener('alpine:init', () => Alpine.store('contexts')
                 .initial(
                     {{ Js::from($rootContext) }},
@@ -90,8 +107,106 @@
                     {{ Js::from($rootContext) }},
                 ));
 
-
             document.addEventListener('alpine:init', () => addAlerts());
+
+            function validateInput(e) {
+                // 8 Backspace, 9 Tab, 32 ' ', 46 Delete, 48-57 numbers, 65-90 a-z, 173 '-', 222 "'",
+                // 188 ',', 190 '.', 36 home, 35 end, 37-39 arrows,
+                if (!(e.keyCode === 8 || e.keyCode === 9 || e.keyCode === 46 ||
+                        e.keyCode === 32 || e.keyCode === 173 || e.keyCode === 222 ||
+                        e.keyCode === 188 || e.keyCode === 190 ||
+                        (e.keyCode >= 35 && e.keyCode <= 39) ||
+                        (e.keyCode >= 48 && e.keyCode <= 57) ||
+                        (e.keyCode >= 65 && e.keyCode <= 90))) {
+                    // console.log('bad key');
+                    e.preventDefault()
+                    return
+                }
+
+                if ((e.keyCode >= 35 && e.keyCode <= 39) || e.keyCode === 9) {
+                    // console.log('just end')
+                    return;
+                }
+
+                if (!validateText(e.key)) {
+                    // console.log('not valid')
+                    e.preventDefault()
+                    return
+                }
+            }
+
+            function searchInput(e, timerDelayMs = 1200) {
+
+                if (searchTimeId !== null) {
+                    clearTimeout(searchTimeId)
+                    searchTimeId = null
+                }
+
+                if (e.target.value.length < 3) {
+                    // console.log('less 3');
+                    return;
+                }
+
+                let search = e.target.value;
+
+                searchTimeId = setTimeout(async () => {
+                    let response = await searchRequest(search);
+                    clearSearchResult()
+                    Alpine.store('search').searchRequest = search
+                    Alpine.store('search').searchResult = response
+                    setSearchContext(response, search)
+                    searchTimeId = null;
+                }, timerDelayMs);
+
+            }
+
+            function setSearchContext(searchResult, search) {
+
+                if (!searchResult) {
+                    return;
+                }
+
+                let previousContext = Alpine.store('contexts').currentContext
+                let context = {
+                    name: 'Search result',
+                    type: 'search',
+                    search: search,
+                }
+
+                Alpine.store('contexts').setData(
+                    searchResult,
+                    previousContext,
+                    context,
+                    searchResult.lenght > 0 ? searchResult[searchResult.length - 1]
+                    .order : 0)
+                Alpine.store('contexts').pushToBreadcrumbs(context)
+            }
+
+            function clearSearch() {
+                search.value = "";
+                clearSearchResult()
+                openFolder(Alpine.store('contexts').breadcrumbs[
+                    Alpine.store('contexts').breadcrumbs.length - 1
+                ]);
+            }
+
+            function clearSearchResult(open) {
+
+                if (Alpine.store('search').searchRequest.length == 0) {
+                    return;
+                }
+
+                Alpine.store('search').clear();
+                let searchBreadcrumbsIndex = Alpine.store('contexts').breadcrumbs
+                    .findIndex((context) => context.type == 'search');
+
+                searchBreadcrumbsIndex = searchBreadcrumbsIndex == -1 ?
+                    Alpine.store('contexts').breadcrumbs.length - 1 :
+                    searchBreadcrumbsIndex - 1;
+
+                Alpine.store('contexts').spliceBreadcrumbs(searchBreadcrumbsIndex);
+
+            }
 
             function addAlerts() {
                 @if (session('verificationStatus'))
@@ -100,11 +215,30 @@
                 @endif
             }
 
-            function clickOnBreadcrumb(event) {
+            function clickOnTag(e) {
+
+                let tag = e.target.closest('[data-tag]');
+
+                if (!tag) {
+                    return
+                }
+
+                console.log(tag.dataset.tag)
+                Alpine.store('tags').toggleTag(tag.dataset.tag)
+            }
+
+            async function clickOnBreadcrumb(event) {
                 let breadcrumb = event.target.closest('[data-breadcrumb]');
                 let breadcrumbIndex = breadcrumb.dataset.breadcrumb
                 let context = Alpine.store('contexts').breadcrumbs[breadcrumbIndex]
-                openFolder(context)
+
+                if (context.type == 'search') {
+                    setSearchContext(await searchRequest(context.search), context
+                        .search)
+                } else {
+                    openFolder(context)
+                }
+
                 Alpine.store('contexts').spliceBreadcrumbs(breadcrumbIndex)
             }
 
@@ -262,6 +396,31 @@
                 }
             }
 
+            async function getTags(callback = null) {
+                let url = '/tags';
+
+                let response = await getRequest(url)
+
+                Alpine.store('tags').setTags(await response)
+
+                return await response;
+            }
+
+            async function getRequest(url, consoleWarnTitle = null) {
+
+                let response = await fetch(url)
+
+                if (response.ok) {
+                    let res = await response.json()
+                    return res.data
+                } else {
+                    console.warn(
+                        consoleWarnTitle ?? "Get request to " + url + " fail")
+                    console.warn(response.status)
+                    return null
+                }
+            }
+
             function openModal(id) {
                 let lastOrder = Alpine.store('contexts').getLastOrder();
                 Alpine.store('bookmark').order = lastOrder;
@@ -349,6 +508,30 @@
                 return false
             }
 
+            async function searchRequest(search) {
+                let response = null;
+
+                try {
+                    response = await axios.get('/search', {
+                        params: {
+                            search: search
+                        }
+                    })
+                } catch (error) {
+                    console.warn('search error');
+                    console.warn(error);
+                    Alpine.store('alerts').addAlert('Search fail, try later');
+                    return false;
+                }
+
+                if (response) {
+                    return response.data.data
+                }
+
+                Alpine.store('alerts').addAlert('Search fail, try later');
+                return false;
+            }
+
             function objToFormdata(obj) {
                 let formdata = new FormData();
 
@@ -359,6 +542,16 @@
                 }
 
                 return formdata;
+            }
+
+            function validateText(text) {
+                let regx = /[\d\w-',.]/;
+
+                if (regx.test(text)) {
+                    return true
+                }
+
+                return false
             }
         </script>
 
