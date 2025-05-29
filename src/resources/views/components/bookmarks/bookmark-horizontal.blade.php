@@ -6,6 +6,7 @@
     'elementAttribute' => 'data-element',
     'elementAttributeAction' => 'data-element-action',
     'elementAttributeType' => 'data-element-type',
+    'tags' => [],
 ])
 
 {{-- <div x-data
@@ -44,10 +45,19 @@
         <div class="w-3/4 flex-none overflow-hidden">
             <div class="grid h-full grid-cols-1 content-between">
 
+                {{-- name --}}
                 <div class="truncate text-lg/6 font-medium py-1 pe-2"
                     x-text="{{ $name }}">
                 </div>
 
+                {{-- tags --}}
+                <div class="flex justify-start items-center gap-1">
+                    <template x-for="item in {{ $tags }}">
+                        <x-html.tags.tag xText="item.short_name" />
+                    </template>
+                </div>
+
+                {{-- link and edit --}}
                 <div class="w-7/8">
                     <div class="w-full">
                         <x-html.tooltip direction='top' tip='click to copy link'

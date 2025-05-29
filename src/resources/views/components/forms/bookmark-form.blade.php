@@ -42,6 +42,57 @@
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 
+            {{-- tags --}}
+            <x-html.formcontrols.fieldset title="Tags">
+                <x-slot:field>
+                    <div
+                        class="flex justify-start items-center gap-2 text-base">
+
+                        <template x-for="(item,index) in $store.bookmark.tags.data">
+                            <x-html.tags.tag-with-close xText="item.name"
+                                closeClick="$store.bookmark.tags.splice(index,1)">
+                            </x-html.tags.tag-with-close>
+                        </template>
+
+                        {{-- tags list --}}
+                        <div class="dropdown dropdown-top dropdown-center">
+
+                            <x-html.button-out-gray class="btn-sm text-base"
+                                action="getTags(Alpine.store('tags').setTags)">
+                                tags list
+                            </x-html.button-out-gray>
+
+                            {{-- <div class="dropdown-content relative">
+                                <div
+                                    class="flex-col justify-center items-center bg-gray-700 w-[10vw] h-[20vh] p-1 overflow-y-auto">
+                                    <div class="bg-gray-500 rounded-sm px-1">
+                                        tag 1
+                                    </div>
+
+                                </div>
+                            </div> --}}
+
+                            <ul tabindex="0"
+                                class="dropdown-content menu bg-gray-700 rounded-box z-1 sm:w-[12vw] p-2 shadow-sm">
+                                <template x-for="item in $store.tags.tags">
+                                    <li>
+                                        <x-html.tags.tag xText="item.name"
+                                            class="mb-1"
+                                            click="$store.bookmark.addTag(item)">
+                                        </x-html.tags.tag>
+
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </x-slot:field>
+                <x-slot:legend>
+                    Add some tags. Max 3 tags
+                </x-slot:legend>
+            </x-html.formcontrols.fieldset>
+
+
             {{-- bookmark thumbnail preview --}}
             <div class="font-bold">Thumbnail</div>
             <template x-if="$store.bookmark.thumbnail_id!==null">
@@ -66,7 +117,7 @@
             </template>
 
             {{-- file input --}}
-            <div x-show="$store.bookmark.thumbnail_id===null">
+            <div x-show="$store.bookmark.thumbnail_id===null" class="mb-2">
                 <x-html.formcontrols.input-file-drop-down
                     id="{{ $thumbnailInput }}" :required="false" />
             </div>
@@ -82,6 +133,7 @@
                     Submit
                 </button>
             </div> --}}
+
 
             <div class="flex gap-4 mt-4 justify-center w-full">
                 <x-html.button-out-orange x-show="{{ $canDeleted }}"

@@ -23,6 +23,7 @@ class BookmarkResource extends JsonResource
             'thumbnail' => $this->thumbnail,
             // 'thumbnail' => Storage::url($this->thumbnail),
             'thumbnail_id' => $this->thumbnail_id,
+            'tags' => new TagCollection($this->tags),
             // 'is_enabled' => $this->is_enabled,
             'order' => $this->order,
         ];

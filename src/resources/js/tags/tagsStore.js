@@ -2,9 +2,26 @@ export default {
     tags: [],
 
     setTags(tagsArray) {
-        // check if tags not empty - update array
-        this.tags = tagsArray;
-        this.tags.map((item) => (item.state = null));
+        if (this.tags.length == 0) {
+            this.tags = tagsArray;
+            this.tags.map((item) => (item.state = null));
+        } else {
+            while (tagsArray.length > 0) {
+                let tag = tagsArray.pop();
+                let indexInArray = this.tags.findIndex(
+                    (item) => item.id === tag.id
+                );
+
+                if (indexInArray != -1) {
+                    this.tags[indexInArray] = {
+                        ...tag,
+                        state: this.tags[indexInArray].state,
+                    };
+                } else {
+                    this.tags.push({ ...tag, state: null });
+                }
+            }
+        }
     },
 
     toggleTag(index) {
@@ -21,12 +38,19 @@ export default {
     },
 
     setAllTagsState(state) {
-        console.log("all tags");
         this.tags.map((item) => (item.state = state));
     },
 
-    getTags(state) {
-        let filtered = this.tags.filter((item) => item.state == state);
+    getTags(state, idOnly = true) {
+        let filtered = [];
+
+        for (let i = 0; i < this.tags.length; i++) {
+            if (this.tags[i].state == state) {
+                filtered.push(idOnly ? this.tags[i].id : this.tags[i]);
+            }
+        }
+
+        // let filtered = this.tags.filter((item) => item.state == state);
         return filtered;
     },
 

@@ -6,6 +6,7 @@ export default {
     thumbnailFile: null,
     thumbnail_id: null,
     context_id: null,
+    tags: [],
     indexInContexts: null,
     order: null,
 
@@ -16,6 +17,7 @@ export default {
         this.thumbnail = data.thumbnail;
         this.thumbnail_id = data.thumbnail_id;
         this.context_id = data.context_id;
+        this.tags = data.tags ?? [];
         this.order = data.order;
     },
 
@@ -28,8 +30,13 @@ export default {
             thumbnailFile: this.thumbnailFile,
             thumbnail_id: this.thumbnail_id,
             context_id: Alpine.store("contexts").currentContext.id,
+            tags: this.tags,
             order: this.order,
         };
+    },
+
+    addTag(tag) {
+        this.tags.push(tag);
     },
 
     clearThumbnail() {
@@ -47,6 +54,7 @@ export default {
         this.thumbnail_id = null;
         this.context_id = null;
         this.order = null;
+        this.tags.length = 0;
         this.indexInContexts = null;
     },
 };

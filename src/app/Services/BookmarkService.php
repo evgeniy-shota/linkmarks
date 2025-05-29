@@ -63,14 +63,14 @@ class BookmarkService
         //     ->where('bs.context_id', $idContext)
         //     ->get();
 
-        $bookmarks = Bookmark::select(
+        $bookmarks = Bookmark::with('tags')->select(
             'bookmarks.id',
             'bookmarks.context_id',
             'bookmarks.link',
             'bookmarks.name',
             'bookmarks.thumbnail_id',
             'bookmarks.order',
-            'thumbnails.name as thumbnail'
+            'thumbnails.name as thumbnail',
         )->leftJoin('thumbnails', 'bookmarks.thumbnail_id', '=', 'thumbnails.id')
             ->where('bookmarks.context_id', $idContext)
             ->get();

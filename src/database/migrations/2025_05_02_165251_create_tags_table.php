@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('name', 150);
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('short_name', 8)->nullable();
             $table->string('description', 400)->nullable();
             $table->boolean('is_enabled')->default(true);

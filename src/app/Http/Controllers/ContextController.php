@@ -49,8 +49,15 @@ class ContextController extends Controller
         return new ContextResource($context);
     }
 
-    public function showContextData(string $id)
+    public function showContextData(Request $request, string $id)
     {
+        $validated = array_filter($request->validate([
+            "tagsIncluded" => 'nullable|array',
+            "tagsExcluded" => 'nullable|array',
+        ]), function ($item) {
+            return isset($item);
+        });
+
         $contexts = $this->contextService->getContexts($id)->toArray();
         $bookmarks = $this->bookmarkService->bookmarksFromContext($id);
 

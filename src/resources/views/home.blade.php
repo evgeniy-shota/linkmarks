@@ -65,8 +65,9 @@
                         <x-bookmarks.bookmark-horizontal id="index"
                             name="element.name" link="element.link"
                             description="element.description"
-                            thumbnail="element.thumbnail" :elementAttribute="$elementAttribute"
-                            :elementAttributeAction="$elementAttributeAction" :elementAttributeType="$elementAttributeType" />
+                            tags="element.tags" thumbnail="element.thumbnail"
+                            :elementAttribute="$elementAttribute" :elementAttributeAction="$elementAttributeAction"
+                            :elementAttributeType="$elementAttributeType" />
                     </template>
 
                     <template x-if="('link' in element)===false">
@@ -227,6 +228,14 @@
                 Alpine.store('tags').toggleTag(tag.dataset.tag)
             }
 
+            function applyFilter() {
+                Alpine.store('filter').isApplied = true
+                openFolder(Alpine.store('contexts').breadcrumbs[
+                    Alpine.store('contexts').breadcrumbs.length - 1])
+            }
+
+            function declineFilter() {}
+
             async function clickOnBreadcrumb(event) {
                 let breadcrumb = event.target.closest('[data-breadcrumb]');
                 let breadcrumbIndex = breadcrumb.dataset.breadcrumb
@@ -299,6 +308,7 @@
                 let index = target.dataset.{{ $attributeName }}
                 Alpine.store('context').indexInContexts = index
                 let context = Alpine.store('contexts').data[index];
+
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
                         editFolder(context)
@@ -372,7 +382,23 @@
             }
 
             async function getContexts(id) {
-                let response = await fetch('/contexts/' + id)
+                let url = '/contexts/' + id;
+
+                if (Alpine.store('filter').isApplied) {
+                    tagsIncluded = Alpine.store('tags').getTags(true)
+                    tagsIncludedParams = tagsIncluded.length > 0 ?
+                        '?tagsIncluded[]=' + tagsIncluded.join('&tagsIncluded[]=') :
+                        '';
+                    tagsExcluded = Alpine.store('tags').getTags(false)
+                    tagsExcludedParams = tagsExcluded.length > 0 ?
+                        '&tagsExcluded[]=' + tagsExcluded.join('&tagsExcluded[]=') :
+                        '';
+
+                    url += tagsIncludedParams + tagsExcludedParams
+                    // console.log(tagsIncluded.join())
+                }
+
+                let response = await fetch(url)
                 if (response.ok) {
                     let res = await response.json()
                     return res.data

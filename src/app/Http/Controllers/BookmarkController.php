@@ -25,7 +25,6 @@ class BookmarkController extends Controller
 
     public function index(Request $request)
     {
-        // $bookmarks = Bookmark::all();
         $bookmarks = $this->bookmarkService->allBookmarks();
 
         foreach ($bookmarks as $bookmark) {
@@ -35,7 +34,6 @@ class BookmarkController extends Controller
         }
 
         return new BookmarkResource($bookmarks);
-        // return view('home', ['bookmarks' => $bookmarks]);
     }
 
     public function show(string $id)

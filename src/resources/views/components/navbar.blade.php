@@ -79,24 +79,32 @@
                     </div>
 
                     <div class="dropdown dropdown-center">
-                        <x-html.button-out-gray
+                        <x-html.button-out-gray class="relative"
                             action="getTags(Alpine.store('tags').setTags)">
                             <x-html.icons.funnel />
                             <div class="hidden sm:block">
                                 Filter
                             </div>
+
+                            <template x-if="$store.filter.isApplied">
+                                <div aria-label="info"
+                                    class="absolute top-0 right-0 w-[8px] h-[8px] bg-sky-400 rounded-sm">
+                                </div>
+                            </template>
                         </x-html.button-out-gray>
 
                         <div tabindex="0"
                             class="dropdown-content rounded bg-gray-600 border-gray-700 border-1 p-2 mt-1">
                             <div
                                 class="mb-1 flex justify-center items-center gap-2 mb-2">
-                                <x-html.button-out-blue class="btn-sm "
-                                    action="">
+                                <x-html.button-out-blue
+                                    class="btn-sm text-base font-normal"
+                                    action="applyFilter()">
                                     apply filter
                                 </x-html.button-out-blue>
-                                <x-html.button-out-gray class="btn-sm "
-                                    action="">
+                                <x-html.button-out-gray
+                                    class="btn-sm text-base font-normal"
+                                    action="$store.filter.isApplied=false">
                                     decline filter
                                 </x-html.button-out-gray>
                             </div>
@@ -105,7 +113,7 @@
                                     action="$store.tags.setAllTagsState(null)"
                                     class="btn-sm px-2">
                                     <x-html.icons.square />
-                                    <div>
+                                    <div class="text-base font-normal">
                                         - not use
                                     </div>
                                 </x-html.button-out-gray>
@@ -123,7 +131,7 @@
                                     action="$store.tags.setAllTagsState(true)"
                                     class="btn-sm px-2">
                                     <x-html.icons.check-square />
-                                    <div>
+                                    <div class="text-base font-normal">
                                         - incl
                                     </div>
                                 </x-html.button-out-gray>
@@ -141,7 +149,7 @@
                                     action="$store.tags.setAllTagsState(false)"
                                     class="btn-sm px-2">
                                     <x-html.icons.x-square />
-                                    <div>
+                                    <div class="text-base font-normal">
                                         - excl
                                     </div>
                                 </x-html.button-out-gray>
@@ -159,10 +167,10 @@
                             <div @@click="clickOnTag($event)"
                                 class="sm:w-[28vw] sm:max-h-[20vh] w-[70vw] overflow-y-auto grid grid-cols-3 gap-2">
                                 <template x-for="(item, index) in $store.tags.tags">
-                                    <x-html.tags.tag background="#3b82f6"
+                                    <x-html.tags.tag-checkbox background="#3b82f6"
                                         state="item.state" xText="item.name"
                                         x-bind:data-tag="index">
-                                    </x-html.tags.tag>
+                                    </x-html.tags.tag-checkbox>
                                 </template>
                             </div>
                         </div>

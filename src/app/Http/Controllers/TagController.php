@@ -2,26 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TagCollection;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TagController extends Controller
 {
     public function index(Request $request)
     {
-        return response()->json(['data' => [
-            [
-                'id' => 1,
-                'name' => 'tag 1'
-            ],
-            [
-                'id' => 2,
-                'name' => 'tag 2'
-            ],
-            [
-                'id' => 3,
-                'name' => 'tag 3'
-            ],
-        ]], 200);
+        $tags = Tag::where('user_id', Auth::id())->where('is_enabled', true)->get();
+        return new TagCollection($tags);
     }
 
     public function show(Request $request, string $id) {}

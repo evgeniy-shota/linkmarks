@@ -50,4 +50,9 @@ class Context extends Model
     {
         return $this->belongsToMany(Thumbnail::class);
     }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'contexts_tags');
+    }
 }

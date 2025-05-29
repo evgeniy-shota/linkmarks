@@ -1,8 +1,8 @@
 @props([
     'background' => '#50d71e',
     'color' => '#4b5563',
+    'closeClick' => null,
     'state' => null,
-    'click' => null,
     'xText' => null,
 ])
 
@@ -14,11 +14,14 @@
         $colors;
 @endphp
 
-<div {{ $attributes->merge(['class' => $classes]) }}
-    x-on:click="{{ $click }}">
+<div {{ $attributes->merge(['class' => $classes]) }}>
 
     <div x-text='{{ $xText }}' x-bind:title="{{ $xText }}">
         {{ $slot ?? '' }}
     </div>
 
+    <div class="border-s-1 hover:text-amber-300 cursor-pointer transition"
+        @@click="{{ $closeClick }}">
+        <x-html.icons.x />
+    </div>
 </div>
