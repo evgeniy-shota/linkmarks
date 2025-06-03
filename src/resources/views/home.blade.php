@@ -10,8 +10,8 @@
 
         {{-- Modal window with Bookmarks form --}}
         <x-modal-window id="bookmarksModal"
-            title="$store.bookmark.id===null?'Add Bookmark':'Edit bookmark'"
-            closeButtonAction="closeModal()">
+            title="$store.bookmark.id===null?'Add bookmark':'Edit bookmark'"
+            closeButtonAction="clearBookmarkStore()">
             <x-forms.bookmark-form modalId="bookmarksModal"
                 canDeleted="$store.bookmark.id!==null?true:false">
             </x-forms.bookmark-form>
@@ -19,41 +19,21 @@
 
         {{-- Modal window with Folder form --}}
         <x-modal-window id="folderModal"
-            title="$store.context.id===null?'Add Folder':'Edit folder'"
-            closeButtonAction="closeModal()">
+            title="$store.context.id===null?'Add folder':'Edit folder'"
+            closeButtonAction="clearContextStore()">
             <x-forms.folder-form modalId="folderModal"
                 canDeleted="$store.context.id!==null?true:false">
             </x-forms.folder-form>
         </x-modal-window>
 
-        {{-- Tool bar --}}
-        {{-- <div class="text-gray-100">Bookmarks filter</div> --}}
-        {{-- <div x-data
-            class="flex justify-between items-center gap-1 mb-3 sticky z-5 top-16"> --}}
-        {{-- <x-html.button
-                action="Alpine.store('alerts').addAlert('test message')">Contexts</x-html.button>
-            <x-html.button
-                action="Alpine.store('alerts').getAlert('test message')">Contexts</x-html.button> --}}
-
-        {{-- <x-html.breadcrumbs onclick="clickOnBreadcrumb"
-                breadcrumbs="Alpine.store('contexts').breadcrumbs">
-            </x-html.breadcrumbs> --}}
-
-        {{-- <x-html.button-out-gray action='openModal(folderModal)'>
-                <x-html.icons.search />
-                <div class="hidden sm:block">
-                    Search
-                </div>
-            </x-html.button-out-gray>
-
-            <x-html.button-out-gray action='openModal(folderModal)'>
-                <x-html.icons.funnel />
-                <div class="hidden sm:block">
-                    Filter
-                </div>
-            </x-html.button-out-gray> --}}
-        {{-- </div> --}}
-
+        {{-- Modal window with Folder form --}}
+        <x-modal-window id="tagModal"
+            title="$store.tag.id===null?'Add tag':'Edit tag'"
+            closeButtonAction="clearTagStore()">
+            <x-forms.tag-form modalId="tagModal"
+                canDeleted="$store.tag.id!==null?true:false">
+            </x-forms.tag-form>
+        </x-modal-window>
 
         <div x-data @@click="clickOnElement"
             class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
@@ -73,8 +53,9 @@
                     <template x-if="('link' in element)===false">
                         <x-folders.folder-horizontal id="index"
                             name="element.name" order="element.order"
-                            parentContextId="2" :elementAttribute="$elementAttribute"
-                            :elementAttributeAction="$elementAttributeAction" :elementAttributeType="$elementAttributeType" />
+                            tags="element.tags" parentContextId="2"
+                            :elementAttribute="$elementAttribute" :elementAttributeAction="$elementAttributeAction"
+                            :elementAttributeType="$elementAttributeType" />
                     </template>
                 </div>
             </template>
@@ -98,15 +79,20 @@
         </div>
 
         <script>
+            // bookmarksModal.showModal();
             let searchTimeId = null;
 
-            document.addEventListener('alpine:init', () => Alpine.store('contexts')
-                .initial(
-                    {{ Js::from($rootContext) }},
-                    {{ Js::from($rootContext) }},
-                    {{ Js::from($contexts) }},
-                    {{ Js::from($rootContext) }},
-                ));
+            document.addEventListener('alpine:init', function() {
+                Alpine.store('contexts')
+                    .initial(
+                        {{ Js::from($rootContext) }},
+                        {{ Js::from($rootContext) }},
+                        {{ Js::from($contexts) }},
+                        {{ Js::from($rootContext) }},
+                    );
+
+                getAdditionalDataContext()
+            });
 
             document.addEventListener('alpine:init', () => addAlerts());
 
@@ -143,22 +129,31 @@
                     searchTimeId = null
                 }
 
-                if (e.target.value.length < 3) {
+                if (e.target.value.length < 2) {
                     // console.log('less 3');
                     return;
                 }
 
-                let search = e.target.value;
+                let request = e.target.value;
 
                 searchTimeId = setTimeout(async () => {
-                    let response = await searchRequest(search);
-                    clearSearchResult()
-                    Alpine.store('search').searchRequest = search
-                    Alpine.store('search').searchResult = response
-                    setSearchContext(response, search)
+                    startSearch(request)
+                    // let response = await searchRequest(request);
+                    // clearSearchResult()
+                    // Alpine.store('search').searchRequest = request
+                    // Alpine.store('search').searchResult = response
+                    // setSearchContext(response, request)
                     searchTimeId = null;
                 }, timerDelayMs);
 
+            }
+
+            async function startSearch(request) {
+                let response = await searchRequest(request);
+                clearSearchResult()
+                Alpine.store('search').searchRequest = request
+                Alpine.store('search').searchResult = response
+                setSearchContext(response, request)
             }
 
             function setSearchContext(searchResult, search) {
@@ -234,7 +229,11 @@
                     Alpine.store('contexts').breadcrumbs.length - 1])
             }
 
-            function declineFilter() {}
+            function declineFilter() {
+                Alpine.store('tags').setAllTagsState(null)
+                Alpine.store('filter').isApplied = false
+                openFolder(Alpine.store('contexts').currentContext)
+            }
 
             async function clickOnBreadcrumb(event) {
                 let breadcrumb = event.target.closest('[data-breadcrumb]');
@@ -246,6 +245,14 @@
                         .search)
                 } else {
                     openFolder(context)
+
+                    if (Alpine.store('search').searchRequest.length > 0 &&
+                        Alpine.store('contexts').breadcrumbs.findIndex(
+                            (item) => item.type == "search") > breadcrumbIndex) {
+                        console.log('clear search');
+                        search.value = ''
+                        Alpine.store('search').clear();
+                    }
                 }
 
                 Alpine.store('contexts').spliceBreadcrumbs(breadcrumbIndex)
@@ -280,6 +287,8 @@
                     case 'edit':
                         let index = target.dataset.{{ $attributeName }};
                         Alpine.store('bookmark').indexInContexts = index
+                        Alpine.store('bookmark').context_id = Alpine.store("contexts")
+                            .currentContext.id
                         editBookmark(
                             Alpine.store('contexts').data[index])
                         break;
@@ -312,6 +321,9 @@
                 switch (target.dataset.{{ $attributeName }}Action) {
                     case 'edit':
                         editFolder(context)
+                        // Alpine.store('context').parent_context_id = Alpine.store(
+                        //         "contexts")
+                        //     .currentContext.id
                         break;
 
                     case 'open':
@@ -344,6 +356,12 @@
                 let context = await getContext(data.id);
                 Alpine.store('context').setData(context);
                 folderModal.showModal()
+            }
+
+            function editTag(index) {
+                Alpine.store('tag').setData(Alpine.store('tags').tags[index])
+                console.log(Alpine.store('tag'))
+                tagModal.showModal();
             }
 
             function openBookmarkInNewTab(link) {
@@ -390,9 +408,11 @@
                         '?tagsIncluded[]=' + tagsIncluded.join('&tagsIncluded[]=') :
                         '';
                     tagsExcluded = Alpine.store('tags').getTags(false)
-                    tagsExcludedParams = tagsExcluded.length > 0 ?
-                        '&tagsExcluded[]=' + tagsExcluded.join('&tagsExcluded[]=') :
-                        '';
+                    tagsExcludedParams = (tagsIncluded.length == 0 ? '?' : '&') +
+                        (tagsExcluded.length > 0 ?
+                            'tagsExcluded[]=' + tagsExcluded.join(
+                                '&tagsExcluded[]=') :
+                            '');
 
                     url += tagsIncludedParams + tagsExcludedParams
                     // console.log(tagsIncluded.join())
@@ -424,12 +444,17 @@
 
             async function getTags(callback = null) {
                 let url = '/tags';
-
+                Alpine.store('tags').isLoading = true
                 let response = await getRequest(url)
-
-                Alpine.store('tags').setTags(await response)
+                Alpine.store('tags').setTags(response)
+                Alpine.store('tags').isLoading = false
 
                 return await response;
+            }
+
+            async function getAdditionalDataContext() {
+                let response = await getRequest('/additional-data/contexts');
+                Alpine.store('additionalData').contexts = response
             }
 
             async function getRequest(url, consoleWarnTitle = null) {
@@ -450,6 +475,10 @@
             function openModal(id) {
                 let lastOrder = Alpine.store('contexts').getLastOrder();
                 Alpine.store('bookmark').order = lastOrder;
+                Alpine.store('bookmark').context_id = Alpine.store('contexts')
+                    .currentContext.id;
+                Alpine.store('context').parentContextId = Alpine.store('contexts')
+                    .currentContext.id;
                 Alpine.store('context').order = lastOrder;
                 id.show()
             }
@@ -457,8 +486,24 @@
             function closeModal() {
                 Alpine.store('bookmark').clear()
                 Alpine.store('context').clear()
+                Alpine.store('tag').clear()
                 // console.log(Alpine.store('fileInput'))
                 Alpine.store('fileInput').clearData()
+            }
+
+            function clearContextStore() {
+                Alpine.store('context').clear()
+
+                Alpine.store('fileInput').clearData()
+            }
+
+            function clearBookmarkStore() {
+                Alpine.store('bookmark').clear()
+                Alpine.store('fileInput').clearData()
+            }
+
+            function clearTagStore() {
+                Alpine.store('tag').clear()
             }
 
             async function submitForm(data, url, callback = null) {

@@ -29,6 +29,7 @@ class UpdateBookmarkRequest extends FormRequest
             'thumbnail_id' => 'nullable|numeric|integer',
             'thumbnailFile' => ['nullable', File::types(['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg', 'webp', 'ico'])->max(2048)],
             'order' => 'nullable|numeric|integer',
+            'tags' => 'nullable|array',
         ];
     }
 }

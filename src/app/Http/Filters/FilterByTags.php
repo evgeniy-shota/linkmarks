@@ -17,13 +17,17 @@ class FilterByTags extends AbstractFilter
         ];
     }
 
-    public function tagsIncluded(Builder $builder, $value)
+    public function tagsIncluded(Builder $builder, $value, $tableName)
     {
-        $builder->whereIn('id', $value);
+        $builder->whereHas('tags', function (Builder $query) use ($value, $tableName) {
+            $query->whereIn("$tableName." . 'tag_id', $value);
+        });
     }
 
-    public function tagsExcluded(Builder $builder, $value)
+    public function tagsExcluded(Builder $builder, $value, $tableName)
     {
-        $builder->whereNotIn('id', $value);
+        $builder->whereHas('tags', function (Builder $query) use ($value, $tableName) {
+            $query->whereNotIn("$tableName." . 'tag_id', $value);
+        });
     }
 }

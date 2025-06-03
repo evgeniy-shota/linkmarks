@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('link', 400);
             $table->string('name', 150);
             $table->foreignId('thumbnail_id')->nullable()->constrained('thumbnails')->onDelete('set null');
-            $table->boolean('is_enabled')->default(true);
             $table->integer('order');
 
             $table->timestamps();

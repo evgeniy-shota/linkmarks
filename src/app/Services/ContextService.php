@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Actions\GetLastOrderInContext;
 use App\Models\Context;
 use App\Models\User;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Request;
 
@@ -15,14 +17,22 @@ class ContextService
         return $context;
     }
 
-    public function getContext(int $id): ?Context
+    public function getContext(int $id, bool $withTags = true): ?Context
     {
-        return Context::find($id);
+        $query = Context::query();
+
+        if ($withTags) {
+            $query->with('tags:id,name,description');
+        }
+
+        return $query->find($id);
+        return Context::with('tags:id,name,description')->find($id);
     }
 
-    public function getContexts(int $idCurrentContext): Collection|Context|null
+    public function getContexts(int $idCurrentContext): Builder
     {
-        $context = Context::where('parent_context_id', $idCurrentContext)->orderBy('order')->get();
+        $context = Context::with('tags:id,name,description')
+            ->where('parent_context_id', $idCurrentContext)->orderBy('order');
         return $context;
     }
 
@@ -33,9 +43,16 @@ class ContextService
         return $context;
     }
 
-    public function updateContext(array $data, int $id): bool
+    public function updateContext(array $data, int $id): ?Context
     {
-        $context = Context::where('id', $id)->update($data);
+        $context = Context::find($id);
+
+        if (!isset($data['order']) || $context->parent_context_id != $data['parent_context_id']) {
+            $maxOrder = GetLastOrderInContext::getOrder($data['parent_context_id']);
+            $data['order'] = $maxOrder + 1;
+        }
+
+        $context->update($data);
         return $context;
     }
 

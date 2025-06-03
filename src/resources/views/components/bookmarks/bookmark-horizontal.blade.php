@@ -53,7 +53,7 @@
                 {{-- tags --}}
                 <div class="flex justify-start items-center gap-1">
                     <template x-for="item in {{ $tags }}">
-                        <x-html.tags.tag xText="item.short_name" />
+                        <x-html.tags.tag xText="item.name" />
                     </template>
                 </div>
 

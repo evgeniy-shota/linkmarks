@@ -8,6 +8,8 @@ import bookmarkStore from "./bookmarks/bookmarkStore";
 import searchStore from "./search/searchStore";
 import tagsStore from "./tags/tagsStore";
 import filterStore from "./filter/filterStore";
+import tagStore from "./tags/tagStore";
+import additionalDataStore from "./additionalData/additionalDataStore";
 // import "./contexts/contextsStore.js";
 
 Alpine.store("alerts", alertsStore);
@@ -16,7 +18,9 @@ Alpine.store("context", contextStore);
 Alpine.store("bookmark", bookmarkStore);
 Alpine.store("search", searchStore);
 Alpine.store("tags", tagsStore);
+Alpine.store("tag", tagStore);
 Alpine.store("filter", filterStore);
+Alpine.store("additionalData", additionalDataStore);
 
 window.Alpine = Alpine;
 

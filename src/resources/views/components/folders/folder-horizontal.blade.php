@@ -1,6 +1,7 @@
 @props([
     'id',
     'name',
+    'tags' => '',
     'elementAttribute' => 'data-element',
     'elementAttributeAction' => 'data-element-action',
     'elementAttributeType' => 'data-element-type',
@@ -39,10 +40,18 @@
             </div>
         </div>
 
-        <div class="w-3/4 flex-none overflow-hidden">
+        <div class="w-3/4 flex-none overflow-hidden py-1">
             <div class="grid h-full grid-cols-1 content-between">
-                <div class="truncate text-lg/6 font-medium py-1 pe-2"
+                <div class="truncate text-lg/6 font-medium pe-2"
                     x-text="{{ $name }}">
+                </div>
+
+                <div class="flex justify-start items-center gap-1 ">
+                    <template x-for="item in {{ $tags }}">
+                        <x-html.tags.tag xText="item.name">
+
+                        </x-html.tags.tag>
+                    </template>
                 </div>
                 {{-- <div class="flex flex-row-reverse items-center">
                     <x-html.tooltip direction='left' tip='Edit'>
@@ -61,7 +70,7 @@
                             {{ $elementAttributeAction }}='edit'
                             class="flex-none btn btn-sm bg-gray-600 opacity-20 hover:opacity-100 border-0 text-gray-100 shadow-none px-2 transition">
                             {{-- <img src="img/icons/three-dots-vertical.svg"> --}}
-                            <x-html.icons.three-dots/>
+                            <x-html.icons.three-dots />
                         </div>
                     </x-html.tooltip>
                 </div>

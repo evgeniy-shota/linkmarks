@@ -1,27 +1,47 @@
 export default {
     tags: [],
+    isLoading: false,
 
     setTags(tagsArray) {
+        console.log(tagsArray);
+
         if (this.tags.length == 0) {
             this.tags = tagsArray;
             this.tags.map((item) => (item.state = null));
         } else {
-            while (tagsArray.length > 0) {
-                let tag = tagsArray.pop();
+            let tempTags = this.tags;
+            this.tags = tagsArray;
+
+            while (tempTags.length > 0) {
+                let tag = tempTags.pop();
+
                 let indexInArray = this.tags.findIndex(
                     (item) => item.id === tag.id
                 );
 
                 if (indexInArray != -1) {
-                    this.tags[indexInArray] = {
-                        ...tag,
-                        state: this.tags[indexInArray].state,
-                    };
-                } else {
-                    this.tags.push({ ...tag, state: null });
+                    this.tags[indexInArray].state = tag.state;
                 }
             }
+
+            // while (tagsArray.length > 0) {
+            //     let tag = tagsArray.pop();
+
+            //     let indexInArray = this.tags.findIndex(
+            //         (item) => item.id === tag.id
+            //     );
+
+            //     if (indexInArray != -1) {
+            //         this.tags[indexInArray] = {
+            //             ...tag,
+            //             state: this.tags[indexInArray].state,
+            //         };
+            //     } else {
+            //         this.tags.push({ ...tag, state: null });
+            //     }
+            // }
         }
+        console.log(this.tags);
     },
 
     toggleTag(index) {
@@ -56,5 +76,6 @@ export default {
 
     clear() {
         this.tags.length = 0;
+        this.isLoading = false;
     },
 };

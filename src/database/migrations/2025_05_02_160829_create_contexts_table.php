@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('name', 150)->nullable();
             $table->boolean('is_root')->default(false);
             $table->integer('parent_context_id')->nullable();
-            $table->boolean('is_enabled')->default(true);
             $table->integer('order')->nullable();
             // $table->foreignId('thumbnail_id')->nullable()->constrained('thumbnails')->onDelete('set null');
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\SetUrlForBookmarksThumbnail;
 use App\Actions\SortContextsAndBookmarks;
+use App\Http\Filters\FilterByTags;
 use App\Http\Requests\Context\StoreContextRequest;
 use App\Http\Requests\Context\UpdateContextRequest;
 use App\Http\Resources\ContextResource;
@@ -29,9 +30,9 @@ class ContextController extends Controller
     {
         $rootContext = $this->contextService->getRootContext(Auth::id());
         $contexts = $this->contextService
-            ->getContexts($rootContext->id)->toArray();
+            ->getContexts($rootContext->id)->get()->toArray();
         $bookmarks = $this->bookmarkService
-            ->bookmarksFromContext($rootContext->id);
+            ->bookmarksFromContext($rootContext->id)->get();
         $bookmarks =
             SetUrlForBookmarksThumbnail::pathToUrl($bookmarks)->toArray();
         $result = SortContextsAndBookmarks::mixInOrder($contexts, $bookmarks);
@@ -58,8 +59,25 @@ class ContextController extends Controller
             return isset($item);
         });
 
-        $contexts = $this->contextService->getContexts($id)->toArray();
+        $contexts = $this->contextService->getContexts($id);
         $bookmarks = $this->bookmarkService->bookmarksFromContext($id);
+
+        if (count($validated) > 0) {
+            $contextFilter = app()->make(
+                FilterByTags::class,
+                ['queryParams' => $validated, 'tableName' => 'contexts_tags'],
+            );
+            $bookmarkFilter = app()->make(
+                FilterByTags::class,
+                ['queryParams' => $validated, 'tableName' => 'bookmarks_tags'],
+
+            );
+            $contexts = $contexts->filter($contextFilter);
+            $bookmarks = $bookmarks->filter($bookmarkFilter);
+        }
+
+        $contexts = $contexts->get()->toArray();
+        $bookmarks = $bookmarks->get();
 
         $bookmarks =
             SetUrlForBookmarksThumbnail::pathToUrl($bookmarks)->toArray();
@@ -84,16 +102,33 @@ class ContextController extends Controller
         $validated['order'] += 1;
         $context = $this->contextService->createContext($validated, Auth::id());
 
+        if (isset($validated['tags'])) {
+            $context->tags()->attach($validated['tags']);
+            // unset($validated['tags']);
+        }
+
         return new ContextResource($context);
     }
 
     public function update(UpdateContextRequest $request, string $id)
     {
         $validated = $request->validated();
-        $result = $this->contextService->updateContext($validated, $id);
 
-        if ($result) {
-            return new ContextResource($this->contextService->getContext($id));
+        if (isset($validated['tags'])) {
+            $tags = $validated['tags'];
+            unset($validated['tags']);
+        }
+
+        $context = $this->contextService->updateContext($validated, $id);
+
+        if ($context) {
+            $context->tags()->detach();
+
+            if (isset($tags)) {
+                $context->tags()->attach($tags);
+            }
+
+            return new ContextResource($context);
         }
 
         return response()->json(['message' => 'Update fail'], 400);

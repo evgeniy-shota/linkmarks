@@ -8,12 +8,14 @@ use App\Http\Resources\BookmarkResource;
 use App\Jobs\ProcessThumbnail;
 use App\Models\Bookmark;
 use App\Models\Context;
+use App\Models\Tag;
 use App\Models\Thumbnail;
 use App\Services\BookmarkService;
 use App\Services\ImageService;
 use App\Services\ThumbnailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class BookmarkController extends Controller
@@ -86,6 +88,11 @@ class BookmarkController extends Controller
         $validated['order'] += 1;
         $bookmark = Bookmark::create($validated);
         $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+
+        if ($validated['tags']) {
+            $bookmark->tags()->attach($validated['tags']);
+        }
+
         return new BookmarkResource($bookmark);
     }
 
@@ -98,25 +105,31 @@ class BookmarkController extends Controller
         if (isset($validated['thumbnailFile'])) {
             $thumbnail = $this->thumbnailService->store($validated['thumbnailFile']);
             $validated['thumbnail_id'] = $thumbnail->id;
-
             unset($validated['thumbnailFile']);
         } else if (!isset($validated['thumbnail_id'])) {
             $validated['thumbnail_id'] = $this->thumbnailService->getDefault()->id;
         }
 
-        $result = $this->bookmarkService->updateBookmark($id, $validated);
-
-        if (!$result) {
-            return response()->json(['message' => 'Bookmark not updated...'], 400);
+        if (isset($validated['tags'])) {
+            $tags = $validated['tags'];
+            unset($validated['tags']);
         }
 
-        $bookmark = $this->bookmarkService->bookmark($id);
+        $bookmark = $this->bookmarkService->updateBookmark($id, $validated);
 
         if ($bookmark) {
+            $bookmark->tags()->detach();
+
+            if (isset($tags)) {
+                $bookmark->tags()->attach($tags);
+            }
+
             $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+
+            return new BookmarkResource($bookmark);
         }
 
-        return new BookmarkResource($bookmark);
+        return response()->json(['message' => 'Bookmark not updated...'], 400);
     }
 
     public function destroy(string $id)

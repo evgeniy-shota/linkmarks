@@ -20,6 +20,8 @@ class ContextResource extends JsonResource
             'isRoot' => $this->is_root,
             'parentContextId' => $this->parent_context_id,
             'order' => $this->order,
+            'tags' => TagResource::collection($this->tags),
+            'thumbnails' =>  null,
         ];
     }
 }

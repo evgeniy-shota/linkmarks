@@ -16,7 +16,7 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $validated = $request->validate([
-            'search' => "required|string|min:3|max:30"
+            'search' => "required|string|min:2|max:30"
         ]);
 
         $contexts = Context::search($validated['search'])

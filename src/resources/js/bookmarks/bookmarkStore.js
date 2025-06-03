@@ -29,13 +29,17 @@ export default {
             // thumbnail: this.thumbnail,
             thumbnailFile: this.thumbnailFile,
             thumbnail_id: this.thumbnail_id,
-            context_id: Alpine.store("contexts").currentContext.id,
-            tags: this.tags,
+            context_id:
+                this.context_id ?? Alpine.store("contexts").currentContext.id,
+            tags: this.tags.map((item) => item.id),
             order: this.order,
         };
     },
 
     addTag(tag) {
+        if (this.tags.find((item) => item.id === tag.id)) {
+            return;
+        }
         this.tags.push(tag);
     },
 

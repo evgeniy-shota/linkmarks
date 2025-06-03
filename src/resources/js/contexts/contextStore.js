@@ -1,18 +1,20 @@
 export default {
     id: null,
     name: null,
-    thumbnail: null,
+    thumbnails: [],
     thumbnail_id: null,
-    parent_context_id: null,
+    parentContextId: null,
     indexInContexts: null,
+    tags: [],
     order: null,
 
     setData(data) {
         this.id = data.id;
         this.name = data.name;
-        this.thumbnail = data.thumbnail;
+        this.thumbnails = data.thumbnails;
         this.thumbnail_id = data.thumbnail_id;
-        this.parent_context_id = data.parent_context_id;
+        this.parentContextId = data.parentContextId;
+        this.tags = data.tags;
         this.order = data.order;
     },
 
@@ -20,26 +22,35 @@ export default {
         return {
             id: this.id,
             name: this.name,
-            link: this.link,
-            thumbnail: this.thumbnail,
             thumbnail_id: this.thumbnail_id,
-            parent_context_id: Alpine.store("contexts").currentContext.id,
+            parent_context_id:
+                this.parentContextId ??
+                Alpine.store("contexts").currentContext.id,
             order: this.order,
+            tags: this.tags.map((item) => item.id),
         };
     },
 
     clearThumbnail() {
-        this.thumbnail = null;
+        this.thumbnails.length = 0;
         this.thumbnail_id = null;
+    },
+
+    addTag(tag) {
+        if (this.tags.find((item) => item.id === tag.id)) {
+            return;
+        }
+        this.tags.push(tag);
     },
 
     clear() {
         this.id = null;
         this.name = null;
-        this.thumbnail = null;
+        this.thumbnails.length = 0;
         this.thumbnail_id = null;
-        this.parent_context_id = null;
+        this.parentContextId = null;
         this.order = null;
         this.indexInContexts = null;
+        this.tags.length = 0;
     },
 };

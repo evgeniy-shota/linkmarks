@@ -16,9 +16,16 @@
 
 <div {{ $attributes->merge(['class' => $classes]) }}
     x-on:click="{{ $click }}">
-
-    <div x-text='{{ $xText }}' x-bind:title="{{ $xText }}">
-        {{ $slot ?? '' }}
+    <div class="flex-none">
+        {{ $prefix ?? '' }}
     </div>
 
+    <div class="flex-none" x-text='{{ $xText }}'
+        x-bind:title="{{ $xText }}">
+        {{ $content ?? '' }}
+    </div>
+
+    <div class="flex-none">
+        {{ $postfix ?? '' }}
+    </div>
 </div>

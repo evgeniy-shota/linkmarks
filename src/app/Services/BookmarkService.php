@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Actions\GetLastOrderInContext;
 use App\Models\Bookmark;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as ECollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -17,8 +19,9 @@ class BookmarkService
         //     $builder->leftJoin('thumbnails', 'bookmarks.thumbnail_id', '=', 'thumbnails.id');
         // })->get();
 
-        $bookmarks = Bookmark::search($name)
-            ->where('user_id', $userId)->get();
+        $bookmarks = Bookmark::search($name)->query(function ($builder) {
+            $builder->with('tags:id,name,description');
+        })->where('user_id', $userId)->get();
 
         $thumbnailsId = [];
 
@@ -41,11 +44,17 @@ class BookmarkService
         return Bookmark::all();
     }
 
-    public function bookmark(string $id): ?Bookmark
+    public function bookmark(string $id, bool $withTags = true): ?Bookmark
     {
-        $bookmark = Bookmark::where('id', $id)->with('thumbnail')->first();
+        $bookmark = Bookmark::query();
+
+        if ($withTags) {
+            $bookmark->with('tags:id,name,description');
+        }
+
+        return $bookmark->where('id', $id)->with('thumbnail')->first();
         // dd($bookmark->thumbnail);
-        return $bookmark;
+        // return $bookmark;
     }
 
     public function bookmarksIn(array $ids): ?ECollection
@@ -55,7 +64,7 @@ class BookmarkService
         return $bookmarks;
     }
 
-    public function bookmarksFromContext(string $idContext): ?Collection
+    public function bookmarksFromContext(string $idContext): Builder
     {
         // $bookmarks = DB::table('bookmarks as bs')
         //     ->leftJoin('thumbnails as ts', 'bs.thumbnail_id', '=', 'ts.id')
@@ -63,7 +72,7 @@ class BookmarkService
         //     ->where('bs.context_id', $idContext)
         //     ->get();
 
-        $bookmarks = Bookmark::with('tags')->select(
+        $bookmarks = Bookmark::with('tags:id,name,description')->select(
             'bookmarks.id',
             'bookmarks.context_id',
             'bookmarks.link',
@@ -72,8 +81,7 @@ class BookmarkService
             'bookmarks.order',
             'thumbnails.name as thumbnail',
         )->leftJoin('thumbnails', 'bookmarks.thumbnail_id', '=', 'thumbnails.id')
-            ->where('bookmarks.context_id', $idContext)
-            ->get();
+            ->where('bookmarks.context_id', $idContext);
 
         // dd($bookmarks);
         return $bookmarks;
@@ -86,15 +94,17 @@ class BookmarkService
     //     return $bookmarks;
     // }
 
-    public function updateBookmark(string $id, array $data): bool
+    public function updateBookmark(string $id, array $data): ?Bookmark
     {
-        $bookmark = Bookmark::where('id', $id)->update($data);
+        $bookmark = Bookmark::find($id);
 
-        if ($bookmark) {
-            return true;
+        if (!isset($data['order']) || $bookmark->context_id != $data['context_id']) {
+            $maxOrder = GetLastOrderInContext::getOrder($data['context_id']);
+            $data['order'] = $maxOrder + 1;
         }
 
-        return false;
+        $bookmark->update($data);
+        return $bookmark;
     }
 
     public function deleteBookmark(string $id): ?bool

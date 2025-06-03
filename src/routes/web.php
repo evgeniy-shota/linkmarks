@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdditionalDataController;
 use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\AutofillForms\BookmarksFormController;
@@ -70,13 +71,10 @@ Route::get('/email/verification-notification', function (Request $request) {
 Route::controller(ResetPasswordController::class)->group(function () {
     Route::get('/forgot-password', 'showEmailForm')
         ->middleware('guest')->name('password.request');
-
     Route::post('/forgot-password', 'sendResetLink')
         ->middleware('guest')->name('passwword.email');
-
     Route::get('/reset-password/{token}', 'showPasswordForm')
         ->middleware('guest')->name('password.reset');
-
     Route::post('/reset-password/', 'resetPassword')
         ->middleware('guest')->name('password.update');
 });
@@ -98,6 +96,10 @@ Route::get('/welcom', function () {
     return view('welcome');
 })->name('welcome');
 
+Route::controller(AdditionalDataController::class)->group(function () {
+    Route::get('/additional-data/contexts','allContexts')->name('additionalData.contexts');
+})->middleware('auth');
+
 Route::controller(BookmarkController::class)->group(function () {
     Route::get('/bookmark/{id}', 'show')->name('home.show');
     Route::post('/bookmarks/', 'store')->name('home.store');
@@ -115,12 +117,12 @@ Route::controller(ContextController::class)->group(function () {
 });
 
 Route::controller(TagController::class)->group(function () {
-    Route::get('/tags/{id}', 'show')->name('tags.index');
+    Route::get('/tags/{id}', 'show')->name('tags.show');
     Route::get('/tags', 'index')->name('tags.index');
-    Route::post('/tags', 'store')->name('tags.index');
-    Route::put('/tags/{id}', 'update')->name('tags.index');
-    Route::delete('/tags/{id}', 'destroy')->name('tags.index');
-});
+    Route::post('/tags', 'store')->name('tags.store');
+    Route::put('/tags/{id}', 'update')->name('tags.update');
+    Route::delete('/tags/{id}', 'destroy')->name('tags.destroy');
+})->middleware('auth');
 
 // Route::get('/add-bookmark', function () {
 //     return view('addBookmark');
