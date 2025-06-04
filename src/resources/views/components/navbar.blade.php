@@ -125,7 +125,7 @@
 
                                 <x-html.formcontrols.checkbox-button
                                     condition="$store.filter.applyToContexts"
-                                    action="$store.filter.applyToCentexts=!$store.filter.applyToContexts">
+                                    action="$store.filter.applyToContexts=!$store.filter.applyToContexts">
                                     <x-slot:label>
                                         apply to folders
                                     </x-slot:label>
@@ -140,23 +140,22 @@
                                 </x-html.formcontrols.checkbox-button>
 
                                 <x-html.formcontrols.checkbox-button
-                                    condition="$store.filter.deepFiltration"
-                                    action="$store.filter.toggleDeepFilration(Alpine.store('contexts').currentContext.id)">
+                                    condition="$store.filter.contextualFiltration"
+                                    action="$store.filter.togglecontextualFiltration(Alpine.store('contexts').currentContext.id)">
                                     <x-slot:label>
-                                        deep filtration
+                                        contextual filtering
                                     </x-slot:label>
                                 </x-html.formcontrols.checkbox-button>
 
-                                {{-- <template x-if="$store.filter.deepFiltration"> --}}
-                                <x-html.formcontrols.checkbox-button class="ms-6"
+                                {{-- group deep filtration --}}
+                                {{-- <x-html.formcontrols.checkbox-button class="ms-6"
                                     disable="!$store.filter.deepFiltration"
                                     condition="$store.filter.groupDeepFiltration"
                                     action="$store.filter.groupDeepFiltration=!$store.filter.groupDeepFiltration">
                                     <x-slot:label>
                                         group deep filtration
                                     </x-slot:label>
-                                </x-html.formcontrols.checkbox-button>
-                                {{-- </template> --}}
+                                </x-html.formcontrols.checkbox-button> --}}
                             </div>
 
                             <div class="border-b-2 border-gray-500 mb-2"></div>
@@ -366,19 +365,6 @@
                     </form>
                 @endif
             @endauth
-
-            {{-- @guest
-                <x-html.link link="{{ route('login') }}" :active="Request::routeIs('login') ? true : false">
-                    Login
-                </x-html.link>
-
-                <x-html.link link="{{ route('registration.index') }}"
-                    :active="Request::routeIs('registration.index')
-                        ? true
-                        : false">
-                    Registration
-                </x-html.link>
-            @endguest --}}
 
         </div>
     </div>

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Actions\GetLastOrderInContext;
 use App\Models\Bookmark;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as ECollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -13,13 +14,9 @@ class BookmarkService
 {
     public function __construct(protected ThumbnailService $thumbnailService) {}
 
-    public function search(string $name, string $userId)
+    public function search(string $searchRequest, string $userId)
     {
-        // return Bookmark::search($name)->query(function ($builder) {
-        //     $builder->leftJoin('thumbnails', 'bookmarks.thumbnail_id', '=', 'thumbnails.id');
-        // })->get();
-
-        $bookmarks = Bookmark::search($name)->query(function ($builder) {
+        $bookmarks = Bookmark::search($searchRequest)->query(function ($builder) {
             $builder->with('tags:id,name,description');
         })->where('user_id', $userId)->get();
 
@@ -39,9 +36,20 @@ class BookmarkService
         return $bookmarks;
     }
 
-    public function allBookmarks(): ECollection
+    public function getAllBookmarks(int $userId): ?EloquentBuilder
     {
-        return Bookmark::all();
+        $bookmarks = Bookmark::with('tags:id,name,description')->select(
+            'bookmarks.id',
+            'bookmarks.context_id',
+            'bookmarks.link',
+            'bookmarks.name',
+            'bookmarks.thumbnail_id',
+            'bookmarks.order',
+            'thumbnails.name as thumbnail',
+        )->leftJoin('thumbnails', 'bookmarks.thumbnail_id', '=', 'thumbnails.id')
+            ->where('bookmarks.user_id', $userId);
+
+        return $bookmarks;
     }
 
     public function bookmark(string $id, bool $withTags = true): ?Bookmark
@@ -66,12 +74,6 @@ class BookmarkService
 
     public function bookmarksFromContext(string $idContext): Builder
     {
-        // $bookmarks = DB::table('bookmarks as bs')
-        //     ->leftJoin('thumbnails as ts', 'bs.thumbnail_id', '=', 'ts.id')
-        //     ->select('bs.id', 'bs.context_id', 'bs.link', 'bs.name', 'bs.thumbnail_id', 'bs.order', 'ts.name as thumbnail')
-        //     ->where('bs.context_id', $idContext)
-        //     ->get();
-
         $bookmarks = Bookmark::with('tags:id,name,description')->select(
             'bookmarks.id',
             'bookmarks.context_id',
@@ -81,9 +83,8 @@ class BookmarkService
             'bookmarks.order',
             'thumbnails.name as thumbnail',
         )->leftJoin('thumbnails', 'bookmarks.thumbnail_id', '=', 'thumbnails.id')
-            ->where('bookmarks.context_id', $idContext);
+            ->where('bookmarks.context_id', $idContext)->orderBy('order');
 
-        // dd($bookmarks);
         return $bookmarks;
     }
 

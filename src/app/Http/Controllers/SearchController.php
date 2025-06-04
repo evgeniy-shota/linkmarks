@@ -6,12 +6,13 @@ use App\Actions\SetUrlForBookmarksThumbnail;
 use App\Models\Bookmark;
 use App\Models\Context;
 use App\Services\BookmarkService;
+use App\Services\ContextService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SearchController extends Controller
 {
-    public function __construct(protected BookmarkService $bookmarkService) {}
+    public function __construct(protected ContextService $contextService, protected BookmarkService $bookmarkService) {}
 
     public function search(Request $request)
     {
@@ -19,8 +20,9 @@ class SearchController extends Controller
             'search' => "required|string|min:2|max:30"
         ]);
 
-        $contexts = Context::search($validated['search'])
-            ->where('user_id', Auth::id())->get();
+        // $contexts = Context::search($validated['search'])
+        //     ->where('user_id', Auth::id())->get();
+        $contexts = $this->contextService->search($validated['search'], Auth::id());
 
         $bookmarks = $this->bookmarkService->search($validated['search'], Auth::id());
 

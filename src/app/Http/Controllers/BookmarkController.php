@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ThumbnailSource;
 use App\Http\Requests\Bookmark\StoreBookmarkRequest;
 use App\Http\Requests\Bookmark\UpdateBookmarkRequest;
 use App\Http\Resources\BookmarkResource;
@@ -25,18 +26,18 @@ class BookmarkController extends Controller
         private ThumbnailService $thumbnailService
     ) {}
 
-    public function index(Request $request)
-    {
-        $bookmarks = $this->bookmarkService->allBookmarks();
+    // public function index(Request $request)
+    // {
+    //     $bookmarks = $this->bookmarkService->getAllBookmarks(Auth::id());
 
-        foreach ($bookmarks as $bookmark) {
-            $bookmark->thumbnail = $bookmark->thumbnail->name ?
-                Storage::url($bookmark->thumbnail->name) : '';
-            $bookmark->description = $bookmark->description ?? '';
-        }
+    //     foreach ($bookmarks as $bookmark) {
+    //         $bookmark->thumbnail = $bookmark->thumbnail->name ?
+    //             Storage::url($bookmark->thumbnail->name) : '';
+    //         $bookmark->description = $bookmark->description ?? '';
+    //     }
 
-        return new BookmarkResource($bookmarks);
-    }
+    //     return new BookmarkResource($bookmarks);
+    // }
 
     public function show(string $id)
     {
@@ -55,7 +56,13 @@ class BookmarkController extends Controller
         $validated['user_id'] = Auth::id();
 
         if (isset($validated['thumbnailFile'])) {
-            $thumbnail = $this->thumbnailService->store($validated['thumbnailFile']);
+            $parsedLink = parse_url($validated['link']);
+            $thumbnailAssociations = $parsedLink['host'];
+            $thumbnail = $this->thumbnailService->store(
+                $validated['thumbnailFile'],
+                ThumbnailSource::UserLoad->value,
+                $thumbnailAssociations
+            );
             $validated['thumbnail_id'] = $thumbnail->id;
             // $file = $this->thumbnailService->saveToTemp($validated['thumbnailFile']);
 

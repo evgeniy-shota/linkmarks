@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Request;
 
 class ContextService
 {
+    public function search(string $searchRequest, int $userId)
+    {
+        $contexts = Context::search($searchRequest)->query(function ($builder) {
+            $builder->with('tags:id,name,description');
+        })->where('user_id', $userId)->get();
+
+        return $contexts;
+    }
+
     public function getRootContext(int $userId): ?Context
     {
         $context = Context::where('user_id', $userId)->where('is_root', true)->first();
@@ -33,6 +42,13 @@ class ContextService
     {
         $context = Context::with('tags:id,name,description')
             ->where('parent_context_id', $idCurrentContext)->orderBy('order');
+        return $context;
+    }
+
+    public function getAllContexts(int $userId): Builder
+    {
+        $context = Context::with('tags:id,name,description')
+            ->where('user_id', $userId)->orderBy('order');
         return $context;
     }
 

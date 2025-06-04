@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\SetUrlForBookmarksThumbnail;
 use App\Actions\SortContextsAndBookmarks;
 use App\Http\Filters\FilterByTags;
+use App\Http\Requests\Context\ShowDataContextRequest;
 use App\Http\Requests\Context\StoreContextRequest;
 use App\Http\Requests\Context\UpdateContextRequest;
 use App\Http\Resources\ContextResource;
@@ -50,34 +51,61 @@ class ContextController extends Controller
         return new ContextResource($context);
     }
 
-    public function showContextData(Request $request, string $id)
+    public function showContextData(ShowDataContextRequest $request, string $id)
     {
-        $validated = array_filter($request->validate([
-            "tagsIncluded" => 'nullable|array',
-            "tagsExcluded" => 'nullable|array',
-        ]), function ($item) {
+        $validated = array_filter($request->validated(), function ($item) {
             return isset($item);
         });
 
-        $contexts = $this->contextService->getContexts($id);
-        $bookmarks = $this->bookmarkService->bookmarksFromContext($id);
+        $filterParams = [];
 
-        if (count($validated) > 0) {
+        if (isset($validated['tagsIncluded'])) {
+            $filterParams['tagsIncluded'] = $validated['tagsIncluded'];
+        }
+
+        if (isset($validated['tagsExcluded'])) {
+            $filterParams['tagsExcluded'] = $validated['tagsExcluded'];
+        }
+
+        if (!isset($validated['contextualFiltration']) && count($filterParams) > 0) {
+            $contexts = $this->contextService->getAllContexts(Auth::id());
+            $bookmarks = $this->bookmarkService->getAllBookmarks(Auth::id());
+
             $contextFilter = app()->make(
                 FilterByTags::class,
-                ['queryParams' => $validated, 'tableName' => 'contexts_tags'],
+                ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
             );
             $bookmarkFilter = app()->make(
                 FilterByTags::class,
-                ['queryParams' => $validated, 'tableName' => 'bookmarks_tags'],
+                ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
 
             );
             $contexts = $contexts->filter($contextFilter);
             $bookmarks = $bookmarks->filter($bookmarkFilter);
-        }
 
-        $contexts = $contexts->get()->toArray();
-        $bookmarks = $bookmarks->get();
+            $contexts = $contexts->get()->toArray();
+            $bookmarks = $bookmarks->get();
+        } else {
+            $contexts = $this->contextService->getContexts($id);
+            $bookmarks = $this->bookmarkService->bookmarksFromContext($id);
+
+            if (count($filterParams) > 0) {
+                $contextFilter = app()->make(
+                    FilterByTags::class,
+                    ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
+                );
+                $bookmarkFilter = app()->make(
+                    FilterByTags::class,
+                    ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
+
+                );
+                $contexts = $contexts->filter($contextFilter);
+                $bookmarks = $bookmarks->filter($bookmarkFilter);
+            }
+
+            $contexts = $contexts->get()->toArray();
+            $bookmarks = $bookmarks->get();
+        }
 
         $bookmarks =
             SetUrlForBookmarksThumbnail::pathToUrl($bookmarks)->toArray();

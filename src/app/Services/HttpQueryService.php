@@ -19,7 +19,7 @@ class HttpQueryService
         return null;
     }
 
-    public function getImages(string $url): ?string
+    public function getImage(string $url): ?string
     {
         $acceptType = 'image/*';
         return $this->getPage($url, $acceptType);

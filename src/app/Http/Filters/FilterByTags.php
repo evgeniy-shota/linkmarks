@@ -26,8 +26,8 @@ class FilterByTags extends AbstractFilter
 
     public function tagsExcluded(Builder $builder, $value, $tableName)
     {
-        $builder->whereHas('tags', function (Builder $query) use ($value, $tableName) {
-            $query->whereNotIn("$tableName." . 'tag_id', $value);
+        $builder->whereDoesntHave('tags', function (Builder $query) use ($value, $tableName) {
+            $query->whereIn("$tableName." . 'tag_id', $value);
         });
     }
 }

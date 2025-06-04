@@ -11,6 +11,10 @@ class HtmlParseService
         // $regx = '|<img\s.+\s\/>|m';
         $regx = '/"[^"]+((\.jpg)|(\.png)|(\.webp)|(\.icon)|(\.svg))"/m';
         $matches = preg_match_all($regx, $page, $images);
-        return $images[0];
+        return array_map(function ($item) {
+            return trim($item, "\"");
+        }, $images[0]);
     }
+
+    public function getTitle(string $page) {}
 }

@@ -56,8 +56,10 @@
             {{-- link input --}}
             <x-html.formcontrols.fieldset title='Link'>
                 <x-slot:field>
-                    <x-html.formcontrols.input required id="link"
-                        type="text" placeholder="www.youtube.com"
+                    <x-html.formcontrols.input
+                        x-on:change="linkInputFocusHandler($event)" required
+                        id="link" type="text"
+                        placeholder="www.youtube.com"
                         x-model="$store.bookmark.link" :state="true" />
                 </x-slot:field>
                 <x-slot:legend>
@@ -177,6 +179,23 @@
         </form>
 
         <script>
+            function linkInputFocusHandler(e) {
+                if (e.target.value.length === 0) {
+                    return
+                }
+
+                getAutocompleteData(e.target.value)
+            }
+
+            async function getAutocompleteData(link) {
+                let url = '/autofill-bf';
+                url += '?url=' + link;
+
+                let response = getRequest(url);
+
+                console.log(response);
+            }
+
             async function submitBookmarkForm() {
                 let data = Alpine.store('bookmark').getData()
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ThumbnailSource;
 use App\Jobs\ProcessThumbnail;
 use App\Models\Thumbnail;
 use Illuminate\Database\Eloquent\Collection;
@@ -57,6 +58,11 @@ class ThumbnailService
         return $result ? $path : null;
     }
 
+    public function getByAssociations(string $associations): ?Collection
+    {
+        return Thumbnail::where('associations', $associations)->get();
+    }
+
     public function getDefault(bool $idOnly = true): Thumbnail|int
     {
         $defaultThumbnail = Thumbnail::where('source', 'default')->where('associations', 'default');
@@ -80,17 +86,11 @@ class ThumbnailService
         return $thumbnails;
     }
 
-    public function store($file)
+    public function store($file, $source = ThumbnailSource::Default->value, string $associations = '')
     {
         $file = $this->saveToTemp($file);
 
-        $thumbnail = Thumbnail::create([
-            'user_id' => Auth::id(),
-            'name' => $file,
-            'source' => '',
-            // 'associations' => '',
-            // 'is_processed' => '',
-        ]);
+        $thumbnail = $this->create($file, $source, $associations);
 
         if (ImageService::fileCanProcessed($file)) {
             ProcessThumbnail::dispatch($thumbnail);
@@ -102,6 +102,18 @@ class ThumbnailService
     public function update(string $id, array $data)
     {
         $thumbnail = Thumbnail::where('id', $id)->update($data);
+        return $thumbnail;
+    }
+
+    public function create(string $fileName, string $fileSource, string $fileAssociations)
+    {
+        $thumbnail = Thumbnail::create([
+            'user_id' => Auth::id(),
+            'name' => $fileName,
+            'source' => $fileSource,
+            'associations' => $fileAssociations,
+        ]);
+
         return $thumbnail;
     }
 

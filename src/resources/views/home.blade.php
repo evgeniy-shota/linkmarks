@@ -225,8 +225,13 @@
 
             function applyFilter() {
                 Alpine.store('filter').isApplied = true
+                Alpine.store('filter').currentContextId = Alpine.store('contexts')
+                    .currentContext.id
                 openFolder(Alpine.store('contexts').breadcrumbs[
                     Alpine.store('contexts').breadcrumbs.length - 1])
+
+                console.log(Alpine.store('contexts')
+                    .currentContext)
             }
 
             function declineFilter() {
@@ -343,7 +348,13 @@
                 }
 
                 let previousContext = Alpine.store('contexts').currentContext
-                let data = await getContexts(context.id)
+                let filter = null;
+                if (Alpine.store('filter').isApplied &&
+                    Alpine.store('filter').currentContextId == context.id) {
+                    filter = filterParams();
+                }
+
+                let data = await getContexts(context.id, filter)
 
                 Alpine.store('contexts').setData(
                     data,
@@ -399,26 +410,50 @@
                 }
             }
 
-            async function getContexts(id) {
+            function filterParams() {
+                let params = [];
+                tagsIncluded = Alpine.store('tags').getTags(true)
+
+                if (tagsIncluded.length > 0) {
+                    params.push('tagsIncluded[]=' + tagsIncluded.join(
+                        '&tagsIncluded[]='));
+                }
+
+                tagsExcluded = Alpine.store('tags').getTags(false)
+
+                if (tagsExcluded.length > 0) {
+                    params.push('tagsExcluded[]=' + tagsExcluded.join(
+                        '&tagsExcluded[]='));
+                }
+
+                params.push(Alpine.store('filter').getFilterParams())
+                return '?' + params.join("&");
+            }
+
+            async function getContexts(id, requestParams = null) {
                 let url = '/contexts/' + id;
 
-                if (Alpine.store('filter').isApplied) {
-                    tagsIncluded = Alpine.store('tags').getTags(true)
-                    tagsIncludedParams = tagsIncluded.length > 0 ?
-                        '?tagsIncluded[]=' + tagsIncluded.join('&tagsIncluded[]=') :
-                        '';
-                    tagsExcluded = Alpine.store('tags').getTags(false)
-                    tagsExcludedParams = (tagsIncluded.length == 0 ? '?' : '&') +
-                        (tagsExcluded.length > 0 ?
-                            'tagsExcluded[]=' + tagsExcluded.join(
-                                '&tagsExcluded[]=') :
-                            '');
+                if (requestParams !== null) {
+                    // tagsIncluded = Alpine.store('tags').getTags(true)
+                    // tagsIncludedParams = tagsIncluded.length > 0 ?
+                    //     '?tagsIncluded[]=' + tagsIncluded.join('&tagsIncluded[]=') :
+                    //     '';
+                    // tagsExcluded = Alpine.store('tags').getTags(false)
+                    // tagsExcludedParams = (tagsIncluded.length == 0 ? '?' : '&') +
+                    //     (tagsExcluded.length > 0 ?
+                    //         'tagsExcluded[]=' + tagsExcluded.join(
+                    //             '&tagsExcluded[]=') :
+                    //         '');
 
-                    url += tagsIncludedParams + tagsExcludedParams
+                    url += requestParams
                     // console.log(tagsIncluded.join())
                 }
 
-                let response = await fetch(url)
+                let response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json;charset=utf-8'
+                    }
+                })
                 if (response.ok) {
                     let res = await response.json()
                     return res.data
@@ -459,7 +494,11 @@
 
             async function getRequest(url, consoleWarnTitle = null) {
 
-                let response = await fetch(url)
+                let response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json;charset=utf-8'
+                    },
+                })
 
                 if (response.ok) {
                     let res = await response.json()
