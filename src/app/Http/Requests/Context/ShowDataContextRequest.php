@@ -24,8 +24,8 @@ class ShowDataContextRequest extends FormRequest
         return [
             "tagsIncluded" => 'nullable|array',
             "tagsExcluded" => 'nullable|array',
-            'discardToContexts' => 'nullable|boolean',
-            'discardToBookmarks' => 'nullable|boolean',
+            'discardToContexts' => 'sometimes|accepted',
+            'discardToBookmarks' => 'sometimes|accepted',
             'contextualFiltration' => 'nullable|boolean',
             'groupDeepFiltration' => [
                 'exclude_with:contextualFiltration',

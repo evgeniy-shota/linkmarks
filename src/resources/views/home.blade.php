@@ -539,6 +539,8 @@
             function clearBookmarkStore() {
                 Alpine.store('bookmark').clear()
                 Alpine.store('fileInput').clearData()
+                Alpine.store('globalValuesStore').showBookmarkThumbnailsVariants = false
+                Alpine.store('additionalData').clearThumbnails()
             }
 
             function clearTagStore() {

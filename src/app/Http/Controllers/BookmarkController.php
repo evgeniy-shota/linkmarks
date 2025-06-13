@@ -13,6 +13,7 @@ use App\Models\Tag;
 use App\Models\Thumbnail;
 use App\Services\BookmarkService;
 use App\Services\ImageService;
+use App\Services\StorageService;
 use App\Services\ThumbnailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,28 +24,16 @@ class BookmarkController extends Controller
 {
     public function __construct(
         private BookmarkService $bookmarkService,
-        private ThumbnailService $thumbnailService
+        private ThumbnailService $thumbnailService,
+        private StorageService $storageService,
     ) {}
-
-    // public function index(Request $request)
-    // {
-    //     $bookmarks = $this->bookmarkService->getAllBookmarks(Auth::id());
-
-    //     foreach ($bookmarks as $bookmark) {
-    //         $bookmark->thumbnail = $bookmark->thumbnail->name ?
-    //             Storage::url($bookmark->thumbnail->name) : '';
-    //         $bookmark->description = $bookmark->description ?? '';
-    //     }
-
-    //     return new BookmarkResource($bookmarks);
-    // }
 
     public function show(string $id)
     {
         $bookmark = $this->bookmarkService->bookmark($id);
 
         if ($bookmark) {
-            $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+            $bookmark->thumbnail = Storage::url($bookmark->thumbnail?->name);
         }
 
         return new BookmarkResource($bookmark);
@@ -57,49 +46,27 @@ class BookmarkController extends Controller
 
         if (isset($validated['thumbnailFile'])) {
             $parsedLink = parse_url($validated['link']);
-            $thumbnailAssociations = $parsedLink['host'];
-            $thumbnail = $this->thumbnailService->store(
-                $validated['thumbnailFile'],
+            $thumbnailFile = $this->storageService
+                ->save($validated['thumbnailFile']);
+            $thumbnail = $this->thumbnailService->create(
+                $thumbnailFile,
+                Auth::id(),
                 ThumbnailSource::UserLoad->value,
-                $thumbnailAssociations
+                $parsedLink['host'] ?? '',
             );
             $validated['thumbnail_id'] = $thumbnail->id;
-            // $file = $this->thumbnailService->saveToTemp($validated['thumbnailFile']);
 
-            // $thumbnail = Thumbnail::create([
-            //     'user_id' => Auth::id(),
-            //     'name' => $file,
-            //     'source' => '',
-            //     // 'associations' => '',
-            //     // 'is_processed' => '',
-            // ]);
-            // $validated['thumbnail_id'] = $thumbnail->id;
-
-            // if (ImageService::fileCanProcessed($file)) {
-            //     ProcessThumbnail::dispatch($thumbnail);
-            // }
+            if (ImageService::fileCanProcessed($thumbnailFile)) {
+                ProcessThumbnail::dispatch($thumbnail);
+            }
 
             unset($validated['thumbnailFile']);
         } else if (!isset($validated['thumbnail_id'])) {
-            $validated['thumbnail_id'] = $this->thumbnailService->getDefault()->id;
+            $validated['thumbnail_id'] = $this->thumbnailService
+                ->getDefault()->id;
         }
 
-        if (!isset($validated['order'])) {
-            $maxContextsOrder = Context::where('parent_context_id', $validated['parent_context_id'])->max('order');
-            $maxBookmarksOrder = Bookmark::where('context_id', $validated['parent_context_id'])->max('order');
-            $validated['order'] =
-                ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
-                    $maxBookmarksOrder) + 1;
-        }
-
-        $validated['order'] += 1;
-        $bookmark = Bookmark::create($validated);
-        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
-
-        if ($validated['tags']) {
-            $bookmark->tags()->attach($validated['tags']);
-        }
-
+        $bookmark = $this->bookmarkService->store($validated);
         return new BookmarkResource($bookmark);
     }
 
@@ -110,11 +77,25 @@ class BookmarkController extends Controller
         });
 
         if (isset($validated['thumbnailFile'])) {
-            $thumbnail = $this->thumbnailService->store($validated['thumbnailFile']);
+            $parsedLink = parse_url($validated['link']);
+            $thumbnailFile = $this->storageService
+                ->save($validated['thumbnailFile']);
+            $thumbnail = $this->thumbnailService->create(
+                $thumbnailFile,
+                Auth::id(),
+                ThumbnailSource::UserLoad->value,
+                $parsedLink['host'] ?? '',
+            );
             $validated['thumbnail_id'] = $thumbnail->id;
+
+            if (ImageService::fileCanProcessed($thumbnailFile)) {
+                ProcessThumbnail::dispatch($thumbnail);
+            }
+
             unset($validated['thumbnailFile']);
         } else if (!isset($validated['thumbnail_id'])) {
-            $validated['thumbnail_id'] = $this->thumbnailService->getDefault()->id;
+            $validated['thumbnail_id'] = $this->thumbnailService
+                ->getDefault()->id;
         }
 
         if (isset($validated['tags'])) {

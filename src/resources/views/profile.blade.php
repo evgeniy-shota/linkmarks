@@ -106,7 +106,8 @@
                 </form> --}}
             </div>
 
-            <div class="flex flex-col justify-center items-start">
+            {{-- settings --}}
+            {{-- <div class="flex flex-col justify-center items-start">
                 <div class="divider divider-start font-bold text-gray-100">
                     Settings
                 </div>
@@ -114,7 +115,7 @@
                 <x-captions.info class="w-full">
                     In development ...
                 </x-captions.info>
-            </div>
+            </div> --}}
 
 
             {{-- <form action="" method="post">

@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Actions\ConvertImage;
 use App\Models\Thumbnail;
 use App\Services\ImageService;
+use App\Services\StorageService;
 use App\Services\ThumbnailService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -25,22 +26,23 @@ class ProcessThumbnail implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ImageService $imageService, ThumbnailService $thumbnailService): void
-    {
-        $absoluteThumbnailPath = Storage::disk('public')->path($this->thumbnail->name);
+    public function handle(
+        ImageService $imageService,
+        StorageService $storageService,
+    ): void {
+        $absoluteThumbnailPath = $storageService->path($this->thumbnail->name);
         $scaledImage = $imageService->scale($absoluteThumbnailPath);
-        $newPath = $thumbnailService->saveFromEncodedImage($scaledImage);
+        $file = $storageService->saveEncodedImage($scaledImage);
 
-        if ($newPath) {
+        if ($file) {
             $oldThumbnail = $this->thumbnail->name;
 
             $this->thumbnail->update([
-                'name' => $newPath,
+                'name' => $file,
                 'is_processed' => true,
             ]);
 
-            $deleteRes = Storage::disk('public')->delete($oldThumbnail);
-            dump("delete result: " . $deleteRes);
+            $deleteRes = $storageService->delete($oldThumbnail);
         }
     }
 }

@@ -25,6 +25,7 @@ class StoreSessionRequest extends FormRequest
         return [
             'email' => ['required', 'email'],
             'password' => ['required'],
+            'rememberUser' => ['sometimes', 'accepted'],
         ];
     }
 }

@@ -3,12 +3,16 @@
 namespace App\Services;
 
 use App\Actions\GetLastOrderInContext;
+use App\Http\Requests\Bookmark\StoreBookmarkRequest;
 use App\Models\Bookmark;
+use App\Models\Context;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as ECollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BookmarkService
 {
@@ -88,12 +92,26 @@ class BookmarkService
         return $bookmarks;
     }
 
-    // public function bookmarksWithThumbnail(string $idContext): ?ECollection
-    // {
-    //     $bookmarks = Bookmark::where('context_id', $idContext)->with('thumbnail')
-    //         ->orderBy('order')->get();
-    //     return $bookmarks;
-    // }
+    public function store(array $data)
+    {
+        if (!isset($data['order'])) {
+            $maxContextsOrder = Context::where('parent_context_id', $data['context_id'])->max('order');
+            $maxBookmarksOrder = Bookmark::where('context_id', $data['context_id'])->max('order');
+            $data['order'] =
+                ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
+                    $maxBookmarksOrder) + 1;
+        }
+
+        $data['order'] += 1;
+        $bookmark = Bookmark::create($data);
+        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+
+        if (isset($data['tags'])) {
+            $bookmark->tags()->attach($data['tags']);
+        }
+
+        return $bookmark;
+    }
 
     public function updateBookmark(string $id, array $data): ?Bookmark
     {

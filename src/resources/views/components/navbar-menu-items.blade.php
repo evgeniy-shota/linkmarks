@@ -12,7 +12,7 @@
     <form action="{{ route('logout') }}" method="post">
         @csrf
         <li>
-            <button type="submit" class="cursor-pointer">Logout</button>
+            <button type="submit" class="cursor-pointer text-base">Logout</button>
         </li>
     </form>
     {{-- <x-html.button class="btn-link" type="submit">

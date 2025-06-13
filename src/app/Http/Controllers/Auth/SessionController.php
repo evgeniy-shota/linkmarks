@@ -13,20 +13,17 @@ class SessionController extends Controller
 
     public function index(Request $request)
     {
-        // if (Auth::user()) {
-        //     return back();
-        // }
-
         return view('auth.login');
     }
 
     public function store(StoreSessionRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+        $rememberUser = $validated['rememberUser'] ?? false;
+        unset($validated['rememberUser']);
 
-        if (Auth::attempt($validated)) {
+        if (Auth::attempt($validated, $rememberUser)) {
             $request->session()->regenerate();
-
             return redirect()->route('home');
         }
 

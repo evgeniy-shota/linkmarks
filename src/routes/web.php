@@ -30,8 +30,6 @@ Route::get('/mailable', function () {
 
 Route::get('/search', [SearchController::class, 'search'])->middleware('auth')->name('search');
 
-Route::get('/autofill-bf', BookmarksFormController::class)->name('autofillBookmarksFrorm');
-
 Route::controller(ProfileController::class)->group(function () {
     Route::get('/profile', 'show')->middleware(['auth'])->name('profile');
     Route::put('/profile', 'update')->name('profile.update');
@@ -87,7 +85,8 @@ Route::controller(ChangePasswordController::class)->group(function () {
 
 // delete account routs
 Route::controller(DeleteAccountController::class)->group(function () {
-    Route::get('/delete-account/{token}', 'destroy')->name('deleteAccount.delete');
+    Route::get('/delete-account/{token}', 'destroy')
+        ->name('deleteAccount.delete');
     Route::post('/delete-account/', 'sendLink')->name('deleteAccount.email');
 })->middleware('auth');
 
@@ -97,7 +96,12 @@ Route::get('/welcom', function () {
 })->name('welcome');
 
 Route::controller(AdditionalDataController::class)->group(function () {
-    Route::get('/additional-data/contexts','allContexts')->name('additionalData.contexts');
+    Route::get('/additional-data/contexts', 'allContexts')
+        ->name('additionalData.contexts');
+    Route::get('/additional-data/bf-autocomplete', 'autocompleteData')
+        ->name('additionalData.autocomplete');
+        Route::get('/additional-data/bf-thumbnails', 'potentialThumbnails')
+        ->name('additionalData.thumbnails');
 })->middleware('auth');
 
 Route::controller(BookmarkController::class)->group(function () {

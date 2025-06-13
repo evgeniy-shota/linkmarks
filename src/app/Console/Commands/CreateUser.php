@@ -36,7 +36,7 @@ class CreateUser extends Command
         $name = $this->argument('name');
         $email = $this->argument('email');
         $defaultEmailDomain = "mail.com";
-        $isAdmin = $this->option('admin') ?? false;
+        $isAdmin = $this->option('admin');
         $count = $this->option('count');
         $generateEmail = false;
 

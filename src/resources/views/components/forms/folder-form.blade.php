@@ -125,32 +125,35 @@
 
 
             {{-- bookmark thumbnail preview --}}
-            <div class="font-bold">Thumbnail</div>
+            <div class="hidden">
+                <div class="font-bold">Thumbnail</div>
 
-            <template x-if="$store.context.thumbnails!==null">
-                <div class="w-full">
-                    <div
-                        class="border-2 border-dashed rounded-sm border-gray-500 flex justify-between items-center h-32 w-full">
-                        <div class="flex-none w-1/2">
-                            <x-html.thumbnail id="contextThumbnailPreview"
-                                src=""
-                                xSrc="$store.context.thumbnail" />
-                        </div>
-                        <div class="w-1/2" class="flex-none">
-                            <x-html.button
-                                action="Alpine.store('context').clearThumbnail()">
-                                Clear
-                            </x-html.button>
+                <template x-if="$store.context.thumbnails!==null">
+                    <div class="w-full">
+                        <div
+                            class="border-2 border-dashed rounded-sm border-gray-500 flex justify-between items-center h-32 w-full">
+                            <div class="flex-none w-1/2">
+                                <x-html.thumbnail id="contextThumbnailPreview"
+                                    src=""
+                                    xSrc="$store.context.thumbnail" />
+                            </div>
+                            <div class="w-1/2" class="flex-none">
+                                <x-html.button
+                                    action="Alpine.store('context').clearThumbnail()">
+                                    Clear
+                                </x-html.button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </template>
+                </template>
 
-            {{-- file input --}}
-            <div x-show="$store.context.thumbnails===null">
-                <x-html.formcontrols.input-file-drop-down
-                    id="{{ $folderThumbnailInput }}" :required="false" />
+                {{-- file input --}}
+                <div x-show="$store.context.thumbnails===null">
+                    <x-html.formcontrols.input-file-drop-down
+                        id="{{ $folderThumbnailInput }}" :required="false" />
+                </div>
             </div>
+
 
             <x-html.formcontrols.button-group deleteAction="deleteFolder"
                 clearActtion="clearForm({{ $folderThumbnailInput }})"

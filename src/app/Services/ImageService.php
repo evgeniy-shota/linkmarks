@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\EncodedImage;
@@ -19,10 +20,23 @@ class ImageService
         "image/jpeg" => "jpeg",
     ];
 
+    public function getImageExtensionFromString(string $file)
+    {
+        // $fileInfo = finfo_buffer(finfo_open(), $file, FILEINFO_MIME_TYPE);
+        $fileInfo = getimagesizefromstring($file);
+
+        return isset($fileInfo[2]) ? image_type_to_extension($fileInfo[2]) : null;
+    }
+
     public function scale(string $img, int $size = 90)
     {
         $manager = ImageManager::imagick();
-        $image = $manager->read($img);
+        try {
+            $image = $manager->read($img);
+        } catch (Exception $e) {
+            return null;
+        }
+
         $imagick = $image->core()->native();
         $type =  $imagick->getImageMimeType();
 
@@ -89,10 +103,10 @@ class ImageService
     private function getImageFromList($imagick)
     {
         // $imagick->setLastIterator();
-        $image = null;
-        $imgCount = $imagick->getNumberImages();
-        $size = 0;
-
+        $image = null;        // if can't recognize image extension remove image
+        // $thumbnailsNames = array_map(function ($item) {
+        //     return md5($item) . $this->imageService->getImageExtensionFromString($item);
+        // }, $images);
         for ($i = 0; $i < $imgCount; $i++) {
             $currentImageSize = $imagick->height + $imagick->width;
 

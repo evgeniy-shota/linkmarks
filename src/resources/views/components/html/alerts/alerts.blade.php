@@ -1,6 +1,6 @@
 @props(['ref', 'xData' => ''])
-
-<div x-data={timer:null} class="absolute bottom-5 right-0">
+{{-- absolute --}}
+<div x-data={timer:null} class="fixed bottom-5 right-0 sm:max-w-2/5">
     <template x-for="(alert, index) in $store.alerts.alertList">
         <div id="{{ $ref }}+index" x-refs="{{ $ref }}+index"
             role="alert"

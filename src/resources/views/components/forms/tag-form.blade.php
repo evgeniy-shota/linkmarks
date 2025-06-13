@@ -21,8 +21,8 @@
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 
-            {{-- name input --}}
-            <x-html.formcontrols.fieldset title='Description' class="mb-2">
+            {{-- Description input --}}
+            {{-- <x-html.formcontrols.fieldset title='Description' class="mb-2">
                 <x-slot:field>
                     <x-html.formcontrols.input id="description" type="text"
                         x-model="$store.tag.description" :state="true" />
@@ -31,7 +31,7 @@
                     <x-html.formcontrols.fieldset-legend
                         text="Enter tag description" />
                 </x-slot:legend>
-            </x-html.formcontrols.fieldset>
+            </x-html.formcontrols.fieldset> --}}
 
             <x-html.formcontrols.button-group deleteAction="deleteTag"
                 canDeleted="{{ $canDeleted }}" />

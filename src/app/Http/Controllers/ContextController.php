@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\SetUrlForBookmarksThumbnail;
 use App\Actions\SortContextsAndBookmarks;
 use App\Http\Filters\FilterByTags;
+use App\Http\Filters\FilterContextsByTags;
 use App\Http\Requests\Context\ShowDataContextRequest;
 use App\Http\Requests\Context\StoreContextRequest;
 use App\Http\Requests\Context\UpdateContextRequest;
@@ -68,20 +69,25 @@ class ContextController extends Controller
         }
 
         if (!isset($validated['contextualFiltration']) && count($filterParams) > 0) {
-            $contexts = $this->contextService->getAllContexts(Auth::id());
+            $contexts = $this->contextService->getAllContexts(Auth::id(), true);
             $bookmarks = $this->bookmarkService->getAllBookmarks(Auth::id());
 
-            $contextFilter = app()->make(
-                FilterByTags::class,
-                ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
-            );
-            $bookmarkFilter = app()->make(
-                FilterByTags::class,
-                ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
+            if (!isset($validated['discardToContexts'])) {
+                $contextFilter = app()->make(
+                    FilterByTags::class,
+                    ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
+                );
+                $contexts = $contexts->filter($contextFilter);
+            }
 
-            );
-            $contexts = $contexts->filter($contextFilter);
-            $bookmarks = $bookmarks->filter($bookmarkFilter);
+            if (!isset($validated['discardToBookmarks'])) {
+                $bookmarkFilter = app()->make(
+                    FilterByTags::class,
+                    ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
+
+                );
+                $bookmarks = $bookmarks->filter($bookmarkFilter);
+            }
 
             $contexts = $contexts->get()->toArray();
             $bookmarks = $bookmarks->get();
@@ -90,17 +96,22 @@ class ContextController extends Controller
             $bookmarks = $this->bookmarkService->bookmarksFromContext($id);
 
             if (count($filterParams) > 0) {
-                $contextFilter = app()->make(
-                    FilterByTags::class,
-                    ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
-                );
-                $bookmarkFilter = app()->make(
-                    FilterByTags::class,
-                    ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
+                if (!isset($validated['discardToContexts'])) {
+                    $contextFilter = app()->make(
+                        FilterByTags::class,
+                        ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
+                    );
+                    $contexts = $contexts->filter($contextFilter);
+                }
 
-                );
-                $contexts = $contexts->filter($contextFilter);
-                $bookmarks = $bookmarks->filter($bookmarkFilter);
+                if (!isset($validated['discardToBookmarks'])) {
+                    $bookmarkFilter = app()->make(
+                        FilterByTags::class,
+                        ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
+
+                    );
+                    $bookmarks = $bookmarks->filter($bookmarkFilter);
+                }
             }
 
             $contexts = $contexts->get()->toArray();

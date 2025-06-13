@@ -43,15 +43,14 @@ class GetUserData extends Command
 
         $users = User::all();
 
-        if ($users) {
-
-            foreach ($users as $user) {
-                $this->info($this->userDataToString($user));
-            }
+        if (!$users) {
+            $this->info('Noting found...');
             return;
         }
 
-        $this->info('Noting found...');
+        foreach ($users as $user) {
+            $this->info($this->userDataToString($user));
+        }
     }
 
     public function userDataToString(User $user)

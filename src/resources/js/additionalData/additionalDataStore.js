@@ -1,4 +1,5 @@
 export default {
+    isLoading: false,
     contexts: [],
     thumbnails: [],
 
@@ -11,6 +12,10 @@ export default {
     },
     clear() {
         this.contexts.length = 0;
+        this.thumbnails.length = 0;
+        this.isLoading = false;
+    },
+    clearThumbnails() {
         this.thumbnails.length = 0;
     },
 };

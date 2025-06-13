@@ -1,5 +1,10 @@
-<header class="sticky top-0 mb-3 z-2">
-    <div x-data class="navbar rounded-sm bg-gray-700 shadow-sm text-gray-100">
+@php
+    $routeNotHome = Route::currentRouteName() != 'home';
+@endphp
+
+<header class="sticky top-0 mt-2 mb-4 z-2">
+    <div x-data
+        class="navbar rounded-t-sm bg-gray-700 shadow-sm text-gray-100 {{ $routeNotHome ? 'rounded-b-sm' : '' }}">
         <div class="navbar-start">
             <div class="dropdown me-1">
                 <div tabindex="0" role="button"
@@ -21,7 +26,7 @@
                 <div class="flex gap-1 justify-center items-center">
                     <x-html.icons.bookmarks-logo size="32" />
                     <div class="hidden sm:block">
-                        Bookmarks
+                        linkmarks
                     </div>
                 </div>
             </a>
@@ -370,7 +375,7 @@
     </div>
 
     @if (Request::routeIs('home'))
-        <div x-data class="mt-3">
+        <div x-data class="border-t-1 border-b-1 rounded-sm border-gray-800">
             <x-html.breadcrumbs onclick="clickOnBreadcrumb"
                 breadcrumbs="Alpine.store('contexts').breadcrumbs">
             </x-html.breadcrumbs>

@@ -45,10 +45,16 @@ class ContextService
         return $context;
     }
 
-    public function getAllContexts(int $userId): Builder
+    public function getAllContexts(int $userId, bool $excludeRoot = false): Builder
     {
         $context = Context::with('tags:id,name,description')
-            ->where('user_id', $userId)->orderBy('order');
+            ->where('user_id', $userId)
+            ->when(
+                $excludeRoot,
+                function (Builder $query) {
+                    $query->where('is_root', false);
+                }
+            )->orderBy('order');
         return $context;
     }
 

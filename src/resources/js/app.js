@@ -10,6 +10,7 @@ import tagsStore from "./tags/tagsStore";
 import filterStore from "./filter/filterStore";
 import tagStore from "./tags/tagStore";
 import additionalDataStore from "./additionalData/additionalDataStore";
+import globalValuesStore from "./globalValues/globalValuesStore";
 // import "./contexts/contextsStore.js";
 
 Alpine.store("alerts", alertsStore);
@@ -21,6 +22,7 @@ Alpine.store("tags", tagsStore);
 Alpine.store("tag", tagStore);
 Alpine.store("filter", filterStore);
 Alpine.store("additionalData", additionalDataStore);
+Alpine.store("globalValuesStore", globalValuesStore);
 
 window.Alpine = Alpine;
 

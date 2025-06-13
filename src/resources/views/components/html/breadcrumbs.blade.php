@@ -1,7 +1,7 @@
 @props(['breadcrumbs' => null, 'onclick' => null])
 
 <div
-    class="breadcrumbs w-full text-md font-semibold bg-gray-700 px-2 rounded-sm">
+    class="breadcrumbs w-full text-md font-semibold bg-gray-700 px-2 rounded-b-sm">
     <ul>
         <template x-for="(item,index) in {{ $breadcrumbs }}">
             <li @@click="{{ $onclick }}"

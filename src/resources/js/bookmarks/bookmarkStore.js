@@ -43,6 +43,12 @@ export default {
         this.tags.push(tag);
     },
 
+    setThumbnailId(id, thumbnail) {
+        this.clearThumbnail();
+        this.thumbnail_id = id;
+        this.thumbnail = thumbnail;
+    },
+
     clearThumbnail() {
         this.thumbnail = null;
         this.thumbnailFile = null;
