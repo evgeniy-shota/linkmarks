@@ -18,7 +18,7 @@ class ThumbnailFactory extends Factory
     {
         return [
             'user_id' => null,
-            'name' => '',
+            'name' => fake()->url(),
             'associations' => null,
             'source' => null,
             'is_enabled' => true,

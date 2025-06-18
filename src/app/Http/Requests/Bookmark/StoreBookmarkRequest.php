@@ -25,12 +25,22 @@ class StoreBookmarkRequest extends FormRequest
         return [
             'context_id' => ['required', 'numeric', 'integer'],
             'link' => ['required', 'url', 'max:400'],
-            'name' => ['required', 'string', 'max:150'],
-            // 'thumbnail' => ['required', File::image()->max(2048)],
-            'thumbnailFile' => [File::types(['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg', 'webp', 'ico'])->max(2048)],
+            'name' => ['sometimes', 'string', 'max:150'],
+            'thumbnailFile' => [
+                File::types([
+                    'jpg',
+                    'jpeg',
+                    'png',
+                    'bmp',
+                    'gif',
+                    'svg',
+                    'webp',
+                    'ico'
+                ])->max(2048)
+            ],
             'thumbnail_id' => ['numeric', 'integer'],
-            'tags' => 'nullable|array',
-            'order' => ['numeric', 'integer'],
+            'tags' => ['sometimes', 'nullable', 'array'],
+            'order' => ['sometimes', 'numeric', 'integer'],
         ];
     }
 }
