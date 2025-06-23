@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Actions\GetLastOrderInContext;
+use App\Actions\SetUrlForBookmarksThumbnail;
+use App\Http\Filters\FilterByTags;
 use App\Http\Requests\Bookmark\StoreBookmarkRequest;
 use App\Models\Bookmark;
 use App\Models\Context;
@@ -56,6 +58,55 @@ class BookmarkService
         return $bookmarks;
     }
 
+    public function getFilteredBookmarks(
+        int $id,
+        int $userId,
+        bool $contextualFiltration,
+        bool $discardToBookmarks,
+        array $filterParams
+    ) {
+        if (!$contextualFiltration && count($filterParams) > 0) {
+
+            $bookmarks = $this->getAllBookmarks($userId);
+
+            if (!$discardToBookmarks) {
+                $bookmarkFilter = app()->make(
+                    FilterByTags::class,
+                    [
+                        'queryParams' => $filterParams,
+                        'tableName' => 'bookmarks_tags'
+                    ],
+
+                );
+                $bookmarks = $bookmarks->filter($bookmarkFilter);
+            }
+
+            $bookmarks = $bookmarks->get();
+        } else {
+            $bookmarks = $this->bookmarksFromContext($id);
+
+            if (count($filterParams) > 0) {
+                if (!$discardToBookmarks) {
+                    $bookmarkFilter = app()->make(
+                        FilterByTags::class,
+                        [
+                            'queryParams' => $filterParams,
+                            'tableName' => 'bookmarks_tags'
+                        ],
+
+                    );
+                    $bookmarks = $bookmarks->filter($bookmarkFilter);
+                }
+            }
+
+            $bookmarks = $bookmarks->get();
+        }
+
+        $bookmarks =
+            SetUrlForBookmarksThumbnail::pathToUrl($bookmarks);
+        return $bookmarks;
+    }
+
     public function bookmark(string $id, bool $withTags = true): ?Bookmark
     {
         $bookmark = Bookmark::query();
@@ -92,7 +143,7 @@ class BookmarkService
         return $bookmarks;
     }
 
-    public function store(array $data)
+    public function createBookmark(array $data, int $userId)
     {
         if (!isset($data['order'])) {
             $maxContextsOrder = Context::where('parent_context_id', $data['context_id'])->max('order');
@@ -103,6 +154,7 @@ class BookmarkService
         }
 
         $data['order'] += 1;
+        $data['user_id'] = $userId;
         $bookmark = Bookmark::create($data);
         $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
 
@@ -113,16 +165,29 @@ class BookmarkService
         return $bookmark;
     }
 
-    public function updateBookmark(string $id, array $data): ?Bookmark
-    {
+    public function updateBookmark(
+        int $id,
+        array $data,
+        ?array $tags
+    ): ?Bookmark {
         $bookmark = Bookmark::find($id);
 
-        if (!isset($data['order']) || $bookmark->context_id != $data['context_id']) {
+        if (
+            !isset($data['order'])
+            || $bookmark->context_id != $data['context_id']
+        ) {
             $maxOrder = GetLastOrderInContext::getOrder($data['context_id']);
             $data['order'] = $maxOrder + 1;
         }
 
         $bookmark->update($data);
+        $bookmark->tags()->detach();
+
+        if (isset($tags)) {
+            $bookmark->tags()->attach($tags);
+        }
+
+        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
         return $bookmark;
     }
 

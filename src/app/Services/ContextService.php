@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Actions\GetLastOrderInContext;
+use App\Http\Filters\FilterByTags;
 use App\Models\Context;
 use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -13,16 +14,19 @@ class ContextService
 {
     public function search(string $searchRequest, int $userId)
     {
-        $contexts = Context::search($searchRequest)->query(function ($builder) {
-            $builder->with('tags:id,name,description');
-        })->where('user_id', $userId)->get();
+        $contexts = Context::search($searchRequest)->query(
+            function ($builder) {
+                $builder->with('tags:id,name,description');
+            }
+        )->where('user_id', $userId)->get();
 
         return $contexts;
     }
 
     public function getRootContext(int $userId): ?Context
     {
-        $context = Context::where('user_id', $userId)->where('is_root', true)->first();
+        $context = Context::where('user_id', $userId)->where('is_root', true)
+            ->first();
         return $context;
     }
 
@@ -35,7 +39,7 @@ class ContextService
         }
 
         return $query->find($id);
-        return Context::with('tags:id,name,description')->find($id);
+        // return Context::with('tags:id,name,description')->find($id);
     }
 
     public function getContexts(int $idCurrentContext): Builder
@@ -45,8 +49,10 @@ class ContextService
         return $context;
     }
 
-    public function getAllContexts(int $userId, bool $excludeRoot = false): Builder
-    {
+    public function getAllContexts(
+        int $userId,
+        bool $excludeRoot = false
+    ): Builder {
         $context = Context::with('tags:id,name,description')
             ->where('user_id', $userId)
             ->when(
@@ -58,6 +64,50 @@ class ContextService
         return $context;
     }
 
+    public function getFilteredContexts(
+        int $id,
+        int $userId,
+        bool $contextualFiltration,
+        bool $discardToContexts,
+        array $filterParams
+    ) {
+        if (!$contextualFiltration && count($filterParams) > 0) {
+            $contexts = $this->getAllContexts($userId, true);
+
+            if (!$discardToContexts) {
+                $contextFilter = app()->make(
+                    FilterByTags::class,
+                    [
+                        'queryParams' => $filterParams,
+                        'tableName' => 'contexts_tags'
+                    ],
+                );
+                $contexts = $contexts->filter($contextFilter);
+            }
+
+            $contexts = $contexts->get();
+            return $contexts;
+        } else {
+            $contexts = $this->getContexts($id);
+
+            if (count($filterParams) > 0) {
+                if (!$discardToContexts) {
+                    $contextFilter = app()->make(
+                        FilterByTags::class,
+                        [
+                            'queryParams' => $filterParams,
+                            'tableName' => 'contexts_tags'
+                        ],
+                    );
+                    $contexts = $contexts->filter($contextFilter);
+                }
+            }
+
+            $contexts = $contexts->get();
+            return $contexts;
+        }
+    }
+
     public function createContext(array $data, int $userId): Context
     {
         $data['user_id'] = $userId;
@@ -65,16 +115,30 @@ class ContextService
         return $context;
     }
 
-    public function updateContext(array $data, int $id): ?Context
-    {
+    public function updateContext(
+        array $data,
+        int $id,
+        ?array $tags
+    ): ?Context {
         $context = Context::find($id);
 
-        if (!isset($data['order']) || $context->parent_context_id != $data['parent_context_id']) {
-            $maxOrder = GetLastOrderInContext::getOrder($data['parent_context_id']);
+        if (
+            !isset($data['order'])
+            || $context->parent_context_id != $data['parent_context_id']
+        ) {
+            $maxOrder = GetLastOrderInContext::getOrder(
+                $data['parent_context_id']
+            );
             $data['order'] = $maxOrder + 1;
         }
 
         $context->update($data);
+        $context->tags()->detach();
+
+        if (isset($tags)) {
+            $context->tags()->attach($tags);
+        }
+
         return $context;
     }
 

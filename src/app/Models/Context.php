@@ -21,7 +21,6 @@ class Context extends Model
         'name',
         'is_root',
         'parent_context_id',
-        'enabled',
         'order',
     ];
 

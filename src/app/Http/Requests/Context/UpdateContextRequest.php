@@ -23,7 +23,7 @@ class UpdateContextRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'nullable|string|max:150',
+            'name' => 'required|string|max:150',
             'parent_context_id' => 'nullable|numeric|integer',
             'order' => 'nullable|numeric|integer',
             'thumbnail_id' => 'nullable|numeric|integer',

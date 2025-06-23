@@ -19,7 +19,13 @@ class TagController extends Controller
 
     public function show(Request $request, string $id)
     {
-        return new TagResource(Tag::find($id));
+        $tag = Tag::find($id);
+
+        if ($request->user()->cannot('view', $tag)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        return new TagResource($tag);
     }
 
     public function store(TagRequest $request)
@@ -33,16 +39,27 @@ class TagController extends Controller
 
     public function update(TagRequest $request, string $id)
     {
+        $tag  = Tag::where('id', $id)->first();
+
+        if ($request->user()->cannot('update', $tag)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
         $validated = $request->validated();
-        $tag = Tag::where('id', $id)->update($validated);
-        $tag = Tag::find($id);
+        $tag = tap($tag)->update($validated);
 
         return new TagResource($tag);
     }
 
     public function destroy(Request $request, string $id)
     {
-        $tag = Tag::destroy($id);
+        $tag = Tag::find($id);
+
+        if ($request->user()->cannot('delete', $tag)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        $tag = $tag->delete();
 
         if ($tag) {
             return response()->json(['message' => 'Tag delete succesfull'], 200);

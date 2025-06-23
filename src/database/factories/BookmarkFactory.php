@@ -20,7 +20,8 @@ class BookmarkFactory extends Factory
     public function definition(): array
     {
         $thumbnail_id = Thumbnail::all('id')->random(1)[0];
-        $user_id = User::all('id')->random(1)[0]->id;
+        $users = User::all('id');
+        $user_id = count($users) > 0 ? $users->random(1)[0]->id : null;
 
         return [
             'user_id' => $user_id,
@@ -28,7 +29,6 @@ class BookmarkFactory extends Factory
             'link' => fake()->url(),
             'name' => fake()->company(),
             'thumbnail_id' => $thumbnail_id,
-            'is_enabled' => true,
             'order' => fake()->numberBetween(1, 999),
         ];
     }

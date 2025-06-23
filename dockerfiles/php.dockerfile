@@ -6,7 +6,7 @@ ARG GID
 ENV UID=${UID}
 ENV GID=${GID}
 
-RUN apk add libjpeg libpng libwebp
+RUN apk add libjpeg libpng libwebp gd
 # RUN apk add imagemagick git autoconf
 
 # WORKDIR /var/lib

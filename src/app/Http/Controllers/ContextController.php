@@ -45,15 +45,25 @@ class ContextController extends Controller
         );
     }
 
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         $context = $this->contextService->getContext($id);
+
+        if ($request->user()->cannot('view', $context)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
 
         return new ContextResource($context);
     }
 
     public function showContextData(ShowDataContextRequest $request, string $id)
     {
+        $context = $this->contextService->getContext($id, false);
+
+        if ($request->user()->cannot('view', $context)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
         $validated = array_filter($request->validated(), function ($item) {
             return isset($item);
         });
@@ -68,60 +78,29 @@ class ContextController extends Controller
             $filterParams['tagsExcluded'] = $validated['tagsExcluded'];
         }
 
-        if (!isset($validated['contextualFiltration']) && count($filterParams) > 0) {
-            $contexts = $this->contextService->getAllContexts(Auth::id(), true);
-            $bookmarks = $this->bookmarkService->getAllBookmarks(Auth::id());
+        $contextualFiltration = isset($validated['contextualFiltration']);
+        $discardToContexts = isset($validated['discardToContexts']);
+        $discardToBookmarks = isset($validated['discardToBookmarks']);
 
-            if (!isset($validated['discardToContexts'])) {
-                $contextFilter = app()->make(
-                    FilterByTags::class,
-                    ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
-                );
-                $contexts = $contexts->filter($contextFilter);
-            }
+        $contexts = $this->contextService->getFilteredContexts(
+            $id,
+            Auth::id(),
+            $contextualFiltration,
+            $discardToContexts,
+            $filterParams
+        );
+        $bookmarks = $this->bookmarkService->getFilteredBookmarks(
+            $id,
+            Auth::id(),
+            $contextualFiltration,
+            $discardToBookmarks,
+            $filterParams
+        );
 
-            if (!isset($validated['discardToBookmarks'])) {
-                $bookmarkFilter = app()->make(
-                    FilterByTags::class,
-                    ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
-
-                );
-                $bookmarks = $bookmarks->filter($bookmarkFilter);
-            }
-
-            $contexts = $contexts->get()->toArray();
-            $bookmarks = $bookmarks->get();
-        } else {
-            $contexts = $this->contextService->getContexts($id);
-            $bookmarks = $this->bookmarkService->bookmarksFromContext($id);
-
-            if (count($filterParams) > 0) {
-                if (!isset($validated['discardToContexts'])) {
-                    $contextFilter = app()->make(
-                        FilterByTags::class,
-                        ['queryParams' => $filterParams, 'tableName' => 'contexts_tags'],
-                    );
-                    $contexts = $contexts->filter($contextFilter);
-                }
-
-                if (!isset($validated['discardToBookmarks'])) {
-                    $bookmarkFilter = app()->make(
-                        FilterByTags::class,
-                        ['queryParams' => $filterParams, 'tableName' => 'bookmarks_tags'],
-
-                    );
-                    $bookmarks = $bookmarks->filter($bookmarkFilter);
-                }
-            }
-
-            $contexts = $contexts->get()->toArray();
-            $bookmarks = $bookmarks->get();
-        }
-
-        $bookmarks =
-            SetUrlForBookmarksThumbnail::pathToUrl($bookmarks)->toArray();
-
-        $result = SortContextsAndBookmarks::mixInOrder($contexts, $bookmarks);
+        $result = SortContextsAndBookmarks::mixInOrder(
+            $contexts->toArray(),
+            $bookmarks->toArray()
+        );
 
         return response()->json(['data' => $result], 200);
     }
@@ -151,30 +130,41 @@ class ContextController extends Controller
 
     public function update(UpdateContextRequest $request, string $id)
     {
+        $context = $this->contextService->getContext($id, false);
+
+        if (!isset($context) || $request->user()->cannot('delete', $context)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
         $validated = $request->validated();
+        $tags = null;
 
         if (isset($validated['tags'])) {
             $tags = $validated['tags'];
             unset($validated['tags']);
         }
 
-        $context = $this->contextService->updateContext($validated, $id);
+        $context = $this->contextService->updateContext($validated, $id, $tags);
 
         if ($context) {
-            $context->tags()->detach();
-
-            if (isset($tags)) {
-                $context->tags()->attach($tags);
-            }
-
+            // $context->tags()->detach();
+            // if (isset($tags)) {
+            //     $context->tags()->attach($tags);
+            // }
             return new ContextResource($context);
         }
 
         return response()->json(['message' => 'Update fail'], 400);
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
+        $context = $this->contextService->getContext($id, false);
+
+        if (!isset($context) || $request->user()->cannot('delete', $context)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
         $result = $this->contextService->deleteContext($id);
 
         if ($result) {

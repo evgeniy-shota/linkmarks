@@ -28,9 +28,16 @@ class BookmarkController extends Controller
         private StorageService $storageService,
     ) {}
 
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $bookmark = $this->bookmarkService->bookmark($id);
+        $bookmark = $this->bookmarkService->bookmark($id, false);
+
+        if (
+            !isset($bookmark)
+            || $request->user()->cannot('view', $bookmark)
+        ) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
 
         if ($bookmark) {
             $bookmark->thumbnail = Storage::url($bookmark->thumbnail?->name);
@@ -42,7 +49,6 @@ class BookmarkController extends Controller
     public function store(StoreBookmarkRequest $request)
     {
         $validated = $request->validated();
-        $validated['user_id'] = Auth::id();
 
         if (isset($validated['thumbnailFile'])) {
             $parsedLink = parse_url($validated['link']);
@@ -66,12 +72,21 @@ class BookmarkController extends Controller
                 ->getDefault()->id;
         }
 
-        $bookmark = $this->bookmarkService->store($validated);
+        $bookmark = $this->bookmarkService->createBookmark($validated, Auth::id());
         return new BookmarkResource($bookmark);
     }
 
     public function update(UpdateBookmarkRequest $request, string $id)
     {
+        $bookmark = $this->bookmarkService->bookmark($id);
+
+        if (
+            !isset($bookmark)
+            || $request->user()->cannot('update', $bookmark)
+        ) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
         $validated = array_filter($request->validated(), function ($item) {
             return isset($item);
         });
@@ -98,33 +113,37 @@ class BookmarkController extends Controller
                 ->getDefault()->id;
         }
 
+        $tags = null;
+
         if (isset($validated['tags'])) {
             $tags = $validated['tags'];
             unset($validated['tags']);
         }
 
-        $bookmark = $this->bookmarkService->updateBookmark($id, $validated);
+        $updated = $this->bookmarkService
+            ->updateBookmark($id, $validated, $tags);
 
-        if ($bookmark) {
-            $bookmark->tags()->detach();
-
-            if (isset($tags)) {
-                $bookmark->tags()->attach($tags);
-            }
-
-            $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
-
-            return new BookmarkResource($bookmark);
+        if ($updated) {
+            return new BookmarkResource($updated);
         }
 
         return response()->json(['message' => 'Bookmark not updated...'], 400);
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $res = $this->bookmarkService->deleteBookmark($id);
-        dump($res);
+        $bookmark = $this->bookmarkService->bookmark($id);
 
-        return response()->json(['message' => 'deleted successfully', 200]);
+        if ($request->user()->cannot('delete', $bookmark)) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        $result = $this->bookmarkService->deleteBookmark($id);
+
+        if ($result) {
+            return response()->json(['message' => 'deleted successfully', 200]);
+        }
+
+        return response()->json(['message' => 'deleted fail', 400]);
     }
 }
