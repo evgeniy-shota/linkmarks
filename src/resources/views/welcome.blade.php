@@ -1,4 +1,3 @@
-
 <x-layout>
     <x-slot:main>
         <x-flex-container width="w-full">

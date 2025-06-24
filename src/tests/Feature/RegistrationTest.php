@@ -28,6 +28,14 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => $userData['email']
         ]);
+        $user = User::where('email', $userData['email'])->first();
+        $this->assertDatabaseHas('profiles', [
+            'user_id' => $user->id
+        ]);
+        $this->assertDatabaseHas('contexts', [
+            'user_id' => $user->id,
+            'is_root' => true,
+        ]);
 
         $response->assertRedirectToRoute('home');
     }

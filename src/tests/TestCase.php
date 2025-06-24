@@ -17,7 +17,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = $this->createUser();
         $rootContext = $this->createRootContext($user->id);
-        $thumbnails = $this->createThumbnails();
+        $thumbnails = $this->createThumbnails($user->id);
 
         return [
             'user' => $user,
@@ -43,9 +43,15 @@ abstract class TestCase extends BaseTestCase
         return User::factory()->count($number)->create();
     }
 
-    protected function createThumbnails(int $number = 10): Collection
-    {
-        return Thumbnail::factory()->count($number)->create();
+    protected function createThumbnails(
+        ?int $userId,
+        string $associated = '',
+        int $number = 10,
+    ): Collection {
+        return Thumbnail::factory()->count($number)->create([
+            'user_id' => $userId,
+            'associations' => $associated,
+        ]);
     }
 
     protected function createRootContext(int $userId): Context

@@ -6,30 +6,24 @@ ARG GID
 ENV UID=${UID}
 ENV GID=${GID}
 
-RUN apk add libjpeg libpng libwebp gd
+RUN apk add libjpeg \
+  libpng \
+  libpng-dev \
+  libwebp \
+  #gd \
+  php84-pecl-xdebug \
+  libjpeg-turbo-dev \
+  freetype-dev \  
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+	&& docker-php-ext-install -j$(nproc) gd \
+  && docker-php-ext-install pdo pdo_mysql
+
+#RUN curl -sSLf \
+#        -o /usr/local/bin/install-php-extensions \
+#        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+#    chmod +x /usr/local/bin/install-php-extensions && \
+#    install-php-extensions gd 
 # RUN apk add imagemagick git autoconf
-
-# WORKDIR /var/lib
-
-# RUN git clone https://github.com/Imagick/imagick \
-# && cd imagick \
-# && phpize && ./configure \
-# && make \
-# && make install \
-# && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini
-
-# RUN apk add --no-cache --virtual .imagick-build-dependencies \
-# autoconf \
-# # curl \
-# g++ \
-# gcc \
-# git \
-# # imagemagick-dev \
-# libtool \
-# make \
-# tar \
-# && apk add --virtual .imagick-runtime-dependencies \
-# imagemagick 
 
 RUN mkdir -p /var/www/html
 
@@ -46,8 +40,6 @@ RUN adduser -G laravel --system -D -s /bin/sh -u ${UID} laravel
 RUN sed -i "s/user = www-data/user = laravel/g" /usr/local/etc/php-fpm.d/www.conf
 RUN sed -i "s/group = www-data/group = laravel/g" /usr/local/etc/php-fpm.d/www.conf
 RUN echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf
-
-RUN docker-php-ext-install pdo pdo_mysql
 
 RUN apk add --no-cache --virtual .imagick-build-dependencies \
   autoconf \
