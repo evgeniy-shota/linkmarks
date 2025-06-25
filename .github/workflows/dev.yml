@@ -16,7 +16,7 @@ jobs:
       - name: Setup mariadb
         run: sudo apt-get install mariadb-server mariadb-client
       - name: Secure the Installation mariadb
-        run: sudo mariadb-secure-installation     
+        run: echo "& n y y y y" | sudo mariadb-secure-installation     
       
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-sugget
