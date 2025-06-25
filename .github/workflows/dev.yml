@@ -16,23 +16,24 @@ jobs:
       - name: Setup mariadb
         run: sudo apt-get install mariadb-server mariadb-client
       - name: Secure the Installation mariadb
-        #run: echo "& n y y y y" | sudo mariadb-secure-installation     
         run: |
           sudo mysql -e "DELETE FROM mysql.user WHERE User=''"
           sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
           sudo mysql -e "DROP DATABASE IF EXISTS test"
           sudo mysql -e "FLUSH PRIVILEGES"
       
+      # install Dependencies
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./src
-#
-#      - name: Setup laravel
-#        run: |
-#          cp .env.example .env
-#          php artisan config:clear
-#          php artisan cache:clear
-#          php artisan key:generate
+
+      #setup Laravel
+      - name: Setup laravel
+        run: |
+          cp .env.example .env
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan key:generate
 #
 #      - name: Check PHP syntax errors
 #        uses: overtrue/phplint@9.6.2      
