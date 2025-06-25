@@ -34,6 +34,7 @@ jobs:
           php artisan config:clear
           php artisan cache:clear
           php artisan key:generate
+        working-directory: ./src
 #
 #      - name: Check PHP syntax errors
 #        uses: overtrue/phplint@9.6.2      
