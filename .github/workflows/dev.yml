@@ -13,7 +13,7 @@ jobs:
           php-version: '8.4'
 
       - name: Setup mariadb
-        run: apt-get install mariadb-server mariadb-client
+        run: sudo apt-get install mariadb-server mariadb-client
 
 #      - name: Install dependencies
 #        run: composer install --prefer-dist --no-progress --no-sugget
