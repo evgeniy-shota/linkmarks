@@ -30,7 +30,7 @@ jobs:
       #setup Laravel
       - name: Setup laravel
         run: |
-          cp .env .env
+          #cp .env .env
           php artisan config:clear
           php artisan cache:clear
           php artisan key:generate
