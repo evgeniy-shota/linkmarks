@@ -6,28 +6,21 @@ jobs:
     steps:
       - name: Get repository code
         uses: actions/checkout@v4.2.2
-
-      - name: Check repo
-        run: |
-          cd src
-          ls -la
-
-      - name: Check context
-        run: ls -la
         
-     # - name: Setup php
-     #   uses: shivammathur/setup-php@2.34.1
-     #   with:
-     #     php-version: '8.4'
+      - name: Setup php
+        uses: shivammathur/setup-php@2.34.1
+        with:
+          php-version: '8.4'
       
-# install mariadb
-     # - name: Setup mariadb
-     #   run: sudo apt-get install mariadb-server mariadb-client
-     # - name: Secure the Installation mariadb
-     #   run: sudo mariadb-secure-installation     
+      # install mariadb
+      - name: Setup mariadb
+        run: sudo apt-get install mariadb-server mariadb-client
+      - name: Secure the Installation mariadb
+        run: sudo mariadb-secure-installation     
       
-#      - name: Install dependencies
-#        run: composer install --prefer-dist --no-progress --no-sugget
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-sugget
+        working-directory: ./src
 #
 #      - name: Setup laravel
 #        run: |
