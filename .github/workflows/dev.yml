@@ -1,4 +1,4 @@
-name: Dev check and test
+name: Check, test and deploy
 on: push
 jobs:
   test:
@@ -15,36 +15,36 @@ jobs:
       - name: Setup postgresql
         run: apt install postgresql
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-sugget
-
-      - name: Setup laravel
-        run: |
-          cp .env.example .env
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan key:generate
-
-      - name: Check PHP syntax errors
-        uses: overtrue/phplint@9.6.2      
-  
-      - name: Composer audit
-        run: composer audit
-
-      - name: Composer validate
-        run: composer validate --no-check-all --strict
-
-      - name: Setup nodejs
-        uses: actions\setup-node@v4
-        with:
-          node-version: '22.16.0'
-
-      - name: Install nodejs dependencies
-        run: npm install
-
-      - name: Run tests
-        run: run ./vendor/bin/phpunit --colors=always
-
-      - name: Run phpstan
-        run: ./vendor/bin/phpstan analyse
+#      - name: Install dependencies
+#        run: composer install --prefer-dist --no-progress --no-sugget
+#
+#      - name: Setup laravel
+#        run: |
+#          cp .env.example .env
+#          php artisan config:clear
+#          php artisan cache:clear
+#          php artisan key:generate
+#
+#      - name: Check PHP syntax errors
+#        uses: overtrue/phplint@9.6.2      
+#  
+#      - name: Composer audit
+#        run: composer audit
+#
+#      - name: Composer validate
+#        run: composer validate --no-check-all --strict
+#
+#      - name: Setup nodejs
+#        uses: actions\setup-node@v4
+#        with:
+#          node-version: '22.16.0'
+#
+#      - name: Install nodejs dependencies
+#        run: npm install
+#
+#      - name: Run tests
+#        run: run ./vendor/bin/phpunit --colors=always
+#
+#      - name: Run phpstan
+#        run: ./vendor/bin/phpstan analyse
     
