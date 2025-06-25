@@ -24,7 +24,7 @@ jobs:
           sudo mysql -e "FLUSH PRIVILEGES"
       
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-sugget
+        run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./src
 #
 #      - name: Setup laravel
