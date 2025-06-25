@@ -12,8 +12,8 @@ jobs:
         with:
           php-version: '8.4'
 
-      - name: Setup postgresql
-        run: apt install postgresql
+      - name: Setup mariadb
+        run: apt install mariadb-server mariadb-client
 
 #      - name: Install dependencies
 #        run: composer install --prefer-dist --no-progress --no-sugget
