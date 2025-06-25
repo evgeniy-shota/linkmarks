@@ -11,6 +11,9 @@ jobs:
         run: |
           cd src
           ls -la
+
+      - name: Check context
+        run: ls -la
         
      # - name: Setup php
      #   uses: shivammathur/setup-php@2.34.1
