@@ -20,9 +20,8 @@ jobs:
         run: |
           sudo mysql -e "DELETE FROM mysql.user WHERE User=''"
           sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-          sudo mysql -e "DROP DATABASE test"
+          sudo mysql -e "DROP DATABASE IF EXISTS test"
           sudo mysql -e "FLUSH PRIVILEGES"
-          
       
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-sugget
