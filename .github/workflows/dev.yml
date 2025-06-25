@@ -16,7 +16,13 @@ jobs:
       - name: Setup mariadb
         run: sudo apt-get install mariadb-server mariadb-client
       - name: Secure the Installation mariadb
-        run: echo "& n y y y y" | sudo mariadb-secure-installation     
+        #run: echo "& n y y y y" | sudo mariadb-secure-installation     
+        run: |
+          mysql -e "DROP USER ''@'localhost'"
+          mysql -e "DROP USER ''@'$(hostname)'"
+          mysql -e "DROP DATABASE test"
+          mysql -e "FLUSH PRIVILEGES"
+          
       
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-sugget
