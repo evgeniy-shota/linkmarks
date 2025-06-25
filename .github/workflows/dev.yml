@@ -18,8 +18,8 @@ jobs:
       - name: Secure the Installation mariadb
         #run: echo "& n y y y y" | sudo mariadb-secure-installation     
         run: |
-          sudo mysql -e "DROP USER ''@'localhost'"
-          sudo mysql -e "DROP USER ''@'$(hostname)'"
+          sudo mysql -e "DELETE FROM mysql.user WHERE User=''"
+          sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
           sudo mysql -e "DROP DATABASE test"
           sudo mysql -e "FLUSH PRIVILEGES"
           
