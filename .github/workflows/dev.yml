@@ -35,8 +35,8 @@ jobs:
           DB_USERNAME: homestead
           DB_PASSWORD: secret
         run: |
-          sudo mysql -e "CREATE USER IF NOT EXIST '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED BY '${{env.DB_USERNAME}}'"
-          sudo mysql -e "CREATE DATABASE IF NOT EXIST ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}} -p${{env.DB_PASSWORD}} 
+          sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED BY '${{env.DB_USERNAME}}'"
+          sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}} -p${{env.DB_PASSWORD}} 
       
       # install DependencCREATE DATABASEie ${{env.DB_DATABASEs
       - name: Install dependencies
