@@ -52,7 +52,7 @@ jobs:
       - name: Setup laravel
         env:
           DB_HOST: 127.0.0.1
-          DB_USERNAME: linkmarks
+          DB_USERNAME: linkmarks@127.0.0.1
           DB_PASSWORD: 
         run: |
           cp .env.example .env
