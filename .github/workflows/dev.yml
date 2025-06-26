@@ -37,13 +37,14 @@ jobs:
         env:
           DB_DATABASE: homestead
           DB_USERNAME: linkmarks
-          DB_PASSWORD: 
+          DB_PASSWORD: password 
         run: |
-          sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'127.0.0.1' IDENTIFIED VIA unix_socket"
+          sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED VIA unix_socket"
           sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}}  
+          sudo mysql -e "GRANT SELECT ON ${{env.DB_DATABASE}}.* TO ${{DB_USERNAME}}@localhost IDENTIFIED VIA unix_socket"
           sudo mysql -e "FLUSH PRIVILEGES"
       
-      # install DependencCREATE DATABASEie ${{env.DB_DATABASEs
+      # install DependencCREATE DATABASE
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./src
@@ -52,8 +53,8 @@ jobs:
       - name: Setup laravel
         env:
           DB_HOST: 127.0.0.1
-          DB_USERNAME: linkmarks@127.0.0.1
-          DB_PASSWORD: 
+          DB_USERNAME: linkmarks
+          DB_PASSWORD: password 
         run: |
           cp .env.example .env
           php artisan config:clear
