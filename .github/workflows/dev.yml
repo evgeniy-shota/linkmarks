@@ -18,6 +18,7 @@ jobs:
           node-version: '22.16.0'
       - name: Install nodejs dependencies
         run: npm install
+        working-directory: ./src
 
       # install mariadb
       - name: Setup mariadb
