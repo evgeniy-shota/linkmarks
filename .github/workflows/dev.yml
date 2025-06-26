@@ -33,13 +33,13 @@ jobs:
           sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
           sudo mysql -e "DROP DATABASE IF EXISTS test"
           sudo mysql -e "FLUSH PRIVILEGES"
-      - name: Setup db
-        env:
-          DB_DATABASE: homestead
-          DB_USERNAME: homestead
-          DB_PASSWORD: secret
-        run: |
-          sudo mysql -e "CREATE DATABASE ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}} -p ${{env.DB_PASSWORD}} 
+      #- name: Setup db
+      #  env:
+      #    DB_DATABASE: homestead
+      #    DB_USERNAME: homestead
+      #    DB_PASSWORD: secret
+      #  run: |
+      #    sudo mysql -e "CREATE DATABASE ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}} -p ${{env.DB_PASSWORD}} 
       
       # install DependencCREATE DATABASEie ${{env.DB_DATABASEs
       - name: Install dependencies
