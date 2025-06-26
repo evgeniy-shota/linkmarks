@@ -41,6 +41,7 @@ jobs:
         run: |
           sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED VIA unix_socket"
           sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}}  
+          sudo mysql -e "FLUSH PRIVILEGES"
       
       # install DependencCREATE DATABASEie ${{env.DB_DATABASEs
       - name: Install dependencies
