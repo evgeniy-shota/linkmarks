@@ -6,6 +6,8 @@ jobs:
     steps:
       - name: Check user
         run: echo $USER
+      - name: Add user
+        run: sudo useradd linkmarks
       - name: Get repository code
         uses: actions/checkout@v4.2.2
         
