@@ -35,7 +35,7 @@ jobs:
       #    DB_USERNAME: homestead
       #    DB_PASSWORD: secret
       #  run: |
-      #    sudo mysql -e "CREATE DATABASE ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}} -p ${{env.DB_PASSWORD}} 
+      #    sudo mysql -e "CREATE DATABASE ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}} -p${{env.DB_PASSWORD}} 
       
       # install DependencCREATE DATABASEie ${{env.DB_DATABASEs
       - name: Install dependencies
@@ -46,7 +46,7 @@ jobs:
       - name: Setup laravel
         env:
           DB_HOST: localhost
-          DB_USERNAME: runner
+          DB_USERNAME: $(uname)
           DB_PASSWORD: 
         run: |
           cp .env.example .env
