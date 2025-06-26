@@ -11,7 +11,14 @@ jobs:
         uses: shivammathur/setup-php@2.34.1
         with:
           php-version: '8.4'
-      
+
+      - name: Setup nodejs
+        uses: actions\setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install nodejs dependencies
+        run: npm install
+
       # install mariadb
       - name: Setup mariadb
         run: sudo apt-get install mariadb-server mariadb-client
@@ -44,14 +51,6 @@ jobs:
 #
 #      - name: Composer validate
 #        run: composer validate --no-check-all --strict
-#
-#      - name: Setup nodejs
-#        uses: actions\setup-node@v4
-#        with:
-#          node-version: '22.16.0'
-#
-#      - name: Install nodejs dependencies
-#        run: npm install
 #
 #      - name: Run tests
 #        run: run ./vendor/bin/phpunit --colors=always
