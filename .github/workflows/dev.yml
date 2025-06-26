@@ -4,6 +4,8 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
+      - name: Check user
+        run: echo $(username)
       - name: Get repository code
         uses: actions/checkout@v4.2.2
         
