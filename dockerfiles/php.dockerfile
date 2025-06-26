@@ -9,6 +9,7 @@ ENV GID=${GID}
 RUN apk add --update linux-headers
 
 RUN apk add libjpeg \
+  postgresql17-dev \
   libpng \
   libpng-dev \
   libwebp \
@@ -18,7 +19,7 @@ RUN apk add libjpeg \
   freetype-dev \  
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
 	&& docker-php-ext-install -j$(nproc) gd \
-  && docker-php-ext-install pdo pdo_mysql 
+  && docker-php-ext-install pdo pdo_pgsql  
 
 #RUN apk add --no-cache --virtual .xdebug-build-dependencies \
 #  g++ \
