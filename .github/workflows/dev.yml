@@ -37,9 +37,9 @@ jobs:
           sudo mysql -e "DELETE FROM mysql.user WHERE User=''"
           sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
           sudo mysql -e "DROP DATABASE IF EXISTS test"
-          sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED VIA unix_socket"
+          sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED BY 'password'"
           sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}}  
-          sudo mysql -e "GRANT SELECT ON ${{env.DB_DATABASE}}.* TO ${{env.DB_USERNAME}}@localhost IDENTIFIED VIA unix_socket"
+          sudo mysql -e "GRANT SELECT ON ${{env.DB_DATABASE}}.* TO ${{env.DB_USERNAME}}@localhost IDENTIFIED BY 'password'"
           sudo mysql -e "FLUSH PRIVILEGES"
       
       # install DependencCREATE DATABASE
