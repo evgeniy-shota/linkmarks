@@ -6,10 +6,6 @@ jobs:
     steps:
       - name: Get repository code
         uses: actions/checkout@v4.2.2
-
-      - name: Test checkout
-        run: cat .env.example
-        working-directory: ./src 
         
       - name: Setup php
         uses: shivammathur/setup-php@2.34.1
@@ -50,6 +46,8 @@ jobs:
       - name: Setup laravel
         env:
           DB_HOST: localhost
+          DB_USERNAME: runner
+          DB_PASSWORD: 
         run: |
           cp .env.example .env
           php artisan config:clear
