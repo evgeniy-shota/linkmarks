@@ -35,9 +35,9 @@ jobs:
           sudo mysql -e "FLUSH PRIVILEGES"
       - name: Setup db
         env:
-          DB_DATABASE=homestead
-          DB_USERNAME=homestead
-          DB_PASSWORD=secret
+          DB_DATABASE: homestead
+          DB_USERNAME: homestead
+          DB_PASSWORD: secret
         run: |
           sudo mysql -e "CREATE DATABASE ${{env.DB_DATABASE}}" -u${{env.DB_USERNAME}} -p${{env.DB_PASSWORD}} 
       
@@ -49,7 +49,7 @@ jobs:
       #setup Laravel
       - name: Setup laravel
         env:
-          DB_HOST=localhost
+          DB_HOST: localhost
         run: |
           cp .env.example .env
           php artisan config:clear
