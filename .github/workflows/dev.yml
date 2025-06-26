@@ -16,13 +16,13 @@ jobs:
         with:
           php-version: '8.4'
 
-      - name: Setup nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.16.0'
-      - name: Install nodejs dependencies
-        run: npm install
-        working-directory: ./src
+#      - name: Setup nodejs
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '22.16.0'
+#      - name: Install nodejs dependencies
+#        run: npm install
+#        working-directory: ./src
 
       # install mariadb
       - name: Setup mariadb
@@ -39,7 +39,7 @@ jobs:
           DB_USERNAME: homestead
           DB_PASSWORD: secret
         run: |
-          sudo mysql -e "CREATE DATABASE ${{env.DB_DATABASE}}" -u${{env.DB_USERNAME}} -p${{env.DB_PASSWORD}} 
+          sudo mysql -e "CREATE DATABASE ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}} -p ${{env.DB_PASSWORD}} 
       
       # install DependencCREATE DATABASEie ${{env.DB_DATABASEs
       - name: Install dependencies
