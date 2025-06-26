@@ -36,7 +36,7 @@ jobs:
       - name: Setup db
         env:
           DB_DATABASE: homestead
-          DB_USERNAME: runner
+          DB_USERNAME: linkmarks
           DB_PASSWORD: 
         run: |
           sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED VIA unix_socket"
@@ -51,7 +51,7 @@ jobs:
       - name: Setup laravel
         env:
           DB_HOST: 127.0.0.1
-          DB_USERNAME: runner
+          DB_USERNAME: linkmarks
           DB_PASSWORD: 
         run: |
           cp .env.example .env
