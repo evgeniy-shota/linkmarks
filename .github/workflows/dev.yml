@@ -26,24 +26,17 @@ jobs:
 
       # install mariadb
       - name: Setup mariadb
-        run: sudo apt-get install mariadb-server mariadb-client
-      - name: Secure the Installation mariadb
-        run: |
-          sudo mysql -e "DELETE FROM mysql.user WHERE User=''"
-          sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-          sudo mysql -e "DROP DATABASE IF EXISTS test"
-          sudo mysql -e "FLUSH PRIVILEGES"
-      - name: Test connect to mariadb
-        run: |
-          sudo mariadb -p
-          CREATE DATABASE linkmarks;
-          
-      - name: Setup db
         env:
           DB_DATABASE: homestead
           DB_USERNAME: linkmarks
           DB_PASSWORD: password 
         run: |
+          sudo apt-get update
+          sudo apt-get install mariadb-server
+          sudo systemctl start mariadb
+          sudo mysql -e "DELETE FROM mysql.user WHERE User=''"
+          sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+          sudo mysql -e "DROP DATABASE IF EXISTS test"
           sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED VIA unix_socket"
           sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}}  
           sudo mysql -e "GRANT SELECT ON ${{env.DB_DATABASE}}.* TO ${{env.DB_USERNAME}}@localhost IDENTIFIED VIA unix_socket"
