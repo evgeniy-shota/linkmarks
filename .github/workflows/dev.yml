@@ -4,10 +4,10 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
-      - name: Add user
-        run: sudo useradd linkmarks
-      - name: Check user
-        run: cat /etc/passwd
+      #- name: Add user
+      #  run: sudo useradd linkmarks
+      #- name: Check user
+      #  run: cat /etc/passwd
        
       - name: Get repository code
         uses: actions/checkout@v4.2.2
@@ -51,8 +51,8 @@ jobs:
         env:
           #DB_HOST: 127.0.0.1
           DB_HOST: localhost
-          DB_USERNAME: linkmarks
-          DB_PASSWORD: password 
+          #DB_USERNAME: linkmarks
+          #DB_PASSWORD: password 
         run: |
           cp .env.example .env
           php artisan config:clear
