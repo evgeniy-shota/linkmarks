@@ -8,13 +8,25 @@ jobs:
         run: sudo useradd linkmarks
       - name: Check user
         run: cat /etc/passwd
-      - name: Get repository code
-        uses: actions/checkout@v4.2.2
         
-      - name: Setup php
-        uses: shivammathur/setup-php@2.34.1
-        with:
-          php-version: '8.4'
+      - name: Check Postgresql
+        run: postgres --version
+        
+      #- name: Get repository code
+      #  uses: actions/checkout@v4.2.2
+        
+      #- name: Setup php
+      #  uses: shivammathur/setup-php@2.34.1
+      #  with:
+      #    php-version: '8.4'
+
+      - name: Setup Postgresql
+        env:
+          PGDATA: /usr/local/pgsql/data
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-17
+          sudo postgres >logfile 2>&1 &
 
 #      - name: Setup nodejs
 #        uses: actions/setup-node@v4
@@ -24,41 +36,24 @@ jobs:
 #        run: npm install
 #        working-directory: ./src
 
-      # install mariadb
-      - name: Setup mariadb
-        env:
-          DB_DATABASE: homestead
-          DB_USERNAME: linkmarks
-          DB_PASSWORD: password 
-        run: |
-          sudo apt-get update
-          sudo apt-get install mariadb-server
-          sudo systemctl start mariadb
-          sudo mysql -e "DELETE FROM mysql.user WHERE User=''"
-          sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-          sudo mysql -e "DROP DATABASE IF EXISTS test"
-          sudo mysql -e "CREATE USER IF NOT EXISTS '${{env.DB_USERNAME}}'@'localhost' IDENTIFIED BY 'password'"
-          sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${{env.DB_DATABASE}}" -u ${{env.DB_USERNAME}}  
-          sudo mysql -e "GRANT SELECT ON ${{env.DB_DATABASE}}.* TO ${{env.DB_USERNAME}}@localhost IDENTIFIED BY 'password'"
-          sudo mysql -e "FLUSH PRIVILEGES"
       
       # install DependencCREATE DATABASE
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-        working-directory: ./src
+      #- name: Install dependencies
+      #  run: composer install --prefer-dist --no-progress --no-suggest
+      #  working-directory: ./src
 
       #setup Laravel
-      - name: Setup laravel
-        env:
-          DB_HOST: 127.0.0.1
-          DB_USERNAME: linkmarks
-          DB_PASSWORD: password 
-        run: |
-          cp .env.example .env
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan key:generate
-        working-directory: ./src
+      #- name: Setup laravel
+      #  env:
+      #    DB_HOST: 127.0.0.1
+      #    DB_USERNAME: linkmarks
+      #    DB_PASSWORD: password 
+      #  run: |
+      #    cp .env.example .env
+      #    php artisan config:clear
+      #    php artisan cache:clear
+      #    php artisan key:generate
+      #  working-directory: ./src
 #
 #      - name: Check PHP syntax errors
 #        uses: overtrue/phplint@9.6.2      
