@@ -10,7 +10,9 @@ jobs:
         run: cat /etc/passwd
         
       - name: Check Postgresql
-        run: postgres --version
+        run: |
+          sudo find / -type f -iwholename "*/bin/postgres"
+          sudo postgres --version
         
       #- name: Get repository code
       #  uses: actions/checkout@v4.2.2
