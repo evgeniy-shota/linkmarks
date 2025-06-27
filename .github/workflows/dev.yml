@@ -8,12 +8,7 @@ jobs:
         run: sudo useradd linkmarks
       - name: Check user
         run: cat /etc/passwd
-        
-      - name: Check Postgresql
-        run: |
-          sudo find / -type f -iwholename "*/bin/postgres"
-          sudo postgres --version
-        
+       
       #- name: Get repository code
       #  uses: actions/checkout@v4.2.2
         
@@ -26,10 +21,10 @@ jobs:
         env:
           PGDATA: /usr/local/pgsql/data
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-17
-          sudo postgres >logfile 2>&1 &
-
+          sudo apt-get update \
+          sudo apt-get install -y postgresql-common \
+          echo | sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh \ 
+          apt-get install -y postgresql-17
 #      - name: Setup nodejs
 #        uses: actions/setup-node@v4
 #        with:
