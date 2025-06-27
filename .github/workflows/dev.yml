@@ -9,13 +9,13 @@ jobs:
       - name: Check user
         run: cat /etc/passwd
        
-      #- name: Get repository code
-      #  uses: actions/checkout@v4.2.2
-        
-      #- name: Setup php
-      #  uses: shivammathur/setup-php@2.34.1
-      #  with:
-      #    php-version: '8.4'
+      - name: Get repository code
+        uses: actions/checkout@v4.2.2
+       
+      - name: Setup php
+        uses: shivammathur/setup-php@2.34.1
+        with:
+          php-version: '8.4'
 
       - name: Setup Postgresql
         env:
@@ -31,13 +31,14 @@ jobs:
           sudo pg_ctlcluster 17 main status
           #sudo /usr/lib/postgresql/17/bin/pg_checksums --enable -D ${{env.PGDATA}}
           sudo ls ${{env.PGDATA}}
-#      - name: Setup nodejs
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: '22.16.0'
-#      - name: Install nodejs dependencies
-#        run: npm install
-#        working-directory: ./src
+          
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install nodejs dependencies
+        run: npm install
+        working-directory: ./src
 
       
        #install DependencCREATE DATABASE
