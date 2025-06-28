@@ -3,6 +3,15 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-22.04
+    services:
+          postgres:
+            image: postgres:17
+            ports:
+              - "5432:5432"
+            env:
+              POSTGRES_DB: homestead
+              POSTGRES_USER: homestead
+              POSTGRES_PASSWORD: secret
     steps:
       #- name: Add user
       #  run: sudo useradd linkmarks
@@ -17,21 +26,23 @@ jobs:
         with:
           php-version: '8.4'
 
-      - name: Setup Postgresql
-        env:
-          PGDATA: /usr/local/postgresql/data/
-          DEBIAN_FRONTEND: noninteractive
-        run: |
-          sudo apt-get update 
-          sudo apt-get install -y postgresql-common 
-          echo | sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh 
-          sudo apt-get install -y postgresql-17
-          sudo pg_createcluster -D ${{env.PGDATA}} 17 main -- --data-checksums
-          sudo pg_ctlcluster 17 main start
-          sudo pg_ctlcluster 17 main status
-          #sudo /usr/lib/postgresql/17/bin/pg_checksums --enable -D ${{env.PGDATA}}
-          su postgres
-          psql -p 5433 -c "CREATE USER homestead WITH CREATEDB PASSWORD 'secret'"
+      - name: S
+
+      #- name: Setup Postgresql
+      #  env:
+      #    PGDATA: /usr/local/postgresql/data/
+      #    DEBIAN_FRONTEND: noninteractive
+      #  run: |
+      #    sudo apt-get update 
+      #    sudo apt-get install -y postgresql-common 
+      #    echo | sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh 
+      #    sudo apt-get install -y postgresql-17
+      #    sudo pg_createcluster -D ${{env.PGDATA}} 17 main -- --data-checksums
+      #    sudo pg_ctlcluster 17 main start
+      #    sudo pg_ctlcluster 17 main status
+      #    #sudo /usr/lib/postgresql/17/bin/pg_checksums --enable -D ${{env.PGDATA}}
+      #    su postgres
+      #    psql -p 5433 -c "CREATE USER homestead WITH CREATEDB PASSWORD 'secret'"
           
       - name: Setup nodejs
         uses: actions/setup-node@v4
@@ -51,8 +62,9 @@ jobs:
       - name: Setup laravel
         env:
           #DB_HOST: 127.0.0.1
-          DB_HOST: localhost
-          DB_PORT: 5433
+          #DB_HOST: localhost
+          DB_HOST: postgres
+          DB_PORT: 5432
           #DB_USERNAME: linkmarks
           #DB_PASSWORD: password 
         run: |
