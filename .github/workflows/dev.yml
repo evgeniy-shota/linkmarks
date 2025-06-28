@@ -6,8 +6,8 @@ jobs:
     steps:
       #- name: Add user
       #  run: sudo useradd linkmarks
-      #- name: Check user
-      #  run: cat /etc/passwd
+      - name: Check user
+        run: cat /etc/passwd
        
       - name: Get repository code
         uses: actions/checkout@v4.2.2
