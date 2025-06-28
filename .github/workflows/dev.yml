@@ -30,7 +30,8 @@ jobs:
           sudo pg_ctlcluster 17 main start
           sudo pg_ctlcluster 17 main status
           #sudo /usr/lib/postgresql/17/bin/pg_checksums --enable -D ${{env.PGDATA}}
-          psql -p 5433 -U postgres -c "CREATE USER homestead WITH CREATEDB PASSWORD 'secret'"
+          su postgres
+          psql -p 5433 -c "CREATE USER homestead WITH CREATEDB PASSWORD 'secret'"
           
       - name: Setup nodejs
         uses: actions/setup-node@v4
