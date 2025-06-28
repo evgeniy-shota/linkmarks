@@ -67,6 +67,7 @@ jobs:
           #DB_PASSWORD: password 
         run: |
           cp .env.example .env
+          php artisan migrate
           php artisan config:clear
           php artisan cache:clear
           php artisan key:generate
