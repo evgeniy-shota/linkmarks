@@ -84,6 +84,7 @@ jobs:
 #
       - name: Run tests
         run: run ./vendor/bin/phpunit --colors=always
+        working-directory: ./src
 #
 #      - name: Run phpstan
 #        run: ./vendor/bin/phpstan analyse
