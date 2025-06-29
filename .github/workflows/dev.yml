@@ -20,6 +20,10 @@ jobs:
        
       - name: Get repository code
         uses: actions/checkout@v4.2.2
+
+      - name: List phpunit settings
+        run: cat phpunit.xml
+        working-directory: ./src
        
       - name: Setup php
         uses: shivammathur/setup-php@2.34.1
