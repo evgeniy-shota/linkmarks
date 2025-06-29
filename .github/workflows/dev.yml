@@ -86,6 +86,10 @@ jobs:
         run: php artisan test
         working-directory: ./src
 
+      - name: PHPStan
+        run: ./vendor/bin/phpstan analyse
+        working-directory: ./src
+
       - name: List Laravel log
         if: always()
         run: |
