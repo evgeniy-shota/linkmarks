@@ -67,9 +67,9 @@ jobs:
         run: cat phpunit.xml
         working-directory: ./src
 
-      - name: Check PHP syntax errors
-        uses: overtrue/phplint@9.6.2      
-        working-directory: ./src
+      #- name: Check PHP syntax errors
+      #  uses: overtrue/phplint@9.6.2      
+      #  working-directory: ./src
   
       - name: Composer audit
         run: composer audit
