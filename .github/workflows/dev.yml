@@ -98,7 +98,7 @@ jobs:
 
       - name: List Laravel log
         if: always()
-        run: tail -n 65 /storage/logs/laravel.log
+        run: tail -n 65 storage/logs/laravel.log
         working-directory: ./src
 #      - name: Run phpstan
 #        run: ./vendor/bin/phpstan analyse
