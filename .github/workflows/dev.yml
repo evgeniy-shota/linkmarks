@@ -16,11 +16,9 @@ jobs:
       - name: Install packeges
         run: |
           sudo apt-get update -y
-          #sudo apt-get install -y libjpeg, libpng-dev, libpng-dev, libwebp, libjpeg-turbo-dev, freetype-dev
-      #- name: Add user
-      #  run: sudo useradd linkmarks
-      - name: Check user
-        run: cat /etc/passwd
+
+      #- name: Check user
+      #  run: cat /etc/passwd
        
       - name: Get repository code
         uses: actions/checkout@v4.2.2
@@ -35,12 +33,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.16.0'
+
       - name: Install nodejs dependencies
         run: |
           npm install
           npm run build
         working-directory: ./src
-
       
        #install DependencCREATE DATABASE
       - name: Install dependencies
@@ -59,10 +57,6 @@ jobs:
           php artisan migrate
           php artisan app:init-default-thumbnail
           php artisan config:clear
-          #php artisan cache:clear
-          #php artisan config:cache
-          #php artisan key:generate
-          #php artisan optimize
         working-directory: ./src
 
       - name: Set permissions
@@ -72,21 +66,20 @@ jobs:
       - name: List phpunit settings
         run: cat phpunit.xml
         working-directory: ./src
-#
-#      - name: Check PHP syntax errors
-#        uses: overtrue/phplint@9.6.2      
-#  
-#      - name: Composer audit
-#        run: composer audit
-#
-#      - name: Composer validate
-#        run: composer validate --no-check-all --strict
-#
+
+      - name: Check PHP syntax errors
+        uses: overtrue/phplint@9.6.2      
+  
+      - name: Composer audit
+        run: composer audit
+
+      - name: Composer validate
+        run: composer validate --no-check-all --strict
+
       - name: Run tests
         env:
           DB_HOST: localhost
           DB_PORT: 5432
-        #run: run ./vendor/bin/phpunit --colors=always
         run: php artisan test
         working-directory: ./src
 
