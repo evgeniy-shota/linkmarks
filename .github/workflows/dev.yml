@@ -79,7 +79,7 @@ jobs:
           #php artisan config:cache
           #php artisan cache:clear
           php artisan key:generate
-          php artisan optimize
+          #php artisan optimize
         working-directory: ./src
 #
 #      - name: Check PHP syntax errors
