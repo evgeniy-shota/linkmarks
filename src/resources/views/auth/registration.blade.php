@@ -80,16 +80,14 @@
                     </x-slot:legend>
                 </x-html.formcontrols.fieldset>
 
-                <div class="flex justify-around items-center">
-                    <button type="reset"
-                        class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
+                <div class="flex justify-center gap-2 items-center mt-2">
+                    <x-html.button-out-gray type="reset">
                         Clear
-                    </button>
+                    </x-html.button-out-gray>
 
-                    <button type="submit"
-                        class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
+                    <x-html.button-out-blue type="submit">
                         Submit
-                    </button>
+                    </x-html.button-out-blue>
                 </div>
             </form>
             @error('registrationError')

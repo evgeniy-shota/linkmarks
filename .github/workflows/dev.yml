@@ -63,8 +63,6 @@ jobs:
       #setup Laravel
       - name: Setup laravel
         env:
-          #DB_HOST: 127.0.0.1
-          #DB_HOST: localhost
           DB_HOST: localhost
           DB_PORT: 5432
           #DB_USERNAME: linkmarks
@@ -72,10 +70,11 @@ jobs:
         run: |
           cp .env.example .env
           php artisan migrate
-          php artisan config:clear
-          php artisan config:cache
-          #php artisan cache:clear
+          php artisan app:init-default-thumbnail
+          #php artisan config:cache
+          php artisan cache:clear
           php artisan key:generate
+          php artisan optimize
         working-directory: ./src
 #
 #      - name: Check PHP syntax errors
