@@ -83,6 +83,9 @@ jobs:
 #        run: composer validate --no-check-all --strict
 #
       - name: Run tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
         #run: run ./vendor/bin/phpunit --colors=always
         run: php artisan test
         working-directory: ./src
