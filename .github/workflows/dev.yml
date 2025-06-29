@@ -101,6 +101,7 @@ jobs:
       - name: List Laravel log
         if: always()
         run: |
+          ls storage/logs/
           if [-f storage/logs/laravel.log]; then
             tail -n 200 storage/logs/laravel.log
           else
