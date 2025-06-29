@@ -56,7 +56,9 @@ jobs:
         with:
           node-version: '22.16.0'
       - name: Install nodejs dependencies
-        run: npm install
+        run: |
+          npm install
+          npm run build
         working-directory: ./src
 
       
