@@ -100,7 +100,12 @@ jobs:
 
       - name: List Laravel log
         if: always()
-        run: tail -n 200 storage/logs/laravel.log
+        run: |
+          if [-f storage/logs/laravel.log]; then
+            tail -n 200 storage/logs/laravel.log
+          else
+            echo "No laravel log found"
+          fi
         working-directory: ./src
 #      - name: Run phpstan
 #        run: ./vendor/bin/phpstan analyse
