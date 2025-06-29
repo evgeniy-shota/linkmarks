@@ -19,16 +19,13 @@ use Intervention\Image\Interfaces\EncodedImageInterface;
 
 class ThumbnailService
 {
-
-    public function __construct(private StorageService $storageService) {}
-
     public function generateUrl(string|Thumbnail $data): string
     {
         if (is_string($data)) {
             return Storage::url($data);
         }
 
-        return Storage::url($data->name) ?? '';
+        return Storage::url($data->name);
     }
 
     public function getByAssociations(string $associations, $userId): ?Collection
@@ -60,7 +57,7 @@ class ThumbnailService
     {
         $thumbnails = Thumbnail::whereIn('id', $ids);
 
-        if ($selectCol && count($selectCol) > 0) {
+        if (count($selectCol) > 0) {
             $thumbnails = $thumbnails->select($selectCol);
         }
 

@@ -22,7 +22,8 @@ class initDefaultThumbnail extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description =
+    'Adds default thumbnails from thumbnails-default to db thumbnails';
 
     /**
      * Execute the console command.

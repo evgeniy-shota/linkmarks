@@ -107,7 +107,7 @@ class BookmarkService
         return $bookmarks;
     }
 
-    public function bookmark(string $id, bool $withTags = true): ?Bookmark
+    public function bookmark(int $id, bool $withTags = true): ?Bookmark
     {
         $bookmark = Bookmark::query();
 
@@ -127,7 +127,7 @@ class BookmarkService
         return $bookmarks;
     }
 
-    public function bookmarksFromContext(string $idContext): Builder
+    public function bookmarksFromContext(int $idContext): Builder
     {
         $bookmarks = Bookmark::with('tags:id,name,description')->select(
             'bookmarks.id',
@@ -191,9 +191,9 @@ class BookmarkService
         return $bookmark;
     }
 
-    public function deleteBookmark(string $id): ?bool
+    public function deleteBookmark(int $id): ?bool
     {
         $result = Bookmark::destroy($id);
-        return $result;
+        return $result === 0 ? false : true;
     }
 }

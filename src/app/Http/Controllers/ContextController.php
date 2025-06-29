@@ -45,7 +45,7 @@ class ContextController extends Controller
         );
     }
 
-    public function show(Request $request, string $id)
+    public function show(Request $request, int $id)
     {
         $context = $this->contextService->getContext($id);
 
@@ -56,7 +56,7 @@ class ContextController extends Controller
         return new ContextResource($context);
     }
 
-    public function showContextData(ShowDataContextRequest $request, string $id)
+    public function showContextData(ShowDataContextRequest $request, int $id)
     {
         $context = $this->contextService->getContext($id, false);
 
@@ -128,7 +128,7 @@ class ContextController extends Controller
         return new ContextResource($context);
     }
 
-    public function update(UpdateContextRequest $request, string $id)
+    public function update(UpdateContextRequest $request, int $id)
     {
         $context = $this->contextService->getContext($id, false);
 
@@ -157,7 +157,7 @@ class ContextController extends Controller
         return response()->json(['message' => 'Update fail'], 400);
     }
 
-    public function destroy(Request $request, string $id)
+    public function destroy(Request $request, int $id)
     {
         $context = $this->contextService->getContext($id, false);
 

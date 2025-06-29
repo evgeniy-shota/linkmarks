@@ -39,7 +39,6 @@ class ContextService
         }
 
         return $query->find($id);
-        // return Context::with('tags:id,name,description')->find($id);
     }
 
     public function getContexts(int $idCurrentContext): Builder
@@ -49,6 +48,9 @@ class ContextService
         return $context;
     }
 
+    /**
+     * @return Builder
+     */
     public function getAllContexts(
         int $userId,
         bool $excludeRoot = false
@@ -64,6 +66,9 @@ class ContextService
         return $context;
     }
 
+    /**
+     * 
+     */
     public function getFilteredContexts(
         int $id,
         int $userId,

@@ -46,8 +46,8 @@ class TagController extends Controller
         }
 
         $validated = $request->validated();
-        $tag = tap($tag)->update($validated);
 
+        $tag->update($validated);
         return new TagResource($tag);
     }
 

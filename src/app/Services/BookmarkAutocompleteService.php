@@ -83,7 +83,7 @@ class BookmarkAutocompleteService
     {
         $parsedUrl = parse_url($url);
         $domain = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
-        $associations = $associations ?? $parsedUrl['host'];
+        $associations = strlen($associations) > 0 ? $associations : $parsedUrl['host'];
         $associationThumbnails =
             $this->getSiteThumbnailsAssociations($associations);
         $thumbnails = $associationThumbnails;
