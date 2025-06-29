@@ -74,7 +74,7 @@ jobs:
           php artisan migrate
           php artisan config:clear
           php artisan config:cache
-          php artisan cache:clear
+          #php artisan cache:clear
           php artisan key:generate
         working-directory: ./src
 #
