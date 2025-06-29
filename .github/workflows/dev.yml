@@ -102,7 +102,7 @@ jobs:
         if: always()
         run: |
           ls storage/logs/
-          if [-f storage/logs/laravel.log]; then
+          if [ -f storage/logs/laravel.log ]; then
             tail -n 200 storage/logs/laravel.log
           else
             echo "No laravel log found"
