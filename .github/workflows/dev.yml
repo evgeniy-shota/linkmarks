@@ -60,7 +60,7 @@ jobs:
           php artisan app:init-default-thumbnail
           php artisan config:clear
           #php artisan cache:clear
-          #php artisan config:cache
+          php artisan config:cache
           php artisan key:generate
           #php artisan optimize
         working-directory: ./src
