@@ -90,7 +90,10 @@ jobs:
         #run: run ./vendor/bin/phpunit --colors=always
         run: php artisan test
         working-directory: ./src
-#
+
+      - name: List Laravel log
+        run: tail -n 65 /storage/logs/laravel.log
+        working-directory: ./src
 #      - name: Run phpstan
 #        run: ./vendor/bin/phpstan analyse
     
