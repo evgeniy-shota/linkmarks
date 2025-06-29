@@ -73,7 +73,7 @@ jobs:
           php artisan migrate
           php artisan app:init-default-thumbnail
           #php artisan config:cache
-          php artisan cache:clear
+          #php artisan cache:clear
           php artisan key:generate
           php artisan optimize
         working-directory: ./src
