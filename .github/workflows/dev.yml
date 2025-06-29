@@ -34,22 +34,6 @@ jobs:
         with:
           php-version: '8.4'
           extensions: imagick, gd, pdo, pdo_pgsql     
-
-      #- name: Setup Postgresql
-      #  env:
-      #    PGDATA: /usr/local/postgresql/data/
-      #    DEBIAN_FRONTEND: noninteractive
-      #  run: |
-      #    sudo apt-get update 
-      #    sudo apt-get install -y postgresql-common 
-      #    echo | sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh 
-      #    sudo apt-get install -y postgresql-17
-      #    sudo pg_createcluster -D ${{env.PGDATA}} 17 main -- --data-checksums
-      #    sudo pg_ctlcluster 17 main start
-      #    sudo pg_ctlcluster 17 main status
-      #    #sudo /usr/lib/postgresql/17/bin/pg_checksums --enable -D ${{env.PGDATA}}
-      #    su postgres
-      #    psql -p 5433 -c "CREATE USER homestead WITH CREATEDB PASSWORD 'secret'"
           
       - name: Setup nodejs
         uses: actions/setup-node@v4
@@ -84,6 +68,10 @@ jobs:
           php artisan key:generate
           #php artisan optimize
         working-directory: ./src
+
+      - name: Set permissions
+        run: chmod -R 777 storage bootstrap/cache
+        working-directory: ./src 
 #
 #      - name: Check PHP syntax errors
 #        uses: overtrue/phplint@9.6.2      
@@ -109,6 +97,4 @@ jobs:
             echo "No laravel log found"
           fi
         working-directory: ./src
-#      - name: Run phpstan
-#        run: ./vendor/bin/phpstan analyse
-    
+   
