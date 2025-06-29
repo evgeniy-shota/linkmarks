@@ -16,7 +16,7 @@ jobs:
       - name: Install packeges
         run: |
           sudo apt-get update -y
-          sudo apt-get instaall -y libjpeg, libpng, libpng-dev, libwebp, libjpeg-turbo-dev, freetype-dev
+          sudo apt-get install -y libjpeg, libpng, libpng-dev, libwebp, libjpeg-turbo-dev, freetype-dev
       #- name: Add user
       #  run: sudo useradd linkmarks
       - name: Check user
