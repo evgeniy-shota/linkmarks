@@ -13,7 +13,8 @@ use Laravel\Scout\Searchable;
 
 class Context extends Model
 {
-    /** @use HasFactory<\Database\Factories\ContextFactory> */
+    /** @use HasFactory<\Database\Factories\ContextFactory> 
+     */
     use HasFactory, Searchable, Filterable;
 
     protected $fillable = [

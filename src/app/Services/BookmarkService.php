@@ -22,9 +22,11 @@ class BookmarkService
 
     public function search(string $searchRequest, string $userId)
     {
-        $bookmarks = Bookmark::search($searchRequest)->query(function ($builder) {
-            $builder->with('tags:id,name,description');
-        })->where('user_id', $userId)->get();
+        $bookmarks = Bookmark::search($searchRequest)->query(
+            function ($builder) {
+                $builder->with('tags:id,name,description');
+            }
+        )->where('user_id', $userId)->get();
 
         $thumbnailsId = [];
 
@@ -32,10 +34,12 @@ class BookmarkService
             $thumbnailsId[] = $bookmark->thumbnail_id;
         }
 
-        $thumbnails = $this->thumbnailService->getThumbnailsIn($thumbnailsId, ['id', 'name'])->keyBy('id');
+        $thumbnails = $this->thumbnailService
+            ->getThumbnailsIn($thumbnailsId, ['id', 'name'])->keyBy('id');
 
         $bookmarks->map(function ($bookmark) use ($thumbnails) {
-            $bookmark->thumbnail = $this->thumbnailService->generateUrl($thumbnails[$bookmark->thumbnail_id]);
+            $bookmark->thumbnail = $this->thumbnailService
+                ->generateUrl($thumbnails[$bookmark->thumbnail_id]);
         });
 
         // dump();
@@ -93,7 +97,6 @@ class BookmarkService
                             'queryParams' => $filterParams,
                             'tableName' => 'bookmarks_tags'
                         ],
-
                     );
                     $bookmarks = $bookmarks->filter($bookmarkFilter);
                 }
@@ -115,15 +118,12 @@ class BookmarkService
             $bookmark->with('tags:id,name,description');
         }
 
-        return $bookmark->where('id', $id)->with('thumbnail')->first();
-        // dd($bookmark->thumbnail);
-        // return $bookmark;
+        return $bookmark->where('id', $id)->with('thumbnail:id,name')->first();
     }
 
     public function bookmarksIn(array $ids): ?ECollection
     {
         $bookmarks = Bookmark::whereIn('id', $ids)->with('thumbnail')->get();
-        // dd($bookmark->thumbnail);
         return $bookmarks;
     }
 
@@ -146,8 +146,14 @@ class BookmarkService
     public function createBookmark(array $data, int $userId)
     {
         if (!isset($data['order'])) {
-            $maxContextsOrder = Context::where('parent_context_id', $data['context_id'])->max('order');
-            $maxBookmarksOrder = Bookmark::where('context_id', $data['context_id'])->max('order');
+            $maxContextsOrder = Context::where(
+                'parent_context_id',
+                $data['context_id']
+            )->max('order');
+            $maxBookmarksOrder = Bookmark::where(
+                'context_id',
+                $data['context_id']
+            )->max('order');
             $data['order'] =
                 ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
                     $maxBookmarksOrder) + 1;
@@ -156,7 +162,10 @@ class BookmarkService
         $data['order'] += 1;
         $data['user_id'] = $userId;
         $bookmark = Bookmark::create($data);
-        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+        $bookmark->thumbnail = Storage::url(
+            $bookmark->thumbnail->name ??
+                ($this->thumbnailService->getDefault())->name
+        );
 
         if (isset($data['tags'])) {
             $bookmark->tags()->attach($data['tags']);
@@ -187,7 +196,10 @@ class BookmarkService
             $bookmark->tags()->attach($tags);
         }
 
-        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+        $bookmark->thumbnail = Storage::url(
+            $bookmark->thumbnail->name ??
+                ($this->thumbnailService->getDefault()->name)
+        );
         return $bookmark;
     }
 

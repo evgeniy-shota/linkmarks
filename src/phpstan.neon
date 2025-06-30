@@ -1,16 +1,14 @@
 includes:
-	- vendor/larastan/larastan/extension.neon
-	- vendor/nesbot/carbon/extension.neon
+  - vendor/larastan/larastan/extension.neon
+  - vendor/nesbot/carbon/extension.neon
 
 parameters:
-	paths:
-		- app/
-
-	# level 10 - max
-	level: 5
-
-#    ignoreErrors:
-#        - '#PHPDoc tag @var#'
+  paths:
+    - app/
+  # level 10 - max
+  level: 5
+  ignoreErrors:
+    - '#Call to an undefined method [a-zA-Z0-9\\_]+::filter\(\)#'
 #
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php

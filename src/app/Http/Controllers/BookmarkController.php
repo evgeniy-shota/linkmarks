@@ -39,8 +39,8 @@ class BookmarkController extends Controller
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        $bookmark->thumbnail = Storage::url($bookmark->thumbnail?->name);
-        return new BookmarkResource($bookmark);
+        $thumbnailName = Storage::url(optional($bookmark->thumbnail)->name);
+        return new BookmarkResource($bookmark, ['thumbnailName' => $thumbnailName]);
     }
 
     public function store(StoreBookmarkRequest $request)
@@ -70,7 +70,7 @@ class BookmarkController extends Controller
         }
 
         $bookmark = $this->bookmarkService->createBookmark($validated, Auth::id());
-        return new BookmarkResource($bookmark);
+        return new BookmarkResource($bookmark, ['thumbnail' => $bookmark->thumbnail]);
     }
 
     public function update(UpdateBookmarkRequest $request, int $id)
@@ -121,7 +121,7 @@ class BookmarkController extends Controller
             ->updateBookmark($id, $validated, $tags);
 
         if ($updated) {
-            return new BookmarkResource($updated);
+            return new BookmarkResource($updated, ['thumbnail' => $updated->thumbnail]);
         }
 
         return response()->json(['message' => 'Bookmark not updated...'], 400);
