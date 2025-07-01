@@ -112,7 +112,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY }}
-          password: ${{ secrets.SERVER_PASSWORD }}
+          #password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd ~
             touch test_ssh_connection.txt
