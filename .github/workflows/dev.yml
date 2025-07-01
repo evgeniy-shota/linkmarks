@@ -105,6 +105,17 @@ jobs:
     needs: [test]
     runs-on: ubuntu-22.04
     steps:
+      - name: SCP Command to Transfer Files
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_DEPLOY }}          
+          password: ${{ secrets.SERVER_PASSWORD }}      
+          source: /dockerfiles/nginx/default.conf
+          target: /etc/nginx/
+      
       - name: SSH connect
         uses: appleboy/ssh-action@v1.2.2
         with:
@@ -114,7 +125,5 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd ~
-            touch test_ssh_connection.txt
-            echo $PATH > test_ssh_connection.txt
+            ls /etc/nginx
           
