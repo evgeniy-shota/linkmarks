@@ -7,7 +7,7 @@ jobs:
           postgres:
             image: postgres:17
             ports:
-              - "5432:5432"
+              - ${{secrets.DB_PORT}}:${{secrets.DB_PORT}}
             env:
               POSTGRES_DB: homestead
               POSTGRES_USER: homestead
@@ -49,7 +49,7 @@ jobs:
       - name: Setup laravel
         env:
           DB_HOST: localhost
-          DB_PORT: 5432
+          DB_PORT: ${{secrets.DB_PORT}}
           #DB_USERNAME: linkmarks
           #DB_PASSWORD: password 
         run: |
@@ -82,7 +82,7 @@ jobs:
       - name: Run tests
         env:
           DB_HOST: localhost
-          DB_PORT: 5432
+          DB_PORT: ${{secrets.DB_PORT}}
         run: php artisan test
         working-directory: ./src
 
@@ -100,4 +100,20 @@ jobs:
             echo "No laravel log found"
           fi
         working-directory: ./src
-   
+  
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: SSH connect
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{secrets.SERVER_IP}}
+          port: ${{secrets.SERVER_PORT}}
+          username: ${{secrets.SERVER_USERNAME}}
+          key: ${{secrets.SSH_DEPLOY}}
+          script: |
+            cd ~
+            touch test_ssh_connection.txt
+            echo $PATH > test_ssh_connection.txt
+          
