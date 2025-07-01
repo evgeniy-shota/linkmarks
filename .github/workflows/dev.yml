@@ -7,7 +7,7 @@ jobs:
           postgres:
             image: postgres:17
             ports:
-              - ${{secrets.DB_PORT}}:${{secrets.DB_PORT}}
+              - 5432:5432
             env:
               POSTGRES_DB: homestead
               POSTGRES_USER: homestead
