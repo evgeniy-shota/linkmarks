@@ -113,7 +113,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY }}          
           password: ${{ secrets.SERVER_PASSWORD }}      
-          source: /dockerfiles/nginx/default.conf
+          source: ./dockerfiles/nginx/default.conf
           target: /etc/nginx/
       
       - name: SSH connect
