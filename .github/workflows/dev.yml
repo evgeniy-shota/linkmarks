@@ -131,4 +131,5 @@ jobs:
           script: |
             ls ~
             ls /etc/nginx
+            mv /dockerfiles/nginx/default.conf ../../
           
