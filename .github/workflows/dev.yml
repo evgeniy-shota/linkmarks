@@ -104,7 +104,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.2.2
         with:
-          space-checkout: |
+          sparce-checkout: |
             src
             dockerfiles/nginx
             
@@ -116,7 +116,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY }}          
           password: ${{ secrets.SERVER_PASSWORD }}      
-          source: "src"
+          source: "src,dockerfiles/nginx"
           target: "~"
       
       - name: SSH connect
@@ -127,6 +127,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY }}
           password: ${{ secrets.SERVER_PASSWORD }}
+          overwrite: true 
           script: |
             ls ~
             ls /etc/nginx
