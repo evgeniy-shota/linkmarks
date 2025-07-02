@@ -109,8 +109,8 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY }}          
           password: ${{ secrets.SERVER_PASSWORD }}      
-          source: README.md
-          target: ~
+          source: "README.md"
+          target: "~"
       
       - name: SSH connect
         uses: appleboy/ssh-action@v1.2.2
