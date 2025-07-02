@@ -116,6 +116,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY }}          
           password: ${{ secrets.SERVER_PASSWORD }}      
+          overwrite: true 
           source: "src,dockerfiles/nginx"
           target: "~"
       
@@ -127,7 +128,6 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          overwrite: true 
           script: |
             ls ~
             ls /etc/nginx
