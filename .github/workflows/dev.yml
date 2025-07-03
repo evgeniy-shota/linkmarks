@@ -119,7 +119,7 @@ jobs:
           sed -i -r 's/DB_DATABASE=[A-Za-z0-9_-]+/DB_DATABASE=${{secrets.DB_NAME}}/g' .env
           sed -i -r 's/DB_USERNAME=[A-Za-z0-9-_]+/DB_USERNAME=${{secrets.DB_USER}}/g' .env
           sed -i -r 's/DB_PASSWORD=[A-Za-z0-9-_!\.,]+/DB_PASSWORD=${{secrets.DB_PASSWORD}}/g' .env
-        working-directory: /src
+        working-directory: ./src
 
       - name: SCP Command to Transfer Files
         uses: appleboy/scp-action@v1.0.0
