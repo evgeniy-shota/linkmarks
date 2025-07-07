@@ -146,6 +146,7 @@ jobs:
           php artisan cache:clear
           php artisan key:generate
           php artisan storage:link
+        working-directory: ./src
 
       - name: SCP Command to Transfer Files
         uses: appleboy/scp-action@v1.0.0
