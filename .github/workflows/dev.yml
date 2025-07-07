@@ -138,7 +138,7 @@ jobs:
       - name: Permisson setup
         run: |
           echo ${{secrets.SERVER_PASSWORD}} | sudo -S chmod -R 777 storage bootstrap/cache
-        working-directory: /src
+        working-directory: ./src
         
       - name: Prepare Laravel
         run: |
