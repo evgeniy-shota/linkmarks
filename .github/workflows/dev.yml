@@ -13,13 +13,10 @@ jobs:
               POSTGRES_USER: homestead
               POSTGRES_PASSWORD: secret
     steps:
-      - name: Install packeges
+      - name: Install packages
         run: |
           sudo apt-get update -y
 
-      #- name: Check user
-      #  run: cat /etc/passwd
-       
       - name: Get repository code
         uses: actions/checkout@v4.2.2
 
@@ -40,7 +37,6 @@ jobs:
           npm run build
         working-directory: ./src
       
-       #install DependencCREATE DATABASE
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./src
@@ -50,8 +46,6 @@ jobs:
         env:
           DB_HOST: localhost
           DB_PORT: ${{secrets.DB_PORT}}
-          #DB_USERNAME: linkmarks
-          #DB_PASSWORD: password 
         run: |
           cp .env.example .env
           php artisan migrate
@@ -97,6 +91,7 @@ jobs:
           fi
         working-directory: ./src
   
+  # DEPLOY
   deploy:
     needs: [test]
     runs-on: ubuntu-22.04
@@ -119,6 +114,39 @@ jobs:
           sed -i -r 's/DB_USERNAME=[A-Za-z0-9_-]+/DB_USERNAME=${{secrets.DB_USER}}/g' .env
           sed -i -r 's/DB_PASSWORD=[A-Za-z0-9_!\.,-]+/DB_PASSWORD=${{secrets.DB_PASSWORD}}/g' .env
         working-directory: ./src
+
+      - name: Setup php
+        uses: shivammathur/setup-php@2.34.1
+        with:
+          php-version: '8.4'
+          extensions: imagick, gd, pdo, pdo_pgsql     
+          
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+
+      - name: Install nodejs dependencies
+        run: |
+          npm install
+          npm run build
+        working-directory: /var/www/linkmarks
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: /var/www/linkmarks
+
+      - name: Permisson setup
+        run: |
+          echo ${{secrets.SERVER_PASSWORD}} | sudo -S chmod -R 777 storage bootstrap/cache
+        working-directory: /src
+        
+      - name: Prepare Laravel
+        run: |
+          php artisan config:clear 
+          php artisan cache:clear
+          php artisan key:generate
+          php artisan storage:link
 
       - name: SCP Command to Transfer Files
         uses: appleboy/scp-action@v1.0.0
@@ -143,10 +171,12 @@ jobs:
           script: |
             ls ~
             ls /etc/nginx
-            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx
             echo ${{secrets.SERVER_PASSWORD}} | sudo rsync -r src/ /var/www/linkmarks/
-#            echo ${{secrets.SERVER_PASSWORD}} | sudo rsync -r ./src/ /var/www/linkmarks
+            echo ${{secrets.SERVER_PASSWORD}} | sudo rm -rf src
+            echo ${{secrets.SERVER_PASSWROD}} | sudo chown -R ${{secrets.SERVER_USERNAME}} /var/www/linkmarks
+            cd /var/www/linkmarks
+            php artisan migrate && php artisan optimize
+
             
-#            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx
-#            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./src/* /var/www/linkmarks/ 
-#            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./src/{*,.[!.]*} /var/www/linkmarks/
+
