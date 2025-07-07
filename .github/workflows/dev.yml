@@ -145,4 +145,5 @@ jobs:
             ls /etc/nginx
             echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv ./dockerfiles/nginx/default.conf /etc/nginx
             echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv ./src/* /var/www/linkmarks/ 
+            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv ./src/.* /var/www/linkmarks/ 
           
