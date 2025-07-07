@@ -144,6 +144,9 @@ jobs:
             ls ~
             ls /etc/nginx
             echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx
-            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./src/* /var/www/linkmarks/ 
-            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./src/{*,.[!.]*} /var/www/linkmarks/ 
-          
+            echo ${{secrets.SERVER_PASSWORD}} | sudo rsync -r src/ /var/www/linkmarks/
+#            echo ${{secrets.SERVER_PASSWORD}} | sudo rsync -r ./src/ /var/www/linkmarks
+            
+#            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx
+#            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./src/* /var/www/linkmarks/ 
+#            echo ${{ secrets.SERVER_PASSWORD}} | sudo -S mv -f ./src/{*,.[!.]*} /var/www/linkmarks/
