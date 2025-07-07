@@ -1,5 +1,5 @@
 import "./bootstrap";
-import "../css/app.css";
+// import "../css/app.css";
 import Alpine from "alpinejs";
 
 import alertsStore from "./alerts/alertsStore";
