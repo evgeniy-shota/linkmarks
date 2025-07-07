@@ -130,10 +130,10 @@ jobs:
         run: |
           npm install
           npm run build
-        working-directory: /src      
+        working-directory: ./src      
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
-        working-directory: /src
+        working-directory: ./src
 
       - name: Permisson setup
         run: |
