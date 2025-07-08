@@ -175,3 +175,4 @@ jobs:
             #echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate --force
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan optimize
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan queue:work
