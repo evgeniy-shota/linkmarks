@@ -135,11 +135,6 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./src
-
-      - name: Permisson setup
-        run: |
-          echo ${{secrets.SERVER_PASSWORD}} | sudo -S chmod -R 777 storage bootstrap/cache
-        working-directory: ./src
         
       - name: Prepare Laravel
         run: |
@@ -177,5 +172,6 @@ jobs:
             cd /var/www/linkmarks
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 storage
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 bootstrap/cache
-            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate
+            #echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate --force
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan optimize
