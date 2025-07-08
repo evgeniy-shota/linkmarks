@@ -173,7 +173,7 @@ jobs:
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rsync -l -r src/ /var/www/linkmarks/
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rm -rf src
-            echo ${{secrets.SERVER_PASSWROD}} | sudo -S chown -R ${{secrets.SERVER_USERNAME}} /var/www/linkmarks
+            echo ${{secrets.SERVER_PASSWROD}} | sudo -S chown -R ${{secrets.SERVER_USERNAME}}:${{secrets.SERVER_USERNAME}} /var/www/linkmarks
             cd /var/www/linkmarks
             sudo ${{secrets.SERVER_PASSWORD}} | php artisan migrate
             sudo ${{secrets.SERVER_PASSWORD}} | php artisan optimize
