@@ -170,7 +170,7 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            echo ${{secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx/nginx.conf
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rsync -l -r src/ /var/www/linkmarks/
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rm -rf src
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chown -R ${{secrets.SERVER_USERNAME}}:${{secrets.SERVER_USERNAME}} /var/www/linkmarks
