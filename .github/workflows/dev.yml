@@ -177,5 +177,5 @@ jobs:
             cd /var/www/linkmarks
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 storage
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 bootstrap/cache
-            sudo ${{secrets.SERVER_PASSWORD}} | php artisan migrate
-            sudo ${{secrets.SERVER_PASSWORD}} | php artisan optimize
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan optimize
