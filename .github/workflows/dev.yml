@@ -175,4 +175,6 @@ jobs:
             #echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate --force
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan optimize
-            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan queue:work
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl reread
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl update
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl start "laravel-worker:*"
