@@ -175,7 +175,5 @@ jobs:
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rm -rf src
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chown -R ${{secrets.SERVER_USERNAME}} /var/www/linkmarks
             cd /var/www/linkmarks
-            php artisan migrate && php artisan optimize
-
-            
-
+            sudo ${{secrets.SERVER_PASSWORD}} | php artisan migrate
+            sudo ${{secrets.SERVER_PASSWORD}} | php artisan optimize
