@@ -140,8 +140,8 @@ jobs:
         run: |
           php artisan config:clear 
           #php artisan cache:clear
-          php artisan key:generate
-          php artisan storage:link
+          #php artisan key:generate
+          #php artisan storage:link
         working-directory: ./src
 
       - name: SCP Command to Transfer Files
@@ -173,6 +173,8 @@ jobs:
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 storage
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 bootstrap/cache
             #echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan key:generate
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan storage:link
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate --force
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan optimize
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl reread
