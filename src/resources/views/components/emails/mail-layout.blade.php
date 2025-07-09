@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title> {{ $title ?? 'Bookmarks' }} </title>
+    <title> {{ $title ?? 'linkmarks' }} </title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -24,7 +24,7 @@
             <div>
                 <x-logo width="40" />
             </div>
-            <div class="text-xl font-bold">Bookmarks</div>
+            <div class="text-xl font-bold">linkmarks</div>
         </div>
         {{ $main }}
 
