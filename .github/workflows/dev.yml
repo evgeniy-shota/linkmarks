@@ -119,8 +119,8 @@ jobs:
           sed -i -r 's/DB_USERNAME=[A-Za-z0-9_-]+/DB_USERNAME=${{secrets.DB_USER}}/g' .env
           sed -i -r 's/DB_PASSWORD=[A-Za-z0-9_!\.,-]+/DB_PASSWORD=${{secrets.DB_PASSWORD}}/g' .env
           # Mail env
-          sed -i -r 's/MAILERSEND_API_KEY=[A-Za-z0-9_!\.,-]+/MAILERSEND_API_KEY=${{secrets.MAILERSEND_API_KEY}}/g' .env
-          sed -i -r 's/RESEND_KEY=[A-Za-z0-9_!\.,-]+/RESEND_KEY=${{secrets.RESEND_KEY}}/g' .env
+          sed -i -r 's/MAILERSEND_API_KEY=[A-Za-z0-9_!\.,-]?/MAILERSEND_API_KEY=${{secrets.MAILERSEND_API_KEY}}/g' .env
+          sed -i -r 's/RESEND_KEY=[A-Za-z0-9_!\.,-]?/RESEND_KEY=${{secrets.RESEND_KEY}}/g' .env
 
         working-directory: ./src
 
