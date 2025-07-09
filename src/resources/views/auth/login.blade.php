@@ -12,7 +12,7 @@
 
     <x-slot:main>
 
-        <x-flex-container x-data class="sm:w-1/5 mt-2">
+        <x-flex-container x-data class="sm:w-3/5 md:w-1/2 lg:w-1/4 xl:w-1/5 mt-2">
             <div class="flex justify-center items-center">
                 <div class="text-gray-100 font-bold">Log In</div>
             </div>
