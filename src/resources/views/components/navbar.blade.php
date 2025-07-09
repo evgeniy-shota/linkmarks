@@ -38,14 +38,14 @@
             </ul>
         </div> --}}
 
-        <div class="navbar-end gap-1">
+        <div class="navbar-end gap-0 sm:gap-1">
             @auth
                 @if (Request::routeIs('home'))
                     <div class="dropdown dropdown-center">
                         <x-html.button-out-gray class="relative"
                             action='search.focus()'>
                             <x-html.icons.search />
-                            <div class="hidden sm:block">
+                            <div class="hidden md:block">
                                 Search
                             </div>
 
@@ -90,7 +90,7 @@
                             <x-html.button-out-gray class="relative"
                                 action="getTags(Alpine.store('tags').setTags)">
                                 <x-html.icons.funnel />
-                                <div class="hidden sm:block">
+                                <div class="hidden md:block">
                                     Filter
                                 </div>
 
@@ -309,7 +309,9 @@
                             <x-html.button-out-gray
                                 action="getTags(Alpine.store('tags').setTags)">
                                 <x-html.icons.tag />
-                                <div>Tags</div>
+                                <div class="hidden md:block">
+                                    Tags
+                                </div>
                             </x-html.button-out-gray>
                         </x-slot:button>
                         <x-slot:content>
@@ -350,14 +352,14 @@
 
                     <x-html.button-out-gray action='openModal(folderModal)'>
                         <x-html.icons.folder-plus />
-                        <div class="hidden sm:block">
+                        <div class="hidden md:block">
                             Add folder
                         </div>
                     </x-html.button-out-gray>
 
                     <x-html.button-out-gray action="openModal(bookmarksModal)">
                         <x-html.icons.bookmarks-plus />
-                        <div class="hidden sm:block">
+                        <div class="hidden md:block">
                             Add bookmark
                         </div>
                     </x-html.button-out-gray>

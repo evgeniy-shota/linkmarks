@@ -1,5 +1,10 @@
 name: Check, test and deploy
-on: push
+on:
+  push:
+    branches:
+      - 'dev'
+    paths:
+      - "src/"
 jobs:
   test:
     runs-on: ubuntu-22.04
@@ -101,7 +106,6 @@ jobs:
         with:
           sparse-checkout: |
             src
-            dockerfiles/nginx
 
       - name: Change env file
         run: |
@@ -153,7 +157,7 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY }}          
           password: ${{ secrets.SERVER_PASSWORD }}      
           overwrite: true 
-          source: "src,dockerfiles/nginx"
+          source: "src"
           target: "~"
       
       - name: SSH connect
@@ -165,18 +169,19 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            echo ${{secrets.SERVER_PASSWORD}} | sudo -S mv -f ./dockerfiles/nginx/default.conf /etc/nginx/nginx.conf
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rsync -l -r src/ /var/www/linkmarks/
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rm -rf src
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chown -R ${{secrets.SERVER_USERNAME}}:${{secrets.SERVER_USERNAME}} /var/www/linkmarks
             cd /var/www/linkmarks
+            # directory permission
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 storage
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chmod -R 775 bootstrap/cache
-            #echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate
+            # artisan commands
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan key:generate
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan storage:link
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate --force
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan optimize
+            # supervisor
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl reread
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl update
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl start "laravel-worker:*"

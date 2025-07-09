@@ -6,7 +6,7 @@
 
 <x-layout>
     <x-slot:main>
-        <x-flex-container class="sm:w-1/2 mt-2">
+        <x-flex-container class="sm:w-1/3 mt-2">
             <div class="text-gray-100 text-lg font-bold mb-2">Profile</div>
 
             @if (!$verified)

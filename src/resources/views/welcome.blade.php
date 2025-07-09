@@ -13,6 +13,10 @@
                 by tags.
                 Join in!
             </div>
+            <x-captions.warning>
+                The site is in alpha testing, problems and errors are possible.
+                We are working on it.
+            </x-captions.warning>
         </x-flex-container>
     </x-slot:main>
 </x-layout>

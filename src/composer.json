@@ -11,7 +11,8 @@
         "laravel/framework": "^12.0",
         "laravel/scout": "^10.15",
         "laravel/tinker": "^2.10.1",
-        "mailersend/laravel-driver": "^2.9"
+        "mailersend/laravel-driver": "^2.9",
+        "resend/resend-php": "^0.18.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

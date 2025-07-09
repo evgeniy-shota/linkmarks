@@ -36,7 +36,7 @@
         </x-modal-window>
 
         <div x-data @@click="clickOnElement"
-            class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+            class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
 
             <template x-for="(element, index) in $store.contexts.data"
                 ::key="element.id">
