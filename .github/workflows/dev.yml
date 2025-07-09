@@ -4,7 +4,7 @@ on:
     branches:
       - 'dev'
     paths:
-      - "src/"
+      - 'src/*'
 jobs:
   test:
     runs-on: ubuntu-22.04
