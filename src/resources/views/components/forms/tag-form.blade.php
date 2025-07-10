@@ -12,12 +12,12 @@
             <x-html.formcontrols.fieldset title='Name' class="mb-2">
                 <x-slot:field>
                     <x-html.formcontrols.input required id="name"
-                        type="text" x-model="$store.tag.name"
-                        :state="true" />
+                        type="text" x-model="$store.tag.name" :state="true"
+                        minlength="1" maxlength="10" />
                 </x-slot:field>
                 <x-slot:legend>
                     <x-html.formcontrols.fieldset-legend
-                        text="Enter tag name" />
+                        text="Enter a tag name. Length - up to 10 characters." />
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 

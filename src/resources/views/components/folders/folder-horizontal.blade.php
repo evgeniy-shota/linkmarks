@@ -15,7 +15,7 @@
         {{ $elementAttributeAction }}='open' {{ $elementAttributeType }}="folder"
         class="h-20 flex">
         <div class="w-1/4 flex-none overflow-hidden">
-            <x-html.icons.folder size="90"/>
+            <x-html.icons.folder size="90" />
             {{-- <div class="flex flex-col justify-center items-center h-full">
                 <div
                     class="flex flex-none w-full h-1/2 justify-center items-center">
@@ -41,7 +41,8 @@
         <div class="w-3/4 flex-none overflow-hidden py-1">
             <div class="grid h-full grid-cols-1 content-between">
                 <div class="truncate text-lg/6 font-medium pe-2"
-                    x-text="{{ $name }}">
+                    x-text="{{ $name }}"
+                    x-bind:title="{{ $name }}">
                 </div>
 
                 <div class="flex justify-start items-center gap-1 ">

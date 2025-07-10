@@ -41,7 +41,7 @@
         <div class="navbar-end gap-0 sm:gap-1">
             @auth
                 @if (Request::routeIs('home'))
-                    <div class="dropdown dropdown-center">
+                    <div class="dropdown dropdown-bottom sm:dropdown-center ">
                         <x-html.button-out-gray class="relative"
                             action='search.focus()'>
                             <x-html.icons.search />
@@ -58,7 +58,7 @@
 
                         <div tabindex="0"
                             class="dropdown-content rounded bg-gray-600 p-2 pb-1 mt-1">
-                            <div class="sm:w-[30vw] sm:max-h-[20vh] w-[70vw]">
+                            <div class="w-[60vw] sm:w-[40vw] md:w-[30vw] sm:max-h-[20vh] ">
                                 <div class="flex gap-1 justify-center items-center">
                                     <x-html.formcontrols.input id="search"
                                         class="w-full"
@@ -86,7 +86,8 @@
                     </div>
 
                     {{-- Filter --}}
-                    <x-html.dropdown>
+                    <x-html.dropdown
+                        class="w-[80vw] sm:w-[47vw] md:w-[37vw] lg:w-[30vw]">
                         <x-slot:button>
                             <x-html.button-out-gray class="relative"
                                 action="getTags(Alpine.store('tags').setTags)">
@@ -215,7 +216,8 @@
                     </x-html.dropdown>
 
                     {{-- Tags --}}
-                    <x-html.dropdown class="sm:w-[25vw]">
+                    <x-html.dropdown
+                        class="w-[58vw] sm:w-[45vw] md:w-[35vw] lg:w-[25vw] xl:w-[22vw]">
                         <x-slot:button>
                             <x-html.button-out-gray
                                 action="getTags(Alpine.store('tags').setTags)">

@@ -23,7 +23,7 @@
                 </div>
 
                 <x-html.dropdown
-                    class="sm:w-[15vw] sm:max-h-[25vh] py-1 px-2 overflow-y-auto overflow-x-hidden">
+                    class="w-[45vw] max-h-[25vh] sm:w-[25vw] md:w-[20vw] lg:w-[15vw] xl:w-[12vw] py-1 px-2 overflow-y-auto overflow-x-hidden">
                     <x-slot:button>
                         <x-html.button-out-gray
                             class="btn-sm text-base font-normal"
@@ -103,7 +103,43 @@
 
                         {{-- tags list --}}
                         <template x-if="$store.bookmark.tags.length<3">
-                            <div class="dropdown dropdown-top dropdown-center">
+
+                            <x-html.dropdown
+                                class="w-[30vw] max-h-[25vh] sm:w-[20vw] md:w-[15vw] lg:w-[10vw] xl:w-[8vw] py-1 px-2 overflow-y-auto overflow-x-hidden">
+                                <x-slot:button>
+                                    <x-html.button-out-gray
+                                        class="btn-sm text-base font-normal"
+                                        action="getTags(Alpine.store('tags').setTags)">
+                                        Add tags
+                                    </x-html.button-out-gray>
+                                </x-slot:button>
+
+                                <x-slot:content>
+                                    <div
+                                        class="flex-col justify-center items-center">
+                                        <div class="w-full mb-1">
+                                            <x-html.button-out-gray
+                                                class="btn-sm w-full"
+                                                action="tagModal.showModal()">
+                                                Create tag
+                                            </x-html.button-out-gray>
+                                        </div>
+
+                                        <template
+                                            x-for="item in $store.tags.tags">
+                                            <div class="mb-1">
+                                                <x-html.tags.tag
+                                                    xText="item.name"
+                                                    class="py-1 cursor-pointer"
+                                                    x-on:click="$store.bookmark.addTag(item)">
+                                                </x-html.tags.tag>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </x-slot:content>
+                            </x-html.dropdown>
+
+                            {{-- <div class="dropdown dropdown-top dropdown-center">
 
                                 <x-html.button-out-gray
                                     class="btn-sm text-base font-normal"
@@ -130,7 +166,8 @@
                                         </div>
                                     </template>
                                 </div>
-                            </div>
+                            </div> --}}
+
                         </template>
                     </div>
                 </x-slot:field>

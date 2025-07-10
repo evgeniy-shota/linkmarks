@@ -47,7 +47,7 @@
 
                 {{-- name --}}
                 <div class="truncate text-lg/6 font-medium py-1 pe-2"
-                    x-text="{{ $name }}">
+                    x-text="{{ $name }}" x-bind:title="{{ $name }}">
                 </div>
 
                 {{-- tags --}}

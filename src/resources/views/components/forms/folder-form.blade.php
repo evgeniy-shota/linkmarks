@@ -17,7 +17,7 @@
                 </div>
 
                 <x-html.dropdown
-                    class="sm:w-[15vw] sm:max-h-[25vh] py-1 px-2 overflow-y-auto overflow-x-hidden">
+                    class="w-[45vw] max-h-[25vh] sm:w-[25vw] md:w-[20vw] lg:w-[15vw] xl:w-[12vw] py-1 px-2 overflow-y-auto overflow-x-hidden">
                     <x-slot:button>
                         <x-html.button-out-gray
                             class="btn-sm text-base font-normal"
@@ -75,7 +75,7 @@
             <x-html.formcontrols.fieldset title="Tags">
                 <x-slot:field>
                     <div
-                        class="flex justify-start items-center gap-2 text-base">
+                        class="flex justify-start items-center gap-1 sm:gap-2 text-base">
 
                         <template x-for="(item,index) of $store.context.tags">
                             <x-html.tags.tag-with-close xText="item.name"
@@ -86,8 +86,8 @@
                         {{-- tags list --}}
                         <template x-if="$store.context.tags.length<3">
 
-                            <x-html.dropdown
-                                class="sm:w-[12vw] sm:max-h-[25vh] py-1 px-2 overflow-y-auto">
+                            <x-html.dropdown dropdownPosition="dropdown-top dropdown-end"
+                                class="w-[30vw] max-h-[25vh] sm:w-[20vw] md:w-[15vw] lg:w-[10vw] xl:w-[8vw] py-1 px-2 overflow-y-auto">
                                 <x-slot:button>
                                     <x-html.button-out-gray
                                         class="btn-sm text-base font-normal"

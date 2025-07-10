@@ -4,7 +4,7 @@
     'action' => '',
 ])
 
-<div class="dropdown {{ $dropdownPosition }}">
+<div class="dropdown {{ $dropdownPosition }} ">
     {{ $button }}
 
     <div tabindex="0"
