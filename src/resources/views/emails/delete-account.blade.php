@@ -4,6 +4,7 @@
         "?email=$user->email";
     // $changePassUrl = url('/change-password/' . "$token?email=$email");
 @endphp
+
 <x-emails.mail-layout>
     <x-slot:main>
         <x-flex-container class="sm:w-1/2 mt-2">
