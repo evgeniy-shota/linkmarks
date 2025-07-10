@@ -62,41 +62,6 @@
                 </x-html.dropdown>
             </div>
 
-            {{-- <div class="flex items-center gap-1">
-                <div class="font-medium">Location:
-                </div>
-
-                <div class="dropdown dropdown-center">
-
-                    <x-html.button-out-gray class="btn-sm text-base font-normal"
-                        action="getAdditionalDataContext">
-                        <x-html.icons.folder />
-
-                        <div
-                            x-text="$store.additionalData.getContext($store.bookmark.context_id).name">
-                        </div>
-                    </x-html.button-out-gray>
-
-                    <div tabindex="0"
-                        class="dropdown-content menu bg-gray-700 rounded-box z-1 sm:w-[15vw] sm:max-h-[25vh] py-1 px-2 overflow-y-auto overflow-x-hidden">
-
-                        <div class="flex-col justify-center items-center">
-                            <template
-                                x-for="item in $store.additionalData.contexts">
-
-                                <div class="bg-gray-500 hover:bg-gray-400 rounded w-full cursor-pointer transition my-1 py-1 px-2"
-                                    x-text="item.name"
-                                    @@click="$store.bookmark.context_id=item.id">
-
-                                </div>
-
-                            </template>
-                        </div>
-
-                    </div>
-                </div>
-            </div> --}}
-
             {{-- link input --}}
             <x-html.formcontrols.fieldset title='Url'>
                 <x-slot:field>

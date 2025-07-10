@@ -110,8 +110,10 @@ jobs:
       - name: Change env file
         run: |
           mv .env.example .env
+          # App env
           sed -i -r 's/APP_ENV=[A-Za-z]+/APP_ENV=production/g' .env
           sed -i 's/APP_DEBUG=true/APP_DEBUG=false/g' .env
+          sed -i -r 's/APP_URL=[A-Za-z0-9:\./-]?/APP_URL=${{env.APP_URL}}/g' .env
           # DB env
           sed -i -r 's/DB_HOST=[a-z0-9\.]+/DB_HOST=${{secrets.DB_HOST}}/g' .env
           sed -i -r 's/DB_PORT=[0-9]{2,4}:[0-9]{2,4}/DB_PORT=${{secrets.DB_PORT}}/g' .env
