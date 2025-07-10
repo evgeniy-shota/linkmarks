@@ -42,7 +42,7 @@ class ProcessThumbnail implements ShouldQueue
                 'is_processed' => true,
             ]);
 
-            $deleteRes = $storageService->delete($oldThumbnail);
+            $storageService->delete($oldThumbnail);
         }
     }
 }
