@@ -16,7 +16,7 @@ All your data will be deleted without the possibility of recovery.
 Clicking the link below will delete your account.
 
 <x-mail::caption :color="'warning'">
-If you did not request account deletion, no further action is required.
+If you did not request account deletion, please review your account and change your password.
 </x-mail::caption>
 
 This delete link will expire in __20 minutes__.
