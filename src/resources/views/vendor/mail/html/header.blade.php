@@ -1,8 +1,8 @@
 @props(['url'])
 <tr>
-<td class="header" align="center">
+<td class="header" align="{{ $align }}">
 <a href="{{ $url }}" style="display: inline-block;">
-<img src="{{url('storage/linkmarks-logo-gray.png')}}" class="logo" alt="linkmarks Logo">
+<img src="{{url('storage/linkmarks-logo-gray.png')}}" class="logo" alt="Logo">
 {!! $slot !!}
 </a>
 </td>
