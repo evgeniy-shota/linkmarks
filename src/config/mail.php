@@ -120,7 +120,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'info@linkmarks.online'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 

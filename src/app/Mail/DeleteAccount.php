@@ -38,8 +38,11 @@ class DeleteAccount extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.delete-account',
-            with: ['token' => $this->token, 'user' => $this->user],
+            markdown: 'mail.delete-account',
+            with: [
+                'token' => $this->token,
+                'user' => $this->user
+            ],
         );
     }
 
