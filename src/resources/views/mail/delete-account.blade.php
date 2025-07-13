@@ -1,9 +1,3 @@
-@php
-    $deleteAccount =
-        route('deleteAccount.delete', ['token' => $token]) .
-        "?email=$user->email";
-@endphp
-
 <x-mail::message>
 # Hello, {{$user->name??''}}!
 
@@ -21,7 +15,7 @@ If you did not request account deletion, please review your account and change y
 
 This delete link will expire in __20 minutes__.
 
-<x-mail::button :url="$deleteAccount " :color="'red'">
+<x-mail::button :url="$url" :color="'red'">
 Delete account
 </x-mail::button>
 

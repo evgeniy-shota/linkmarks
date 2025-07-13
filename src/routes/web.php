@@ -24,10 +24,10 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', [BookmarkController::class, 'index'])->name('home');
 
 // Mail preview
-// Route::get('/mailable', function () {
-//     return new DeleteAccount('qwerty1234', Auth::user());
-//     // return new Notification();
-// })->name('mailview');
+Route::get('/mailable', function () {
+    return new DeleteAccount('qwerty1234', Auth::user());
+    // return new Notification();
+})->name('mailview');
 
 Route::get('/search', [SearchController::class, 'search'])
     ->middleware('auth')->name('search');

@@ -40,8 +40,14 @@ class DeleteAccount extends Mailable
         return new Content(
             markdown: 'mail.delete-account',
             with: [
-                'token' => $this->token,
-                'user' => $this->user
+                'user' => $this->user,
+                'url' => route(
+                    'deleteAccount.delete',
+                    [
+                        'token' => $this->token,
+                        'email' => $this->user->email,
+                    ]
+                ),
             ],
         );
     }
