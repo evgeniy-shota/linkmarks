@@ -1,5 +1,6 @@
-name: Deploy on vps
+name: Deploy 
 on:
+  workflow_dispatch:  
   push:
     branches:
       - 'master'
@@ -8,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    #needs: [test]
+    needs: [test]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -20,8 +21,10 @@ jobs:
       - name: Change env file
         run: |
           mv .env.example .env
+          # App env
           sed -i -r 's/APP_ENV=[A-Za-z]+/APP_ENV=production/g' .env
           sed -i 's/APP_DEBUG=true/APP_DEBUG=false/g' .env
+          sed -i -r 's|APP_URL=[A-Za-z0-9:\/\.-]+|APP_URL="${{vars.APP_URL}}"|g' .env
           # DB env
           sed -i -r 's/DB_HOST=[a-z0-9\.]+/DB_HOST=${{secrets.DB_HOST}}/g' .env
           sed -i -r 's/DB_PORT=[0-9]{2,4}:[0-9]{2,4}/DB_PORT=${{secrets.DB_PORT}}/g' .env
@@ -29,8 +32,9 @@ jobs:
           sed -i -r 's/DB_USERNAME=[A-Za-z0-9_-]+/DB_USERNAME=${{secrets.DB_USER}}/g' .env
           sed -i -r 's/DB_PASSWORD=[A-Za-z0-9_!\.,-]+/DB_PASSWORD=${{secrets.DB_PASSWORD}}/g' .env
           # Mail env
-          sed -i -r 's/MAILERSEND_API_KEY=[A-Za-z0-9_!\.,-]+/MAILERSEND_API_KEY=${{secrets.MAILERSEND_API_KEY}}/g' .env
-          sed -i -r 's/RESEND_KEY=[A-Za-z0-9_!\.,-]+/RESEND_KEY=${{secrets.RESEND_KEY}}/g' .env
+          sed -i -r 's/MAILERSEND_API_KEY=[A-Za-z0-9_!\.,-]?/MAILERSEND_API_KEY=${{secrets.MAILERSEND_API_KEY}}/g' .env
+          sed -i -r 's/RESEND_KEY=[A-Za-z0-9_!\.,-]?/RESEND_KEY=${{secrets.RESEND_KEY}}/g' .env
+
         working-directory: ./src
 
       - name: Setup php
@@ -57,6 +61,9 @@ jobs:
       - name: Prepare Laravel
         run: |
           php artisan config:clear 
+          #php artisan cache:clear
+          #php artisan key:generate
+          #php artisan storage:link
         working-directory: ./src
 
       - name: SCP Command to Transfer Files
@@ -71,7 +78,7 @@ jobs:
           source: "src"
           target: "~"
       
-      - name: SSH connect
+      - name: SSH actions
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -80,6 +87,9 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
+            # DB dump
+            pg_dump ${{secrets.DB_NAME}} > ~/DB_dumps/${{secrets.DB_NAME}}_deploy_$(date +'%F_%H-%M').sql
+            # Copy
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rsync -l -r src/ /var/www/linkmarks/
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S rm -rf src
             echo ${{secrets.SERVER_PASSWROD}} | sudo -S chown -R ${{secrets.SERVER_USERNAME}}:${{secrets.SERVER_USERNAME}} /var/www/linkmarks
@@ -91,9 +101,12 @@ jobs:
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan key:generate
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan storage:link
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan migrate --force
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan config:clear
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan cache:clear
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan optimize
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S php artisan app:init-default-thumbnail
             # supervisor
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl reread
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl update
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl reload
             echo ${{secrets.SERVER_PASSWORD}} | sudo -S supervisorctl start "laravel-worker:*"
-  

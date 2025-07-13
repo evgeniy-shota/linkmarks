@@ -13,24 +13,31 @@ use Illuminate\Support\Str;
 
 class DeleteAccountController extends Controller
 {
+    const int TOKEN_EXPIRATION_MINUTES = 20;
+
     public function destroy(Request $request, string $token)
     {
         $validated = $request->validate([
             'email' => 'required|email'
         ]);
 
-        // check time
         $validToken = DB::table('delete_account_tokens')
             ->where('email', $validated['email'])->where('token', $token)
             ->first();
 
 
         if ($validToken) {
-            $timeDiff = date_diff(new DateTime($validToken->created_at), new DateTime());
+            $timeDiff = date_diff(
+                new DateTime($validToken->created_at),
+                new DateTime()
+            );
 
             if (
-                $timeDiff->y > 0 || $timeDiff->m > 0 || $timeDiff->d > 0
-                || $timeDiff->h > 0 || $timeDiff->i > 20
+                $timeDiff->y > 0
+                || $timeDiff->m > 0
+                || $timeDiff->d > 0
+                || $timeDiff->h > 0
+                || $timeDiff->i > self::TOKEN_EXPIRATION_MINUTES
             ) {
                 return abort(403, 'The link has expired');
             }
@@ -48,7 +55,10 @@ class DeleteAccountController extends Controller
         }
 
         //check token and email -> delete
-        return redirect()->route('profile')->withErrors(['' => '']);
+        return abort(403, 'Your link has expired or invalid');
+        // return redirect()->route('profile')->withErrors(
+        //     ['deleteAccount' => 'Your link has expired or invalid']
+        // );
     }
 
     public function sendLink(Request $request)
