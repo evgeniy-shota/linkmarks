@@ -28,10 +28,10 @@
                         linkmarks
                     </div>
 
-                    <div
+                    {{-- <div
                         class="text-sm font-semibold bg-gray-200 text-gray-800 rounded-sm px-1 py-0">
                         v0.2
-                    </div>
+                    </div> --}}
                 </div>
             </a>
         </div>
