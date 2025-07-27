@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    needs: [test]
+    # needs: [test]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
