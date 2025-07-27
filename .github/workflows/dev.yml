@@ -14,8 +14,8 @@ jobs:
             ports:
               - 5432:5432
             env:
-              POSTGRES_DB: homestead
-              POSTGRES_USER: homestead
+              POSTGRES_DB: linkmarks
+              POSTGRES_USER: linkmarks
               POSTGRES_PASSWORD: secret
     steps:
       - name: Install packages
