@@ -42,6 +42,4 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            ls -la scripts
-            ls -la scripts/bash
-            echo ${{secrets.SERVER_PASSWORD}} | sudo cp ~/scripts/bash/artisan-schedule /etc/cron.minutely/
+            echo ${{secrets.SERVER_PASSWORD}} | sudo -S cp ~/scripts/bash/artisan-schedule /etc/cron.minutely/
