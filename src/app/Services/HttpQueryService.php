@@ -24,7 +24,7 @@ class HttpQueryService
         try {
             $response = Http::withHeaders($headers)->accept($acceptType)->get($url);
         } catch (ConnectionException $connectionEx) {
-            // dump($connectionEx);
+
             return null;
         } catch (Exception $exception) {
             return null;
@@ -73,8 +73,9 @@ class HttpQueryService
         string $acceptType = self::IMAGE_ACCEPT_TYPE,
         array $headers = self::HEADERS
     ): array {
+        $images = $this->pool($urls, $acceptType, $headers);
         return array_map(function ($item) {
             return $item->body();
-        }, $this->pool($urls, $acceptType, $headers));
+        }, $images);
     }
 }

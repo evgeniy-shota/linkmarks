@@ -31,20 +31,6 @@ class initDefaultThumbnail extends Command
     public function handle()
     {
         $files = Storage::disk('public')->files('thumbnails-default');
-        // $data = array_map(function ($item) {
-        //     $offset = strpos($item, '/') + 1;
-        //     $length = strlen($item)
-        //         - (strlen($item) - strrpos($item, '.')) - $offset;
-        //     return [
-        //         'name' => $item,
-        //         'source' => ThumbnailSource::Default->value,
-        //         'associations' => substr(
-        //             $item,
-        //             $offset,
-        //             $length
-        //         ),
-        //     ];
-        // }, $files);
 
         foreach ($files as $fileName) {
             $offset = strpos($fileName, '/') + 1;
@@ -53,21 +39,15 @@ class initDefaultThumbnail extends Command
 
             DB::table('thumbnails')->updateOrInsert(
                 ['name' => $fileName, 'source' => ThumbnailSource::Default->value,],
-                ['associations' => substr(
-                    $fileName,
-                    $offset,
-                    $length
-                ),]
+                [
+                    'associations' => substr(
+                        $fileName,
+                        $offset,
+                        $length
+                    ),
+                    'is_processed' => true
+                ]
             );
         }
-
-        // $thumbnails = DB::table('thumbnails')->insert($data);
-        // $thumbnails = DB::table('thumbnails')->upsert(
-        //     $data,
-        //     ['name'],
-        //     ['source', 'associations']
-        // );
-
-        // dump($thumbnails);
     }
 }

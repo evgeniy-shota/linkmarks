@@ -26,7 +26,6 @@ class BookmarkAutocompleteService
         $parsedUrl = parse_url($url);
         $domain = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
         $page = $this->httpQuery->getPage($url);
-        // $this->httpQuery->getPage($domain);
 
         if (!isset($page)) {
             $title = $parsedUrl['host'];

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Scout\Searchable;
+use Orchid\Screen\AsSource;
 
 /**
  * @property \App\Models\Thumbnail|string $thumbnail
@@ -17,7 +18,7 @@ use Laravel\Scout\Searchable;
 class Bookmark extends Model
 {
     /** @use HasFactory<\Database\Factories\BookmarkFactory> */
-    use HasFactory, Searchable, Filterable;
+    use HasFactory, Searchable, Filterable, AsSource;
 
     protected $table = 'bookmarks';
 

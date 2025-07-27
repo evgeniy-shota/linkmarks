@@ -4,7 +4,7 @@ namespace App\Services;
 
 class HtmlParseService
 {
-    const LOGO_REG = '/logo|favicon/';
+    const LOGO_REG = '/logo|Logo|favicon/';
 
     public function getImages(
         string $page,
@@ -32,7 +32,9 @@ class HtmlParseService
                 $path = isset($parsedImageUrl['scheme'])
                     && isset($parsedImageUrl['host'])
                     ? $image
-                    : $domain . $image;
+                    : $domain .
+                    ($domain[-1] != '/' && $image[0] != '/' ? '/' : '') .
+                    $image;
 
                 $startIndex = strrpos($image, '/') + 1;
                 $endIndex = strrpos($image, '.');
@@ -79,7 +81,7 @@ class HtmlParseService
         $titleEnd = stripos($page, '</title>');
         $titleLength = $titleEnd - $titleStart;
 
-        $title = strip_tags(substr($page, $titleStart + strlen($titleStr[0]), $titleLength));
-        return $title;
+        $title = trim(strip_tags(substr($page, $titleStart + strlen($titleStr[0]), $titleLength)));
+        return strlen($title) == 0 ? null : $title;
     }
 }

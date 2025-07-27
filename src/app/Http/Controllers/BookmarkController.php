@@ -48,33 +48,9 @@ class BookmarkController extends Controller
 
     public function store(StoreBookmarkRequest $request)
     {
-        $validated = $request->validated();
-
-        if (isset($validated['thumbnailFile'])) {
-            $parsedLink = parse_url($validated['link']);
-            $thumbnailFile = $this->storageService
-                ->save($validated['thumbnailFile']);
-            $thumbnail = $this->thumbnailService->create(
-                $thumbnailFile,
-                Auth::id(),
-                ThumbnailSource::UserLoad->value,
-                $parsedLink['host'] ?? '',
-            );
-            $validated['thumbnail_id'] = $thumbnail->id;
-
-            if (ImageService::fileCanProcessed($thumbnailFile)) {
-                ProcessThumbnail::dispatch($thumbnail)
-                    ->delay(now()->addMinutes(1));
-            }
-
-            unset($validated['thumbnailFile']);
-        } else if (!isset($validated['thumbnail_id'])) {
-            $validated['thumbnail_id'] = $this->thumbnailService
-                ->getDefault()->id;
-        }
-
         $bookmark = $this->bookmarkService
-            ->createBookmark($validated, Auth::id());
+            ->createBookmark($request->validated(), Auth::id());
+
         return new BookmarkResource(
             $bookmark,
             ['thumbnail' => $bookmark->thumbnail]

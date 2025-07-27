@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Actions\GetLastOrderInContext;
 use App\Actions\SetUrlForBookmarksThumbnail;
+use App\Enums\ThumbnailSource;
 use App\Http\Filters\FilterByTags;
 use App\Http\Requests\Bookmark\StoreBookmarkRequest;
+use App\Jobs\ProcessThumbnail;
 use App\Models\Bookmark;
 use App\Models\Context;
 use GuzzleHttp\Psr7\Request;
@@ -13,12 +15,16 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as ECollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class BookmarkService
 {
-    public function __construct(protected ThumbnailService $thumbnailService) {}
+    public function __construct(
+        protected ThumbnailService $thumbnailService,
+        protected StorageService $storageService
+    ) {}
 
     public function search(string $searchRequest, string $userId)
     {
@@ -145,18 +151,32 @@ class BookmarkService
 
     public function createBookmark(array $data, int $userId)
     {
+        if (isset($data['thumbnailFile'])) {
+            $parsedLink = parse_url($data['link']);
+            $thumbnailFile = $this->storageService
+                ->save($data['thumbnailFile']);
+            $thumbnail = $this->thumbnailService->create(
+                $thumbnailFile,
+                Auth::id(),
+                ThumbnailSource::UserLoad->value,
+                $parsedLink['host'] ?? '',
+            );
+            $data['thumbnail_id'] = $thumbnail->id;
+
+            if (ImageService::fileCanProcessed($thumbnailFile)) {
+                ProcessThumbnail::dispatch($thumbnail)
+                    ->delay(now()->addMinutes(1));
+            }
+
+            unset($data['thumbnailFile']);
+        } else if (!isset($data['thumbnail_id'])) {
+            $data['thumbnail_id'] = $this->thumbnailService
+                ->getDefault()->id;
+        }
+
         if (!isset($data['order'])) {
-            $maxContextsOrder = Context::where(
-                'parent_context_id',
-                $data['context_id']
-            )->max('order');
-            $maxBookmarksOrder = Bookmark::where(
-                'context_id',
-                $data['context_id']
-            )->max('order');
             $data['order'] =
-                ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
-                    $maxBookmarksOrder) + 1;
+                GetLastOrderInContext::getOrder($data['context_id']);
         }
 
         $data['order'] += 1;

@@ -30,19 +30,19 @@
         <div class="flex justify-center items-center gap-3 w-full">
             <x-html.button-out-orange x-show="{{ $canDeleted }}" class="w-1/4"
                 action="confirmDelete=true">
-                <x-html.icons.trash />
+                {{-- <x-html.icons.trash /> --}}
                 Delete
             </x-html.button-out-orange>
 
             <x-html.button-out-gray type="reset" action="{{ $clearAction }}"
                 class="w-1/4">
-                <x-html.icons.x-lg/>
+                {{-- <x-html.icons.x-lg/> --}}
                 Clear
             </x-html.button-out-gray>
 
             <x-html.button-out-green type="submit" class="w-1/4"
                 action="{{ $saveAction }}">
-                <x-html.icons.floppy />
+                {{-- <x-html.icons.floppy /> --}}
                 Save
             </x-html.button-out-green>
         </div>

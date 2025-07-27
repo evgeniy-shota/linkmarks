@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Orchid\Screen\AsSource;
 
 class Thumbnail extends Model
 {
     /** @use HasFactory<\Database\Factories\ThumbnailFactory> */
-    use HasFactory;
+    use HasFactory, AsSource;
 
     protected $fillable = [
         'user_id',

@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Scout\Searchable;
+use Orchid\Screen\AsSource;
 
 class Context extends Model
 {
     /** @use HasFactory<\Database\Factories\ContextFactory> 
      */
-    use HasFactory, Searchable, Filterable;
+    use HasFactory, Searchable, Filterable, AsSource;
 
     protected $fillable = [
         'user_id',

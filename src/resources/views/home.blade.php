@@ -9,52 +9,40 @@
     <x-slot:main>
 
         {{-- Modal window with Bookmarks form --}}
-        <x-modal-window id="bookmarksModal"
-            title="$store.bookmark.id===null?'Add bookmark':'Edit bookmark'"
+        <x-modal-window id="bookmarksModal" title="$store.bookmark.id===null?'Add bookmark':'Edit bookmark'"
             closeButtonAction="clearBookmarkStore()">
-            <x-forms.bookmark-form modalId="bookmarksModal"
-                canDeleted="$store.bookmark.id!==null?true:false">
+            <x-forms.bookmark-form modalId="bookmarksModal" canDeleted="$store.bookmark.id!==null?true:false">
             </x-forms.bookmark-form>
         </x-modal-window>
 
         {{-- Modal window with Folder form --}}
-        <x-modal-window id="folderModal"
-            title="$store.context.id===null?'Add folder':'Edit folder'"
+        <x-modal-window id="folderModal" title="$store.context.id===null?'Add folder':'Edit folder'"
             closeButtonAction="clearContextStore()">
-            <x-forms.folder-form modalId="folderModal"
-                canDeleted="$store.context.id!==null?true:false">
+            <x-forms.folder-form modalId="folderModal" canDeleted="$store.context.id!==null?true:false">
             </x-forms.folder-form>
         </x-modal-window>
 
         {{-- Modal window with Folder form --}}
-        <x-modal-window id="tagModal"
-            title="$store.tag.id===null?'Add tag':'Edit tag'"
+        <x-modal-window id="tagModal" title="$store.tag.id===null?'Add tag':'Edit tag'"
             closeButtonAction="clearTagStore()">
-            <x-forms.tag-form modalId="tagModal"
-                canDeleted="$store.tag.id!==null?true:false">
+            <x-forms.tag-form modalId="tagModal" canDeleted="$store.tag.id!==null?true:false">
             </x-forms.tag-form>
         </x-modal-window>
 
         <div x-data @@click="clickOnElement"
             class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
 
-            <template x-for="(element, index) in $store.contexts.data"
-                ::key="element.id">
+            <template x-for="(element, index) in $store.contexts.data" ::key="element.id">
                 <div>
                     <template x-if="'link' in element">
-                        <x-bookmarks.bookmark-horizontal id="index"
-                            name="element.name" link="element.link"
-                            description="element.description"
-                            tags="element.tags" thumbnail="element.thumbnail"
-                            :elementAttribute="$elementAttribute" :elementAttributeAction="$elementAttributeAction"
-                            :elementAttributeType="$elementAttributeType" />
+                        <x-bookmarks.bookmark-horizontal id="index" name="element.name" link="element.link"
+                            description="element.description" tags="element.tags" thumbnail="element.thumbnail"
+                            :elementAttribute="$elementAttribute" :elementAttributeAction="$elementAttributeAction" :elementAttributeType="$elementAttributeType" />
                     </template>
 
                     <template x-if="('link' in element)===false">
-                        <x-folders.folder-horizontal id="index"
-                            name="element.name" order="element.order"
-                            tags="element.tags" parentContextId="2"
-                            :elementAttribute="$elementAttribute" :elementAttributeAction="$elementAttributeAction"
+                        <x-folders.folder-horizontal id="index" name="element.name" order="element.order"
+                            tags="element.tags" parentContextId="2" :elementAttribute="$elementAttribute" :elementAttributeAction="$elementAttributeAction"
                             :elementAttributeType="$elementAttributeType" />
                     </template>
                 </div>
@@ -507,6 +495,11 @@
                     console.warn(
                         consoleWarnTitle ?? "Get request to " + url + " fail")
                     console.warn(response.status)
+
+                    if (response.status == 401) {
+                        window.location.replace("{{ route('login') }}");
+                    }
+
                     return null
                 }
             }
@@ -520,6 +513,7 @@
                     .currentContext.id;
                 Alpine.store('context').order = lastOrder;
                 id.show()
+                getAdditionalDataContext();
             }
 
             function closeModal() {
@@ -532,7 +526,7 @@
 
             function clearContextStore() {
                 Alpine.store('context').clear()
-
+                Alpine.store('context').clearThumbnail()
                 Alpine.store('fileInput').clearData()
             }
 

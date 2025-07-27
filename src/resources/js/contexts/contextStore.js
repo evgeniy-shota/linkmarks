@@ -11,7 +11,7 @@ export default {
     setData(data) {
         this.id = data.id;
         this.name = data.name;
-        this.thumbnails = data.thumbnails;
+        this.thumbnails = data.thumbnails ?? [];
         this.thumbnail_id = data.thumbnail_id;
         this.parentContextId = data.parentContextId;
         this.tags = data.tags;

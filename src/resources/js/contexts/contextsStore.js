@@ -24,7 +24,6 @@ export default {
     },
 
     spliceBreadcrumbs(index, count = this.breadcrumbs.length) {
-        console.log(index + 1);
         this.breadcrumbs.splice(Number(index) + 1, count);
     },
 
@@ -33,15 +32,13 @@ export default {
         this.currentContext = currentContext;
         this.orderNumber = orderNumber;
         this.data = data;
-        console.log('data')
-        console.log(data);
     },
 
     clearData() {
         this.previousContext = null;
         this.currentContext = this.rootContext;
         this.orderNumber = null;
-        this.data = [];
+        this.data.length = 0;
         this.breadcrumbs = [];
     },
 };

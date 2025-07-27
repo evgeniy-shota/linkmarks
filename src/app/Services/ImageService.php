@@ -62,6 +62,8 @@ class ImageService
         }
 
         $encoded = $image->encodeByExtension($extension, quality: 85);
+        unset($image);
+        unset($manager);
         return $encoded;
     }
 
@@ -76,14 +78,6 @@ class ImageService
 
     public function getSupportedExtension(string $type): ?string
     {
-        // $arrayExt = [
-        //     image_type_to_mime_type(IMAGETYPE_WEBP) => "webp",
-        //     image_type_to_mime_type(IMAGETYPE_PNG) => "png",
-        //     image_type_to_mime_type(IMAGETYPE_ICO) => "png",
-        //     image_type_to_mime_type(IMAGETYPE_JPEG) => "jpeg",
-        //     "image/x-ico" => "webp",
-        // ];
-
         $extension = match ($type) {
             image_type_to_mime_type(IMAGETYPE_WEBP) => 'webp',
             image_type_to_mime_type(IMAGETYPE_PNG) => 'png',

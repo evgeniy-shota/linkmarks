@@ -10,19 +10,28 @@ use App\Models\Thumbnail;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends BaseTestCase
 {
     protected function prepareDependencies(): array
     {
-        $user = $this->createUser();
-        $rootContext = $this->createRootContext($user->id);
-        $thumbnails = $this->createThumbnails($user->id);
+        $dependencies = DB::transaction(function () {
+            $user = $this->createUser();
+            $rootContext = $this->createRootContext($user->id);
+            $thumbnails = $this->createThumbnails($user->id);
+
+            return [
+                'user' => $user,
+                'rootContext' => $rootContext,
+                'thumbnails' => $thumbnails,
+            ];
+        }, 3);
 
         return [
-            'user' => $user,
-            'rootContext' => $rootContext,
-            'thumbnails' => $thumbnails,
+            'user' => $dependencies['user'],
+            'rootContext' => $dependencies['rootContext'],
+            'thumbnails' => $dependencies['thumbnails'],
         ];
     }
 

@@ -69,7 +69,7 @@
                     </x-html.button-out-gray>
 
                     <x-html.button-out-blue type="submit">
-                        Submit
+                        Log In
                     </x-html.button-out-blue>
                 </div>
             </form>

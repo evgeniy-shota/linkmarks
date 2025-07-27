@@ -8,10 +8,16 @@ use App\Models\Context;
 class GetLastOrderInContext
 {
 
-    public static function getOrder(string $contextId)
+    public static function getOrder(?int $contextId): int
     {
-        $bookmarksOrder = Bookmark::where('context_id', $contextId)->max('order');
-        $contextOrder = Context::where('parent_context_id', $contextId)->max('order');
+        if (!isset($contextId)) {
+            return 0;
+        }
+
+        $bookmarksOrder = (int)Bookmark::where('context_id', $contextId)
+            ->select('order')->max('order');
+        $contextOrder = (int)Context::where('parent_context_id', $contextId)
+            ->select('order')->max('order');
 
         return $bookmarksOrder > $contextOrder ? $bookmarksOrder : $contextOrder;
     }

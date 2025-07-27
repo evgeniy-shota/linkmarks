@@ -6,7 +6,7 @@
         <template x-for="(item,index) in {{ $breadcrumbs }}">
             <li @@click="{{ $onclick }}"
                 x-bind:data-breadcrumb="index" class="relative">
-                <x-html.breadcrumbs-item text="item.name" index="index"
+                <x-html.breadcrumbs-item text="item.name" index="index" isRoot="item.is_root"
                     active="Alpine.store('contexts').breadcrumbs.length-1==index"
                     marked="item.type=='search'" />
 

@@ -4,37 +4,21 @@
 <div class="flex justify-center items-center w-full">
     <div class="rounded-md bg-gray-600 p-1 w-full">
 
-        <form x-data @@submit.prevent="submitTagForm"
-            action="" method="post">
+        <form x-data @@submit.prevent="submitTagForm" action="" method="post">
             @csrf
 
             {{-- name input --}}
             <x-html.formcontrols.fieldset title='Name' class="mb-2">
                 <x-slot:field>
-                    <x-html.formcontrols.input required id="name"
-                        type="text" x-model="$store.tag.name" :state="true"
-                        minlength="1" maxlength="10" />
+                    <x-html.formcontrols.input required id="name" type="text" x-model="$store.tag.name"
+                        :state="true" minlength="1" maxlength="10" />
                 </x-slot:field>
                 <x-slot:legend>
-                    <x-html.formcontrols.fieldset-legend
-                        text="Enter a tag name. Length - up to 10 characters." />
+                    <x-html.formcontrols.fieldset-legend text="Enter a tag name. Length - up to 10 characters." />
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 
-            {{-- Description input --}}
-            {{-- <x-html.formcontrols.fieldset title='Description' class="mb-2">
-                <x-slot:field>
-                    <x-html.formcontrols.input id="description" type="text"
-                        x-model="$store.tag.description" :state="true" />
-                </x-slot:field>
-                <x-slot:legend>
-                    <x-html.formcontrols.fieldset-legend
-                        text="Enter tag description" />
-                </x-slot:legend>
-            </x-html.formcontrols.fieldset> --}}
-
-            <x-html.formcontrols.button-group deleteAction="deleteTag"
-                canDeleted="{{ $canDeleted }}" />
+            <x-html.formcontrols.button-group deleteAction="deleteTag" canDeleted="{{ $canDeleted }}" />
 
         </form>
 
@@ -54,8 +38,14 @@
                 let result = await submitForm(
                     data,
                     '/tags/',
-                    (tag) => Alpine.store('tags').tags.push(tag))
-                console.log(Alpine.store('tags').tags)
+                    (tag) => {
+                        Alpine.store('tags').tags.push(tag)
+
+                        if (Alpine.store('tag').callback !== null) {
+                            Alpine.store('tag').callback(
+                                Alpine.store('tags').tags[Alpine.store('tags').tags.length - 1])
+                        }
+                    })
 
                 if (result) {
                     {{ $modalId }}.close()

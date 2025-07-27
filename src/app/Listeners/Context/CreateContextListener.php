@@ -22,13 +22,17 @@ class CreateContextListener
      */
     public function handle(CreatedEvent $event): void
     {
-        Context::create([
-            'user_id' => $event->user->id,
-            'name' => "Root",
-            'is_root' => true,
-            'parent_context_id' => null,
-            'is_enabled' => true,
-            'order' => null,
-        ]);
+        Context::firstOrCreate(
+            [
+                'user_id' => $event->user->id,
+                'is_root' => true,
+            ],
+            [
+                'name' => "Root",
+                'parent_context_id' => null,
+                'is_enabled' => true,
+                'order' => null,
+            ]
+        );
     }
 }

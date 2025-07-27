@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 Schedule::command('app:remove-unused-images')->weekly();
 
 Schedule::command('app:prune-delete-account-tokens')->daily();
+
+// creates (if does not exist) test users with test data
+Schedule::command('app:init-test-users')->everyThirtyMinutes();
