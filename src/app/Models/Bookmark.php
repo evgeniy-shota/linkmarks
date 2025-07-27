@@ -3,17 +3,22 @@
 namespace App\Models;
 
 use App\Models\Traits\Filterable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Scout\Searchable;
+use Orchid\Screen\AsSource;
 
+/**
+ * @property \App\Models\Thumbnail|string $thumbnail
+ */
 class Bookmark extends Model
 {
     /** @use HasFactory<\Database\Factories\BookmarkFactory> */
-    use HasFactory, Searchable, Filterable;
+    use HasFactory, Searchable, Filterable, AsSource;
 
     protected $table = 'bookmarks';
 

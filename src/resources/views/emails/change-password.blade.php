@@ -10,7 +10,7 @@
                 <div>
                     <x-logo width="40" />
                 </div>
-                <div class="text-xl font-bold">Bookmarks</div>
+                <div class="text-xl font-bold">linkmarks</div>
             </div>
             <div>
                 <div class="mb-2">
@@ -51,7 +51,7 @@
                     Respectfully,
                     <a href="{{ route('home') }}"
                         class="font-bold border-1 rounded border-gray-300 py-1 px-2 cursor-pointer">
-                        Bookmarks
+                        linkmarks
                     </a>
                 </div>
             </div>

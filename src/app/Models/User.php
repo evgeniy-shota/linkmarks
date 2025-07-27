@@ -4,12 +4,14 @@ namespace App\Models;
 
 use App\Events\User\CreatedEvent;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Orchid\Filters\Types\Like;
+use Orchid\Filters\Types\Where;
+use Orchid\Filters\Types\WhereDateStartEnd;
+use Orchid\Platform\Models\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -19,7 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array
      */
     protected $fillable = [
         'name',
@@ -30,32 +32,58 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes excluded from the model's JSON form.
      *
-     * @var list<string>
+     * @var array
      */
     protected $hidden = [
         'password',
         'remember_token',
+        'permissions',
+        'is_admin',
+        'is_enabled',
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast to native types.
      *
-     * @return array<string, string>
+     * @var array
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'created_at' => 'datetime:d-m-Y',
-        ];
-    }
+    protected $casts = [
+        'permissions' => 'array',
+        'password' => 'hashed',
+        'email_verified_at' => 'datetime',
+    ];
 
-    // protected $dispatchesEvents = [
-    //     'created' => CreatedEvent::class,
-    // ];
+    /**
+     * The attributes for which you can use filters in url.
+     *
+     * @var array
+     */
+    protected $allowedFilters = [
+        'id' => Where::class,
+        'name' => Like::class,
+        'email' => Like::class,
+        'updated_at' => WhereDateStartEnd::class,
+        'created_at' => WhereDateStartEnd::class,
+    ];
+
+    /**
+     * The attributes for which can use sort in url.
+     *
+     * @var array
+     */
+    protected $allowedSorts = [
+        'id',
+        'name',
+        'email',
+        'updated_at',
+        'created_at',
+    ];
+
+    protected $dispatchesEvents = [
+        'created' => CreatedEvent::class,
+    ];
 
     public function profile(): HasOne
     {

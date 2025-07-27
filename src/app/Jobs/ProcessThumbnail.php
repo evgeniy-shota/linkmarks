@@ -31,6 +31,7 @@ class ProcessThumbnail implements ShouldQueue
         StorageService $storageService,
     ): void {
         $absoluteThumbnailPath = $storageService->path($this->thumbnail->name);
+        dump($absoluteThumbnailPath);
         $scaledImage = $imageService->scale($absoluteThumbnailPath);
         $file = $storageService->saveEncodedImage($scaledImage);
 
@@ -42,7 +43,7 @@ class ProcessThumbnail implements ShouldQueue
                 'is_processed' => true,
             ]);
 
-            $deleteRes = $storageService->delete($oldThumbnail);
+            $storageService->delete($oldThumbnail);
         }
     }
 }

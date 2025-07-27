@@ -1,2 +1,5 @@
 *
 !.gitignore
+!linkmarks-logo-gray.png
+!thumbnails-default/
+!thumbnails-default/*

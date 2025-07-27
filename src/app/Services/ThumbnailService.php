@@ -11,24 +11,23 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\LazyCollection;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
 use Illuminate\Support\Str;
 use Intervention\Image\EncodedImage;
 use Intervention\Image\Interfaces\EncodedImageInterface;
+use Nette\Utils\Arrays;
 
 class ThumbnailService
 {
-
-    public function __construct(private StorageService $storageService) {}
-
     public function generateUrl(string|Thumbnail $data): string
     {
         if (is_string($data)) {
             return Storage::url($data);
         }
 
-        return Storage::url($data->name) ?? '';
+        return Storage::url($data->name);
     }
 
     public function getByAssociations(string $associations, $userId): ?Collection
@@ -51,6 +50,16 @@ class ThumbnailService
         return $defaultThumbnail->first();
     }
 
+    public function getLazyAll(?int $userId): LazyCollection
+    {
+        return Thumbnail::when(
+            isset($userId),
+            function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            }
+        )->lazy();
+    }
+
     public function getById($id)
     {
         return Thumbnail::find($id);
@@ -60,7 +69,7 @@ class ThumbnailService
     {
         $thumbnails = Thumbnail::whereIn('id', $ids);
 
-        if ($selectCol && count($selectCol) > 0) {
+        if (count($selectCol) > 0) {
             $thumbnails = $thumbnails->select($selectCol);
         }
 

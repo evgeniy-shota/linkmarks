@@ -39,7 +39,6 @@ class ContextService
         }
 
         return $query->find($id);
-        // return Context::with('tags:id,name,description')->find($id);
     }
 
     public function getContexts(int $idCurrentContext): Builder
@@ -49,9 +48,13 @@ class ContextService
         return $context;
     }
 
+    /**
+     * @return Builder
+     */
     public function getAllContexts(
         int $userId,
-        bool $excludeRoot = false
+        bool $excludeRoot = false,
+        string $orderBy = "order"
     ): Builder {
         $context = Context::with('tags:id,name,description')
             ->where('user_id', $userId)
@@ -60,10 +63,13 @@ class ContextService
                 function (Builder $query) {
                     $query->where('is_root', false);
                 }
-            )->orderBy('order');
+            )->orderBy('is_root', 'desc')->orderBy($orderBy, 'asc');
         return $context;
     }
 
+    /**
+     * 
+     */
     public function getFilteredContexts(
         int $id,
         int $userId,
@@ -111,7 +117,19 @@ class ContextService
     public function createContext(array $data, int $userId): Context
     {
         $data['user_id'] = $userId;
+
+        if (!isset($data['order'])) {
+            $data['order'] =
+                GetLastOrderInContext::getOrder($data['parent_context_id']);
+        }
+
+        $data['order'] += 1;
         $context = Context::create($data);
+
+        if (isset($data['tags'])) {
+            $context->tags()->attach($data['tags']);
+        }
+
         return $context;
     }
 

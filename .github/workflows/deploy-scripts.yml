@@ -1,0 +1,39 @@
+name: Deploy scripts 
+on:
+  workflow_dispatch:  
+  push:
+    branches:
+      - 'master'
+    paths:
+      - "scripts/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          sparse-checkout: |
+            scripts
+
+      - name: Change scripts
+        run: |
+          sed -i -r 's/DB_NAME/${{secrets.DB_NAME}}/g' bash/pg_dump
+        working-directory: scripts
+            
+      - name: SCP Command to Transfer Files
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_DEPLOY }}          
+          password: ${{ secrets.SERVER_PASSWORD }}      
+          overwrite: true 
+          source: "scripts"
+          target: "~"
+
+      - name: Move scripts
+        run: |
+          echo ${{secrets.SERVER_PASSWORD}} | sudo cp ~/scripts/bash/artisan-schedule /etc/cron.minutely/

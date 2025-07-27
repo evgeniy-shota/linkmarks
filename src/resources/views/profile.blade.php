@@ -6,7 +6,7 @@
 
 <x-layout>
     <x-slot:main>
-        <x-flex-container class="sm:w-1/2 mt-2">
+        <x-flex-container class="sm:w-1/3 mt-2">
             <div class="text-gray-100 text-lg font-bold mb-2">Profile</div>
 
             @if (!$verified)
@@ -86,89 +86,7 @@
                     Change password
                 </x-html.button-out-gray>
 
-
-                {{-- <div class="mb-1">
-                    A password change link will be sent to your email address.
-                </div>
-
-                @error('changePassword')
-                    <div class="text-amber-300 mb-1">{{ $message }}</div>
-                @enderror
-
-                <form action="{{ route('changePassword.request') }}"
-                    method="post">
-                    @csrf
-                    <x-html.formcontrols.input id="email" hidden readonly
-                        type="email" :value="$userData->email" />
-                    <x-html.button-out-gray :disabled="!$verified" type="submit">
-                        <span>Send link</span>
-                    </x-html.button-out-gray>
-                </form> --}}
             </div>
-
-            {{-- settings --}}
-            {{-- <div class="flex flex-col justify-center items-start">
-                <div class="divider divider-start font-bold text-gray-100">
-                    Settings
-                </div>
-
-                <x-captions.info class="w-full">
-                    In development ...
-                </x-captions.info>
-            </div> --}}
-
-
-            {{-- <form action="" method="post">
-                @csrf
-                <div class="border-1 rounded-md border-gray-700 p-2">
-
-                    <fieldset class="fieldset text-gray-100">
-                        <legend class="fieldset-legend text-gray-100 text-base">
-                            Bookmarks view</legend>
-                        <div class="flex justify-left items-center gap-1">
-                            <input id='radioHorizontalBookmarksView'
-                                type="radio" name="radio-1"
-                                class="radio radio-xs bg-gray-100 border-gray-700 checked:text-gray-700 checked:border-gray-700 checked:bg-gray-100"
-                                checked="checked" />
-                            <label for='radioHorizontalBookmarksView'
-                                class="cursor-pointer text-base">Horizontal
-                                view</label>
-                        </div>
-
-                        <div class="flex justify-left items-center gap-1">
-                            <input id='radioSquareBookmarksView' type="radio"
-                                name="radio-1"
-                                class="radio radio-xs bg-gray-100 border-gray-700 checked:text-gray-700 checked:border-gray-700 checked:bg-gray-100" />
-                            <label for='radioSquareBookmarksView'
-                                class="cursor-pointer text-base">Square
-                                view</label>
-
-                        </div>
-                    </fieldset>
-
-                    <fieldset class="fieldset text-gray-100">
-                        <legend class="fieldset-legend text-gray-100">Password
-                        </legend>
-                        <input type="password" class="input bg-gray-700"
-                            minlength="8" maxlength="32"
-                            placeholder="My awesome page" />
-                        <p class="label">Enter your password</p>
-                    </fieldset>
-
-                    <div class="flex justify-around items-center">
-                        <button
-                            class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
-                            Clear
-                        </button>
-
-                        <button type="submit"
-                            class="btn bg-gray-500 border-gray-600 hover:border-gray-500 text-gray-100 shadow-md">
-                            Save
-                        </button>
-                    </div>
-                </div>
-            </form> --}}
-
 
             <div class="flex flex-col justify-start items-start mb-1">
                 <div
@@ -206,9 +124,18 @@
                 <form action="{{ route('deleteAccount.email') }}"
                     method="post">
                     @csrf
-                    <x-html.button-out-red type="submit" :disabled="!$verified">
-                        Send deletion link
-                    </x-html.button-out-red>
+                    <div x-data="deleteTimer" x-init=" {{ session('deleteAccount') != null ? 'startTimer()' : null }}">
+                        <x-html.element-blocker :isBlocked="'timerId == null'"
+                            :timerValue="'timerValue'">
+                            <x-html.button-out-red type="submit"
+                                ::disabled="{{ $verified ? '!(timerId == null)' : true }}">
+                                <div>
+                                    Send deletion link
+                                </div>
+                            </x-html.button-out-red>
+                        </x-html.element-blocker>
+                    </div>
+
                 </form>
             </div>
         </x-flex-container>
@@ -229,6 +156,27 @@
 
         <script>
             document.addEventListener('alpine:init', () => addAlerts());
+
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('deleteTimer', () => ({
+                    timerValue: 59,
+                    timerId: null,
+
+                    startTimer(timeout = 59000) {
+                        this.timerId = setInterval(() => {
+                            this.timerValue--;
+                            console.log('interval');
+                        }, 1000);
+
+                        setTimeout(() => {
+                            clearInterval(this.timerId);
+                            this.timerId = null
+                            this.timerValue = 59;
+                        }, timeout);
+                    },
+
+                }))
+            })
 
             function addAlerts() {
                 @if (session('status'))

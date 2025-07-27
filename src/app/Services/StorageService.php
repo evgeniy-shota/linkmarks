@@ -17,6 +17,11 @@ class StorageService
         return Storage::disk($disk)->exists($name);
     }
 
+    public function getFiles(string $dirName = "", string $disk = "public")
+    {
+        return Storage::disk($disk)->files($dirName);
+    }
+
     public function save(
         $file,
         string $disk = 'public',
@@ -33,7 +38,7 @@ class StorageService
     public function saveFromString(
         string $str,
         string $name,
-        string $path = "/thumbnails/",
+        string $path = "thumbnails/",
         string $disk = "public",
     ): ?string {
         return Storage::disk($disk)->put("$path$name", $str) ? "$path$name" : null;

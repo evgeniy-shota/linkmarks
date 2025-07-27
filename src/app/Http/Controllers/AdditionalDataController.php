@@ -7,6 +7,7 @@ use App\Http\Resources\ContextCollection;
 use App\Http\Resources\ThumbnailResource;
 use App\Models\Context;
 use App\Services\BookmarkAutocompleteService;
+use App\Services\ContextService;
 use App\Services\ThumbnailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +15,17 @@ use Illuminate\Support\Facades\Auth;
 class AdditionalDataController extends Controller
 {
     public function __construct(
-        private BookmarkAutocompleteService $bookmarkAS
+        private BookmarkAutocompleteService $bookmarkAS,
+        private ContextService $contextService,
     ) {}
 
     public function allContexts()
     {
-        $contexts = Context::where('user_id', Auth::id())->get();
+        $contexts = $this->contextService->getAllContexts(
+            Auth::id(),
+            false,
+            'name'
+        )->get();
 
         return new ContextCollection($contexts);
     }

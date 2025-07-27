@@ -7,7 +7,7 @@
             </x-captions.success>
 
             <div>
-                Thanks for using bookmarks! Bye!
+                Thanks for using linkmarks! Bye!
             </div>
 
         </x-flex-container>

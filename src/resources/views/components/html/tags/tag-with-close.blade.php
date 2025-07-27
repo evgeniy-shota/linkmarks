@@ -16,7 +16,7 @@
 
 <div {{ $attributes->merge(['class' => $classes]) }}>
 
-    <div x-text='{{ $xText }}' x-bind:title="{{ $xText }}">
+    <div x-text='{{ $xText }}' x-bind:title="{{ $xText }}" class="truncate">
         {{ $slot ?? '' }}
     </div>
 

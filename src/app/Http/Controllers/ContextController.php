@@ -45,7 +45,7 @@ class ContextController extends Controller
         );
     }
 
-    public function show(Request $request, string $id)
+    public function show(Request $request, int $id)
     {
         $context = $this->contextService->getContext($id);
 
@@ -56,7 +56,7 @@ class ContextController extends Controller
         return new ContextResource($context);
     }
 
-    public function showContextData(ShowDataContextRequest $request, string $id)
+    public function showContextData(ShowDataContextRequest $request, int $id)
     {
         $context = $this->contextService->getContext($id, false);
 
@@ -108,27 +108,12 @@ class ContextController extends Controller
     public function store(StoreContextRequest $request)
     {
         $validated = $request->validated();
-
-        if (!isset($validated['order'])) {
-            $maxContextsOrder = Context::where('parent_context_id', $validated['parent_context_id'])->max('order');
-            $maxBookmarksOrder = Bookmark::where('context_id', $validated['parent_context_id'])->max('order');
-            $validated['order'] =
-                ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
-                    $maxBookmarksOrder) + 1;
-        }
-
-        $validated['order'] += 1;
         $context = $this->contextService->createContext($validated, Auth::id());
-
-        if (isset($validated['tags'])) {
-            $context->tags()->attach($validated['tags']);
-            // unset($validated['tags']);
-        }
 
         return new ContextResource($context);
     }
 
-    public function update(UpdateContextRequest $request, string $id)
+    public function update(UpdateContextRequest $request, int $id)
     {
         $context = $this->contextService->getContext($id, false);
 
@@ -147,17 +132,13 @@ class ContextController extends Controller
         $context = $this->contextService->updateContext($validated, $id, $tags);
 
         if ($context) {
-            // $context->tags()->detach();
-            // if (isset($tags)) {
-            //     $context->tags()->attach($tags);
-            // }
             return new ContextResource($context);
         }
 
         return response()->json(['message' => 'Update fail'], 400);
     }
 
-    public function destroy(Request $request, string $id)
+    public function destroy(Request $request, int $id)
     {
         $context = $this->contextService->getContext($id, false);
 

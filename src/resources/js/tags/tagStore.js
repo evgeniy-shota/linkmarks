@@ -4,6 +4,7 @@ export default {
     name: "",
     description: "",
     isLoading: false,
+    callback: null,
 
     setData(tag, index) {
         this.id = tag.id;
@@ -24,5 +25,6 @@ export default {
         this.name = "";
         this.description = "";
         this.isLoading = false;
+        this.callback = null;
     },
 };

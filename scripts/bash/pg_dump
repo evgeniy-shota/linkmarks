@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pg_dump DB_NAME > ~/DB_dumps/DB_NAME_deploy_$(date +'%F_%H-%M').sql

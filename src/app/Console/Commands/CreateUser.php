@@ -89,7 +89,7 @@ class CreateUser extends Command
         }
     }
 
-    protected function userInfoOutput(User $user, string $unhashedPassword): void
+    protected function userInfoOutput(User $user, ?string $unhashedPassword): void
     {
         $role = $user->is_admin ? 'Admin' : 'User';
         $password = $unhashedPassword ?? $user->password;

@@ -6,30 +6,50 @@ ARG GID
 ENV UID=${UID}
 ENV GID=${GID}
 
-RUN apk add libjpeg libpng libwebp gd
+RUN apk add --update linux-headers
+
+RUN apk add libjpeg \
+  postgresql17-dev \
+  libpng \
+  libpng-dev \
+  libwebp \
+  gd \
+  #php84-pecl-xdebug \
+  libjpeg-turbo-dev \
+  freetype-dev \  
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+	&& docker-php-ext-install -j$(nproc) gd \
+  && docker-php-ext-install pdo pdo_pgsql  
+
+#RUN apk add --no-cache --virtual .xdebug-build-dependencies \
+#  g++ \
+#  gcc \
+#  git \
+#  autoconf \
+#  automake \
+#  tar \
+#  make \
+#  php84-dev \
+#
+#  && XDEBUG_TAG=3.4.4 \
+#  && git clone -o ${XDEBUG_TAG} --depth 1 https://github.com/xdebug/xdebug.git /tmp/xdebug \
+#  && cd /tmp/xdebug \
+#  && phpize \
+#  && ./configure --enable-xdebug \
+#  && make \
+#  && make install \
+#  && cp modules/xdebug.so \
+#  && touch /usr/local/etc/php/conf.d/99-xdebug.ini \
+#  && echo "zend_extension=xdebug" >> /usr/local/etc/php/conf.d/99-xdebug.ini \
+#  
+#  && apk del .xdebug-build-dependencies 
+  
+#RUN curl -sSLf \
+#        -o /usr/local/bin/install-php-extensions \
+#        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+#    chmod +x /usr/local/bin/install-php-extensions && \
+#    install-php-extensions gd 
 # RUN apk add imagemagick git autoconf
-
-# WORKDIR /var/lib
-
-# RUN git clone https://github.com/Imagick/imagick \
-# && cd imagick \
-# && phpize && ./configure \
-# && make \
-# && make install \
-# && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini
-
-# RUN apk add --no-cache --virtual .imagick-build-dependencies \
-# autoconf \
-# # curl \
-# g++ \
-# gcc \
-# git \
-# # imagemagick-dev \
-# libtool \
-# make \
-# tar \
-# && apk add --virtual .imagick-runtime-dependencies \
-# imagemagick 
 
 RUN mkdir -p /var/www/html
 
@@ -47,8 +67,6 @@ RUN sed -i "s/user = www-data/user = laravel/g" /usr/local/etc/php-fpm.d/www.con
 RUN sed -i "s/group = www-data/group = laravel/g" /usr/local/etc/php-fpm.d/www.conf
 RUN echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf
 
-RUN docker-php-ext-install pdo pdo_mysql
-
 RUN apk add --no-cache --virtual .imagick-build-dependencies \
   autoconf \
   curl \
@@ -59,23 +77,22 @@ RUN apk add --no-cache --virtual .imagick-build-dependencies \
   libtool \
   make \
   tar \
-&& apk add --virtual .imagick-runtime-dependencies \
+  && apk add --virtual .imagick-runtime-dependencies \
   imagemagick \
 
-&& IMAGICK_TAG="3.7.0" \
-&& git clone -o ${IMAGICK_TAG} --depth 1 https://github.com/mkoppanen/imagick.git /tmp/imagick \
-&& cd /tmp/imagick \
+  && IMAGICK_TAG="3.7.0" \
+  && git clone -o ${IMAGICK_TAG} --depth 1 https://github.com/mkoppanen/imagick.git /tmp/imagick \
+  && cd /tmp/imagick \
 
-&& phpize \
-&& ./configure \
-&& make \
-&& make install \
+  && phpize \
+  && ./configure \
+  && make \
+  && make install \
 
 # && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini \
-&& touch /usr/local/etc/php/conf.d/php.ini \
-&& echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/php.ini \
-
-&& apk del .imagick-build-dependencies
+  && touch /usr/local/etc/php/conf.d/php.ini \
+  && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/php.ini \
+  && apk del .imagick-build-dependencies
 
 #RUN mkdir -p /usr/src/php/ext/redis \
 #    && curl -L https://github.com/phpredis/phpredis/archive/5.3.4.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \

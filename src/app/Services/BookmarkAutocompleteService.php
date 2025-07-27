@@ -26,7 +26,6 @@ class BookmarkAutocompleteService
         $parsedUrl = parse_url($url);
         $domain = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
         $page = $this->httpQuery->getPage($url);
-        // $this->httpQuery->getPage($domain);
 
         if (!isset($page)) {
             $title = $parsedUrl['host'];
@@ -35,7 +34,8 @@ class BookmarkAutocompleteService
             $title = $this->htmlParse->getTitle($page) ?? $parsedUrl['host'];
         }
 
-        $thumbnails = $this->thumbnailService->getByAssociations($parsedUrl['host'], Auth::id());
+        $thumbnails = $this->thumbnailService
+            ->getByAssociations($parsedUrl['host'], Auth::id());
 
         if (isset($thumbnails) && count($thumbnails) > 0) {
             return [
@@ -56,7 +56,11 @@ class BookmarkAutocompleteService
         }
 
         if (isset($page)) {
-            $thumbnails = $this->getImagesFromPage($page, $domain, $parsedUrl['host']);
+            $thumbnails = $this->getImagesFromPage(
+                $page,
+                $domain,
+                $parsedUrl['host']
+            );
 
             if (isset($thumbnails) && count($thumbnails) > 0) {
                 return [
@@ -83,7 +87,8 @@ class BookmarkAutocompleteService
     {
         $parsedUrl = parse_url($url);
         $domain = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
-        $associations = $associations ?? $parsedUrl['host'];
+        $associations = strlen($associations) > 0
+            ? $associations : $parsedUrl['host'];
         $associationThumbnails =
             $this->getSiteThumbnailsAssociations($associations);
         $thumbnails = $associationThumbnails;
@@ -109,7 +114,8 @@ class BookmarkAutocompleteService
 
         $thumbnails = $thumbnails->unique('name');
 
-        return count($thumbnails) > 0 ? $thumbnails : array($this->thumbnailService->getDefault(false));
+        return count($thumbnails) > 0
+            ? $thumbnails : array($this->thumbnailService->getDefault(false));
     }
 
     public function getSiteFavicon(string $url, string $host): ?Thumbnail
@@ -120,7 +126,8 @@ class BookmarkAutocompleteService
             return null;
         }
 
-        $faviconExtension = $this->imageService->getImageExtensionFromString($favicon);
+        $faviconExtension = $this->imageService
+            ->getImageExtensionFromString($favicon);
 
         if (!isset($faviconExtension)) {
             return null;
@@ -140,7 +147,8 @@ class BookmarkAutocompleteService
         );
 
         if (ImageService::fileCanProcessed($thumbnailFile)) {
-            ProcessThumbnail::dispatch($thumbnail);
+            ProcessThumbnail::dispatch($thumbnail)
+                ->delay(now()->addMinutes(1));
         }
 
         return $thumbnail;
@@ -148,7 +156,8 @@ class BookmarkAutocompleteService
 
     public function getSiteThumbnailsAssociations(string $associations)
     {
-        $thumbnails = $this->thumbnailService->getByAssociations($associations, Auth::id());
+        $thumbnails = $this->thumbnailService
+            ->getByAssociations($associations, Auth::id());
         return $thumbnails;
     }
 
@@ -160,14 +169,16 @@ class BookmarkAutocompleteService
             return null;
         }
 
-        $images = $this->httpQuery->poolImages(array_column($parsedImages, 'path'));
+        $images = $this->httpQuery
+            ->poolImages(array_column($parsedImages, 'path'));
         $thumbnailsFiles = [];
 
         for ($i = 0, $size = count($images); $i < $size; $i++) {
             $encodedImage = $this->imageService->scale($images[$i]);
 
             if ($encodedImage) {
-                $thumbnailsFiles[] = $this->storageService->saveEncodedImage($encodedImage);
+                $thumbnailsFiles[] = $this->storageService
+                    ->saveEncodedImage($encodedImage);
             } else {
                 $name = md5($images[$i]);
                 $extension = $this->imageService->getImageExtensionFromString(

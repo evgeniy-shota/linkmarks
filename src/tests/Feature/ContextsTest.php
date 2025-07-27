@@ -67,6 +67,20 @@ class ContextsTest extends TestCase
         ]);
     }
 
+    public function test_show_user_context_with_incorrect_url_fail(): void
+    {
+        $dependencies = $this->prepareDependencies();
+        $context = $this->createContexts(
+            $dependencies['user']->id,
+            $dependencies['rootContext']->id,
+            1
+        );
+        $response = $this->actingAs($dependencies['user'])
+            ->getJson(route('context', 'qwerty' . $context[0]->id));
+
+        $response->assertNotFound();
+    }
+
     public function test_show_other_user_context_fail(): void
     {
         $dependencies = $this->prepareDependencies();

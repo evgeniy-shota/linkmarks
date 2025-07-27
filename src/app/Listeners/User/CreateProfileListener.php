@@ -22,7 +22,7 @@ class CreateProfileListener
      */
     public function handle(CreatedEvent $event): void
     {
-        Profile::create([
+        Profile::firstOrCreate([
             'user_id' => $event->user->id,
         ]);
     }

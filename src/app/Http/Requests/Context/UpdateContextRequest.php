@@ -27,7 +27,19 @@ class UpdateContextRequest extends FormRequest
             'parent_context_id' => 'nullable|numeric|integer',
             'order' => 'nullable|numeric|integer',
             'thumbnail_id' => 'nullable|numeric|integer',
-            'thumbnailFile' => ['nullable', File::types(['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg', 'webp', 'ico'])->max(2048)],
+            'thumbnailFile' => [
+                'nullable',
+                File::types([
+                    'jpg',
+                    'jpeg',
+                    'png',
+                    'bmp',
+                    'gif',
+                    'svg',
+                    'webp',
+                    'ico'
+                ])->max(2048)
+            ],
             'tags' => 'nullable|array',
         ];
     }

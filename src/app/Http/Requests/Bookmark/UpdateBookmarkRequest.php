@@ -23,13 +23,22 @@ class UpdateBookmarkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'context_id' => 'nullable|numeric|integer',
+            'context_id' => ['nullable', 'numeric', 'integer'],
             'link' => ['required', 'url', 'max:400'],
-            'name' => 'nullable|string|max:150',
-            'thumbnail_id' => 'nullable|numeric|integer',
-            'thumbnailFile' => ['nullable', File::types(['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg', 'webp', 'ico'])->max(2048)],
-            'order' => 'nullable|numeric|integer',
-            'tags' => 'nullable|array',
+            'name' => ['nullable', 'string', 'max:150'],
+            'thumbnail_id' => ['nullable', 'numeric', 'integer'],
+            'thumbnailFile' => ['nullable', File::types([
+                'jpg',
+                'jpeg',
+                'png',
+                'bmp',
+                'gif',
+                'svg',
+                'webp',
+                'ico'
+            ])->max(2048)],
+            'order' => ['nullable', 'numeric', 'integer'],
+            'tags' => ['nullable', 'array'],
         ];
     }
 }

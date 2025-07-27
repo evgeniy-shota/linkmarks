@@ -23,23 +23,6 @@ export default {
                     this.tags[indexInArray].state = tag.state;
                 }
             }
-
-            // while (tagsArray.length > 0) {
-            //     let tag = tagsArray.pop();
-
-            //     let indexInArray = this.tags.findIndex(
-            //         (item) => item.id === tag.id
-            //     );
-
-            //     if (indexInArray != -1) {
-            //         this.tags[indexInArray] = {
-            //             ...tag,
-            //             state: this.tags[indexInArray].state,
-            //         };
-            //     } else {
-            //         this.tags.push({ ...tag, state: null });
-            //     }
-            // }
         }
         console.log(this.tags);
     },

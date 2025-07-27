@@ -103,7 +103,12 @@ class TagsTest extends TestCase
         $tagData['name'] = 'updated';
         $response = $this->actingAs($user)->put(route('tags.update', $tag->id), $tagData);
 
-        $response->assertSuccessful();
+        $response->assertSuccessful()->assertJson([
+            'data' => [
+                'name' => $tagData['name'],
+            ],
+        ]);
+
         $this->assertDatabaseHas('tags', [
             'user_id' => $tagData['user_id'],
             'name' => $tagData['name'],

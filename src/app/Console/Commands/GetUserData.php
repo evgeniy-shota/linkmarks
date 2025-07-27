@@ -43,7 +43,7 @@ class GetUserData extends Command
 
         $users = User::all();
 
-        if (!$users) {
+        if (count($users) === 0) {
             $this->info('Noting found...');
             return;
         }

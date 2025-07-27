@@ -14,7 +14,8 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    // 'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'resend'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,9 +42,9 @@ return [
             'transport' => 'mailersend',
         ],
 
-        // 'mailgun' => [
-        //     'transport' => 'mailgun',
-        // ],
+        'mailgun' => [
+            'transport' => 'mailgun',
+        ],
 
         'smtp' => [
             'transport' => 'smtp',
@@ -119,7 +120,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'info@linkmarks.online'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 

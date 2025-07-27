@@ -1,4 +1,4 @@
-@props(['tip', 'direction' => 'top'])
+@props(['tip', 'direction' => 'top', 'bgColor' => 'bg-gray-600'])
 
 @php
     $tooltipDirection = match ($direction) {
@@ -10,7 +10,7 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'w-full tooltip ' . $tooltipDirection]) }}>
-    <div class="tooltip-content bg-gray-600">
+    <div class="tooltip-content {{ $bgColor }}">
         {{ $tip }}
     </div>
     {{ $slot }}

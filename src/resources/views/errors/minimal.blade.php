@@ -40,7 +40,7 @@
     <div class="flex justify-center items-center text-2xl font-bold mt-4">
         <a href="{{ route('home') }}" class="text-gray-300 flex justify-center items-center">
             <x-logo></x-logo>
-            <div>Bookmarks</div>
+            <div>linkmarks</div>
         </a>
     </div>
     <div class="w-full min-h-[80vh] flex flex-col justify-center items-center">

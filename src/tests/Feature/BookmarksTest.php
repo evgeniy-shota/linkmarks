@@ -125,20 +125,20 @@ class BookmarksTest extends TestCase
         $bookmarkData = $this->getBookmarkData($dependencies);
         $image = UploadedFile::fake()->image('image.png');
         $bookmarkData['thumbnailFile'] = $image;
-        Storage::fake('public');
         $response = $this->actingAs($dependencies['user'])->post(
             route('bookmarks.store'),
             $bookmarkData
         );
 
         $response->assertCreated();
-
+        $thumbnail = Thumbnail::find($response['data']['thumbnail_id']);
         $this->assertDatabaseHas('bookmarks', [
             'link' => $bookmarkData['link'],
             'name' => $bookmarkData['name'],
             'context_id' => $bookmarkData['context_id'],
         ]);
-        Storage::disk('public')->assertExists($image->hashName());
+        Storage::disk('public')->assertExists($thumbnail->name);
+        Storage::disk('public')->delete($thumbnail->name);
     }
 
     public function test_create_bookmark_with_incorrect_data_fail(): void
@@ -181,6 +181,34 @@ class BookmarksTest extends TestCase
             'name' => $bookmarkData['name'],
             'context_id' => $bookmarkData['context_id'],
         ]);
+    }
+
+    public function test_update_bookmark_with_uploading_image_success(): void
+    {
+        $dependencies = $this->prepareDependencies();
+        $bookmark = $this->createBookmarks(
+            $dependencies['user']->id,
+            $dependencies['rootContext']->id,
+            1
+        )[0];
+        $image = UploadedFile::fake()->image('image.png', 90, 90);
+        $response = $this->actingAs($dependencies['user'])->put(
+            route('bookmarks.update', $bookmark->id),
+            [
+                'link' => $bookmark->link,
+                'thumbnailFile' => $image,
+                'context_id' => $bookmark->context_id,
+            ],
+        );
+
+        $response->assertSuccessful();
+        $thumbnail = Thumbnail::find($response['data']['thumbnail_id']);
+        $this->assertDatabaseMissing('bookmarks', [
+            'id' => $bookmark->id,
+            'thumbnail_id' => $bookmark->thumbnail_id,
+        ]);
+        Storage::disk('public')->assertExists($thumbnail->name);
+        Storage::disk('public')->delete($thumbnail->name);
     }
 
     public function test_update_bookmark_with_incorrect_data_fail(): void

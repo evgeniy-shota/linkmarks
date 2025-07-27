@@ -9,6 +9,7 @@ use Intervention\Image\EncodedImage;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Str;
 use Imagick;
+use Intervention\Image\Interfaces\EncodedImageInterface;
 use Intervention\Image\Interfaces\ImageInterface;
 
 class ImageService
@@ -28,7 +29,7 @@ class ImageService
         return isset($fileInfo[2]) ? image_type_to_extension($fileInfo[2]) : null;
     }
 
-    public function scale(string $img, int $size = 90)
+    public function scale(string $img, int $size = 90): ?EncodedImageInterface
     {
         $manager = ImageManager::imagick();
         try {
@@ -43,7 +44,7 @@ class ImageService
         $extension = $this->getSupportedExtension($type);
 
         if (!$extension) {
-            return;
+            return null;
         }
 
         $imagick->stripImage();
@@ -61,10 +62,12 @@ class ImageService
         }
 
         $encoded = $image->encodeByExtension($extension, quality: 85);
+        unset($image);
+        unset($manager);
         return $encoded;
     }
 
-    public function convertToWebp(string $path, $quality = 20): EncodedImage
+    public function convertToWebp(string $path, $quality = 20): EncodedImageInterface
     {
         $manager = new ImageManager(new Driver());
         $image = $manager->read($path);
@@ -75,14 +78,6 @@ class ImageService
 
     public function getSupportedExtension(string $type): ?string
     {
-        // $arrayExt = [
-        //     image_type_to_mime_type(IMAGETYPE_WEBP) => "webp",
-        //     image_type_to_mime_type(IMAGETYPE_PNG) => "png",
-        //     image_type_to_mime_type(IMAGETYPE_ICO) => "png",
-        //     image_type_to_mime_type(IMAGETYPE_JPEG) => "jpeg",
-        //     "image/x-ico" => "webp",
-        // ];
-
         $extension = match ($type) {
             image_type_to_mime_type(IMAGETYPE_WEBP) => 'webp',
             image_type_to_mime_type(IMAGETYPE_PNG) => 'png',
@@ -107,6 +102,8 @@ class ImageService
         // $thumbnailsNames = array_map(function ($item) {
         //     return md5($item) . $this->imageService->getImageExtensionFromString($item);
         // }, $images);
+        $size = 0;
+        $imgCount = $imagick->getNumberImages();
         for ($i = 0; $i < $imgCount; $i++) {
             $currentImageSize = $imagick->height + $imagick->width;
 
@@ -120,7 +117,7 @@ class ImageService
         return $image;
     }
 
-    public function encodeFromString(string $str): EncodedImage
+    public function encodeFromString(string $str): EncodedImageInterface
     {
         $manager = ImageManager::imagick();
         $image = $manager->read($str);

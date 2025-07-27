@@ -6,14 +6,18 @@ use App\Http\Requests\TagRequest;
 use App\Http\Resources\TagCollection;
 use App\Http\Resources\TagResource;
 use App\Models\Tag;
+use App\Services\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TagController extends Controller
 {
+    public function __construct(protected TagService $tagService) {}
+
     public function index(Request $request)
     {
-        $tags = Tag::where('user_id', Auth::id())->get();
+        $tags = Tag::where('user_id', Auth::id())
+            ->orderBy('name', 'ASC')->get();
         return new TagCollection($tags);
     }
 
@@ -30,10 +34,7 @@ class TagController extends Controller
 
     public function store(TagRequest $request)
     {
-        $data = $request->validated();
-        $data['user_id'] = Auth::id();
-        $tag = Tag::create($data);
-
+        $tag = $this->tagService->createTag($request->validated(), Auth::id());
         return new TagResource($tag);
     }
 
@@ -46,8 +47,8 @@ class TagController extends Controller
         }
 
         $validated = $request->validated();
-        $tag = tap($tag)->update($validated);
 
+        $tag->update($validated);
         return new TagResource($tag);
     }
 
@@ -62,7 +63,8 @@ class TagController extends Controller
         $tag = $tag->delete();
 
         if ($tag) {
-            return response()->json(['message' => 'Tag delete succesfull'], 200);
+            return response()
+                ->json(['message' => 'Tag delete succesfull'], 200);
         }
 
         return response()->json(['message' => 'Fail! Tag not deleted'], 400);

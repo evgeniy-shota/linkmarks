@@ -28,7 +28,7 @@ class BookmarkController extends Controller
         private StorageService $storageService,
     ) {}
 
-    public function show(Request $request, string $id)
+    public function show(Request $request, int $id)
     {
         $bookmark = $this->bookmarkService->bookmark($id, false);
 
@@ -39,44 +39,25 @@ class BookmarkController extends Controller
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        if ($bookmark) {
-            $bookmark->thumbnail = Storage::url($bookmark->thumbnail?->name);
-        }
-
-        return new BookmarkResource($bookmark);
+        $thumbnailName = Storage::url(optional($bookmark->thumbnail)->name);
+        return new BookmarkResource(
+            $bookmark,
+            ['thumbnailName' => $thumbnailName]
+        );
     }
 
     public function store(StoreBookmarkRequest $request)
     {
-        $validated = $request->validated();
+        $bookmark = $this->bookmarkService
+            ->createBookmark($request->validated(), Auth::id());
 
-        if (isset($validated['thumbnailFile'])) {
-            $parsedLink = parse_url($validated['link']);
-            $thumbnailFile = $this->storageService
-                ->save($validated['thumbnailFile']);
-            $thumbnail = $this->thumbnailService->create(
-                $thumbnailFile,
-                Auth::id(),
-                ThumbnailSource::UserLoad->value,
-                $parsedLink['host'] ?? '',
-            );
-            $validated['thumbnail_id'] = $thumbnail->id;
-
-            if (ImageService::fileCanProcessed($thumbnailFile)) {
-                ProcessThumbnail::dispatch($thumbnail);
-            }
-
-            unset($validated['thumbnailFile']);
-        } else if (!isset($validated['thumbnail_id'])) {
-            $validated['thumbnail_id'] = $this->thumbnailService
-                ->getDefault()->id;
-        }
-
-        $bookmark = $this->bookmarkService->createBookmark($validated, Auth::id());
-        return new BookmarkResource($bookmark);
+        return new BookmarkResource(
+            $bookmark,
+            ['thumbnail' => $bookmark->thumbnail]
+        );
     }
 
-    public function update(UpdateBookmarkRequest $request, string $id)
+    public function update(UpdateBookmarkRequest $request, int $id)
     {
         $bookmark = $this->bookmarkService->bookmark($id);
 
@@ -104,7 +85,8 @@ class BookmarkController extends Controller
             $validated['thumbnail_id'] = $thumbnail->id;
 
             if (ImageService::fileCanProcessed($thumbnailFile)) {
-                ProcessThumbnail::dispatch($thumbnail);
+                ProcessThumbnail::dispatch($thumbnail)
+                    ->delay(now()->addMinutes(1));
             }
 
             unset($validated['thumbnailFile']);
@@ -124,13 +106,16 @@ class BookmarkController extends Controller
             ->updateBookmark($id, $validated, $tags);
 
         if ($updated) {
-            return new BookmarkResource($updated);
+            return new BookmarkResource(
+                $updated,
+                ['thumbnail' => $updated->thumbnail]
+            );
         }
 
         return response()->json(['message' => 'Bookmark not updated...'], 400);
     }
 
-    public function destroy(Request $request, string $id)
+    public function destroy(Request $request, int $id)
     {
         $bookmark = $this->bookmarkService->bookmark($id);
 
@@ -141,7 +126,9 @@ class BookmarkController extends Controller
         $result = $this->bookmarkService->deleteBookmark($id);
 
         if ($result) {
-            return response()->json(['message' => 'deleted successfully', 200]);
+            return response()->json(
+                ['message' => 'deleted successfully', 200]
+            );
         }
 
         return response()->json(['message' => 'deleted fail', 400]);

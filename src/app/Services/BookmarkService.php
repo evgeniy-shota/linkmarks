@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Actions\GetLastOrderInContext;
 use App\Actions\SetUrlForBookmarksThumbnail;
+use App\Enums\ThumbnailSource;
 use App\Http\Filters\FilterByTags;
 use App\Http\Requests\Bookmark\StoreBookmarkRequest;
+use App\Jobs\ProcessThumbnail;
 use App\Models\Bookmark;
 use App\Models\Context;
 use GuzzleHttp\Psr7\Request;
@@ -13,18 +15,24 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as ECollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class BookmarkService
 {
-    public function __construct(protected ThumbnailService $thumbnailService) {}
+    public function __construct(
+        protected ThumbnailService $thumbnailService,
+        protected StorageService $storageService
+    ) {}
 
     public function search(string $searchRequest, string $userId)
     {
-        $bookmarks = Bookmark::search($searchRequest)->query(function ($builder) {
-            $builder->with('tags:id,name,description');
-        })->where('user_id', $userId)->get();
+        $bookmarks = Bookmark::search($searchRequest)->query(
+            function ($builder) {
+                $builder->with('tags:id,name,description');
+            }
+        )->where('user_id', $userId)->get();
 
         $thumbnailsId = [];
 
@@ -32,10 +40,12 @@ class BookmarkService
             $thumbnailsId[] = $bookmark->thumbnail_id;
         }
 
-        $thumbnails = $this->thumbnailService->getThumbnailsIn($thumbnailsId, ['id', 'name'])->keyBy('id');
+        $thumbnails = $this->thumbnailService
+            ->getThumbnailsIn($thumbnailsId, ['id', 'name'])->keyBy('id');
 
         $bookmarks->map(function ($bookmark) use ($thumbnails) {
-            $bookmark->thumbnail = $this->thumbnailService->generateUrl($thumbnails[$bookmark->thumbnail_id]);
+            $bookmark->thumbnail = $this->thumbnailService
+                ->generateUrl($thumbnails[$bookmark->thumbnail_id]);
         });
 
         // dump();
@@ -93,7 +103,6 @@ class BookmarkService
                             'queryParams' => $filterParams,
                             'tableName' => 'bookmarks_tags'
                         ],
-
                     );
                     $bookmarks = $bookmarks->filter($bookmarkFilter);
                 }
@@ -107,7 +116,7 @@ class BookmarkService
         return $bookmarks;
     }
 
-    public function bookmark(string $id, bool $withTags = true): ?Bookmark
+    public function bookmark(int $id, bool $withTags = true): ?Bookmark
     {
         $bookmark = Bookmark::query();
 
@@ -115,19 +124,16 @@ class BookmarkService
             $bookmark->with('tags:id,name,description');
         }
 
-        return $bookmark->where('id', $id)->with('thumbnail')->first();
-        // dd($bookmark->thumbnail);
-        // return $bookmark;
+        return $bookmark->where('id', $id)->with('thumbnail:id,name')->first();
     }
 
     public function bookmarksIn(array $ids): ?ECollection
     {
         $bookmarks = Bookmark::whereIn('id', $ids)->with('thumbnail')->get();
-        // dd($bookmark->thumbnail);
         return $bookmarks;
     }
 
-    public function bookmarksFromContext(string $idContext): Builder
+    public function bookmarksFromContext(int $idContext): Builder
     {
         $bookmarks = Bookmark::with('tags:id,name,description')->select(
             'bookmarks.id',
@@ -145,18 +151,41 @@ class BookmarkService
 
     public function createBookmark(array $data, int $userId)
     {
+        if (isset($data['thumbnailFile'])) {
+            $parsedLink = parse_url($data['link']);
+            $thumbnailFile = $this->storageService
+                ->save($data['thumbnailFile']);
+            $thumbnail = $this->thumbnailService->create(
+                $thumbnailFile,
+                Auth::id(),
+                ThumbnailSource::UserLoad->value,
+                $parsedLink['host'] ?? '',
+            );
+            $data['thumbnail_id'] = $thumbnail->id;
+
+            if (ImageService::fileCanProcessed($thumbnailFile)) {
+                ProcessThumbnail::dispatch($thumbnail)
+                    ->delay(now()->addMinutes(1));
+            }
+
+            unset($data['thumbnailFile']);
+        } else if (!isset($data['thumbnail_id'])) {
+            $data['thumbnail_id'] = $this->thumbnailService
+                ->getDefault()->id;
+        }
+
         if (!isset($data['order'])) {
-            $maxContextsOrder = Context::where('parent_context_id', $data['context_id'])->max('order');
-            $maxBookmarksOrder = Bookmark::where('context_id', $data['context_id'])->max('order');
             $data['order'] =
-                ($maxContextsOrder > $maxBookmarksOrder ? $maxContextsOrder :
-                    $maxBookmarksOrder) + 1;
+                GetLastOrderInContext::getOrder($data['context_id']);
         }
 
         $data['order'] += 1;
         $data['user_id'] = $userId;
         $bookmark = Bookmark::create($data);
-        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+        $bookmark->thumbnail = Storage::url(
+            $bookmark->thumbnail->name ??
+                ($this->thumbnailService->getDefault())->name
+        );
 
         if (isset($data['tags'])) {
             $bookmark->tags()->attach($data['tags']);
@@ -187,13 +216,16 @@ class BookmarkService
             $bookmark->tags()->attach($tags);
         }
 
-        $bookmark->thumbnail = Storage::url($bookmark->thumbnail->name);
+        $bookmark->thumbnail = Storage::url(
+            $bookmark->thumbnail->name ??
+                ($this->thumbnailService->getDefault()->name)
+        );
         return $bookmark;
     }
 
-    public function deleteBookmark(string $id): ?bool
+    public function deleteBookmark(int $id): ?bool
     {
         $result = Bookmark::destroy($id);
-        return $result;
+        return $result === 0 ? false : true;
     }
 }

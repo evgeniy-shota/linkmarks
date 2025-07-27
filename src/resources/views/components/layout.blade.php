@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title> {{ $title ?? 'Bookmarks' }} </title>
+    <title> {{ $title ?? 'linkmarks' }} </title>
     <link rel="icon" type="image/png" sizes="32x32"
         href="{{ asset('/favicon.svg') }}">
 
@@ -16,6 +16,7 @@
 
     <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- @vite(['resources/js/app.js']) --}}
 
 </head>
 
@@ -23,13 +24,10 @@
     <x-navbar></x-navbar>
 
     <main>
-
         {{ $main }}
-
     </main>
 
     <x-html.alerts.alerts ref="alert" />
-
 </body>
 
 <script>
