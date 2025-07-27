@@ -35,5 +35,6 @@ jobs:
 
       - name: Move scripts
         run: |
-          ls -la
+          ls -la scripts
+          ls -la scripts/bash
           echo ${{secrets.SERVER_PASSWORD}} | sudo cp ~/scripts/bash/artisan-schedule /etc/cron.minutely/
