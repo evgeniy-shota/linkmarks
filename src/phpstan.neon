@@ -9,6 +9,8 @@ parameters:
   level: 5
   ignoreErrors:
     - '#Call to an undefined method [a-zA-Z0-9\\_]+::filter\(\)#'
-#
-#    excludePaths:
-#        - ./*/*/FileToBeExcluded.php
+
+  excludePaths:
+    - ./app/Orchid/Layouts/Role/RoleListLayout.php
+    - ./app/Orchid/Layouts/User/UserListLayout.php
+    - ./app/Orchid/Screens/User/UserProfileScreen.php

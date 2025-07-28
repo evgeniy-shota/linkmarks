@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\ThumbnailSource;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class removeUnusedImages extends Command
@@ -56,5 +57,10 @@ class removeUnusedImages extends Command
         if (count($filesToDelete)) {
             Storage::disk('public')->delete($filesToDelete);
         }
+
+        Log::channel('tasksLog')
+            ->info("Unused thumbnails removed. Files deleted - "
+                . count($filesToDelete) . ". Thumbnails deleted - "
+                . count($thumbnailsToDelete));
     }
 }

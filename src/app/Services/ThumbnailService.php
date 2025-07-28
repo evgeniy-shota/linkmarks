@@ -30,6 +30,9 @@ class ThumbnailService
         return Storage::url($data->name);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<\App\Models\Thumbnail>|null
+     */
     public function getByAssociations(string $associations, $userId): ?Collection
     {
         return Thumbnail::where(function (Builder $query) use ($userId) {

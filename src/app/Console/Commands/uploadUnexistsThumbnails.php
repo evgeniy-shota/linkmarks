@@ -82,6 +82,7 @@ class uploadUnexistsThumbnails extends Command
 
                 $thumbnail = $associatThumbnails->first(
                     function ($value) use ($thumbnailId) {
+                        /** @var \App\Models\Thumbnail $value */
                         return $value->id !== $thumbnailId;
                     }
                 );
@@ -93,7 +94,7 @@ class uploadUnexistsThumbnails extends Command
                     );
                 }
 
-                $bookmark->thumbnail_id = $thumbnail?->id
+                $bookmark->thumbnail_id = $thumbnail->id
                     ?? $this->thumbnailService->getDefault()->id;
                 $bookmark->save();
             }

@@ -13,6 +13,7 @@ use App\Services\ThumbnailService;
 use App\Services\UserServices;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class initTestUsers extends Command
 {
@@ -53,8 +54,10 @@ class initTestUsers extends Command
                 'is_admin'
             )->where('is_enabled', true)->get();
 
-        if (!isset($testUsers) || count($testUsers) == 0) {
+        if (count($testUsers) == 0) {
             $this->warn('No test users found.');
+            Log::channel('tasksLog')
+                ->warning('Test users initializing fail. No test users found.');
             return;
         }
 
@@ -80,8 +83,10 @@ class initTestUsers extends Command
                 'name'
             )->where('is_enabled', true)->get()->toArray();
 
-        if (!isset($testTags) || count($testTags) == 0) {
+        if (count($testTags) == 0) {
             $this->warn('No test tags found.');
+            Log::channel('tasksLog')
+                ->warning('Test users initializing fail. No test tags found.');
             return;
         }
 
@@ -93,8 +98,10 @@ class initTestUsers extends Command
                 'order'
             )->where('is_enabled', true)->get()->toArray();
 
-        if (!isset($testContexts) || count($testContexts) == 0) {
+        if (count($testContexts) == 0) {
             $this->warn('No test context found.');
+            Log::channel('tasksLog')
+                ->warning('Test users initializing fail. No test context found.');
             return;
         }
 
@@ -107,8 +114,10 @@ class initTestUsers extends Command
                 'order'
             )->where('is_enabled', true)->get()->toArray();
 
-        if (!isset($testBookmarks) || count($testBookmarks) == 0) {
+        if (count($testBookmarks) == 0) {
             $this->warn('No test bookmarks found.');
+            Log::channel('tasksLog')
+                ->warning('Test users initializing fail. No test bookmarks found.');
             return;
         }
 
@@ -125,7 +134,6 @@ class initTestUsers extends Command
             ));
 
             $tags = Tag::where('user_id', $user->id)->get();
-            // $tags = array_combine((array)($tags->pluck('name')), (array)($tags->pluck('id')));
             $tags = (array)$tags->pluck('id', 'name')->all();
             $contextOrder = 1;
 
@@ -150,13 +158,15 @@ class initTestUsers extends Command
                 $data['tags'] = $this->getTagsIdFromString($data['tags'], $tags);
 
                 $parsedLink = parse_url($data['link']);
+
                 $thumbnail = $this->thumbnailService->getByAssociations(
                     $parsedLink['host'],
                     $user->id
                 );
 
                 if (isset($thumbnail) && count($thumbnail) > 0) {
-                    $data['thumbnail_id'] = $thumbnail[0]->id;
+                    $data['thumbnail_id'] = $thumbnail[0]->id
+                        ?? $this->thumbnailService->getDefault();
                 }
 
                 $bookmarks[] = $this->bookmarkService->createBookmark(
@@ -165,9 +175,10 @@ class initTestUsers extends Command
                 );
             }
         }
+        Log::channel('tasksLog')->info('Test users initialized');
     }
 
-    protected function getTagsIdFromString(?string $tagsNames, array $tagsNI)
+    protected function getTagsIdFromString(?string $tagsNames, array $tagsNI): ?array
     {
         if (!isset($tagsNames)) {
             return null;
@@ -178,7 +189,7 @@ class initTestUsers extends Command
 
         foreach ($tagsName as $name) {
             if (
-                !isset($name) || strlen($name) == 0
+                strlen($name) == 0
                 || !array_key_exists($name, $tagsNI)
             ) {
                 continue;

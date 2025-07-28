@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class pruneDeleteAccountTokens extends Command
 {
@@ -30,5 +31,7 @@ class pruneDeleteAccountTokens extends Command
         $date = now()->subDays($days > 0 ? $days : 7);
         DB::table('delete_account_tokens')
             ->where('created_at', '<', $date)->delete();
+        Log::channel('tasksLog')
+            ->warning('Expired account deletion tokens removed.');
     }
 }
