@@ -68,41 +68,9 @@ class ContextController extends Controller
             return isset($item);
         });
 
-        $filterParams = [];
+        $contextData = $this->contextService->showContextData($validated, $id);
 
-        if (isset($validated['tagsIncluded'])) {
-            $filterParams['tagsIncluded'] = $validated['tagsIncluded'];
-        }
-
-        if (isset($validated['tagsExcluded'])) {
-            $filterParams['tagsExcluded'] = $validated['tagsExcluded'];
-        }
-
-        $contextualFiltration = isset($validated['contextualFiltration']);
-        $discardToContexts = isset($validated['discardToContexts']);
-        $discardToBookmarks = isset($validated['discardToBookmarks']);
-
-        $contexts = $this->contextService->getFilteredContexts(
-            $id,
-            Auth::id(),
-            $contextualFiltration,
-            $discardToContexts,
-            $filterParams
-        );
-        $bookmarks = $this->bookmarkService->getFilteredBookmarks(
-            $id,
-            Auth::id(),
-            $contextualFiltration,
-            $discardToBookmarks,
-            $filterParams
-        );
-
-        $result = SortContextsAndBookmarks::mixInOrder(
-            $contexts->toArray(),
-            $bookmarks->toArray()
-        );
-
-        return response()->json(['data' => $result], 200);
+        return response()->json(['data' => $contextData], 200);
     }
 
     public function store(StoreContextRequest $request)
@@ -121,15 +89,8 @@ class ContextController extends Controller
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        $validated = $request->validated();
-        $tags = null;
-
-        if (isset($validated['tags'])) {
-            $tags = $validated['tags'];
-            unset($validated['tags']);
-        }
-
-        $context = $this->contextService->updateContext($validated, $id, $tags);
+        $context = $this->contextService
+            ->updateContext($request->validated(), $id);
 
         if ($context) {
             return new ContextResource($context);

@@ -91,7 +91,7 @@ class ContextScreen extends Screen
 
         $data = $validator->validated();
 
-        $this->contextService->updateContext($data, $context->id, null);
+        $this->contextService->updateContext($data, $context->id);
 
         Toast::info(__('Context was saved'));
     }

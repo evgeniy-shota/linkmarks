@@ -3,7 +3,6 @@ export default {
     isLoading: false,
 
     setTags(tagsArray) {
-        console.log(tagsArray);
 
         if (this.tags.length == 0) {
             this.tags = tagsArray;
@@ -24,7 +23,6 @@ export default {
                 }
             }
         }
-        console.log(this.tags);
     },
 
     toggleTag(index) {
@@ -53,7 +51,6 @@ export default {
             }
         }
 
-        // let filtered = this.tags.filter((item) => item.state == state);
         return filtered;
     },
 

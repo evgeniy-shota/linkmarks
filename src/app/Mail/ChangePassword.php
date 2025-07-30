@@ -29,7 +29,7 @@ class ChangePassword extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('support@bookmarks.com', 'Bookmarks support'),
+            from: new Address('support@linkmarks.online', 'linkmarks support'),
             subject: 'Change Password',
         );
     }

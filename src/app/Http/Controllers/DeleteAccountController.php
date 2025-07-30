@@ -44,7 +44,7 @@ class DeleteAccountController extends Controller
 
             $user = User::where('email', $validated['email'])->first();
             Auth::logout();
-            // ??? logoutOtherDevices
+
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             $result = $user->delete();
@@ -54,11 +54,8 @@ class DeleteAccountController extends Controller
             }
         }
 
-        //check token and email -> delete
         return abort(403, 'Your link has expired or invalid');
-        // return redirect()->route('profile')->withErrors(
-        //     ['deleteAccount' => 'Your link has expired or invalid']
-        // );
+
     }
 
     public function sendLink(Request $request)

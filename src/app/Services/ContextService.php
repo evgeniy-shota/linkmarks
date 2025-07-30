@@ -3,15 +3,19 @@
 namespace App\Services;
 
 use App\Actions\GetLastOrderInContext;
+use App\Actions\SortContextsAndBookmarks;
 use App\Http\Filters\FilterByTags;
 use App\Models\Context;
 use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 class ContextService
 {
+    public function __construct(protected BookmarkService $bookmarkService) {}
+
     public function search(string $searchRequest, int $userId)
     {
         $contexts = Context::search($searchRequest)->query(
@@ -114,6 +118,45 @@ class ContextService
         }
     }
 
+    public function showContextData(array $data, int $id): array
+    {
+        $filterParams = [];
+
+        if (isset($data['tagsIncluded'])) {
+            $filterParams['tagsIncluded'] = $data['tagsIncluded'];
+        }
+
+        if (isset($data['tagsExcluded'])) {
+            $filterParams['tagsExcluded'] = $data['tagsExcluded'];
+        }
+
+        $contextualFiltration = isset($data['contextualFiltration']);
+        $discardToContexts = isset($data['discardToContexts']);
+        $discardToBookmarks = isset($data['discardToBookmarks']);
+
+        $contexts = $this->getFilteredContexts(
+            $id,
+            Auth::id(),
+            $contextualFiltration,
+            $discardToContexts,
+            $filterParams
+        );
+        $bookmarks = $this->bookmarkService->getFilteredBookmarks(
+            $id,
+            Auth::id(),
+            $contextualFiltration,
+            $discardToBookmarks,
+            $filterParams
+        );
+
+        $result = SortContextsAndBookmarks::mixInOrder(
+            $contexts->toArray(),
+            $bookmarks->toArray()
+        );
+
+        return $result;
+    }
+
     public function createContext(array $data, int $userId): Context
     {
         $data['user_id'] = $userId;
@@ -135,10 +178,16 @@ class ContextService
 
     public function updateContext(
         array $data,
-        int $id,
-        ?array $tags
+        int $id
     ): ?Context {
         $context = Context::find($id);
+
+        $tags = null;
+
+        if (isset($data['tags'])) {
+            $tags = $data['tags'];
+            unset($data['tags']);
+        }
 
         if (
             !isset($data['order'])

@@ -196,9 +196,39 @@ class BookmarkService
 
     public function updateBookmark(
         int $id,
-        array $data,
-        ?array $tags
+        array $data
     ): ?Bookmark {
+
+        if (isset($data['thumbnailFile'])) {
+            $parsedLink = parse_url($data['link']);
+            $thumbnailFile = $this->storageService
+                ->save($data['thumbnailFile']);
+            $thumbnail = $this->thumbnailService->create(
+                $thumbnailFile,
+                Auth::id(),
+                ThumbnailSource::UserLoad->value,
+                $parsedLink['host'] ?? '',
+            );
+            $data['thumbnail_id'] = $thumbnail->id;
+
+            if (ImageService::fileCanProcessed($thumbnailFile)) {
+                ProcessThumbnail::dispatch($thumbnail)
+                    ->delay(now()->addMinutes(1));
+            }
+
+            unset($data['thumbnailFile']);
+        } else if (!isset($data['thumbnail_id'])) {
+            $data['thumbnail_id'] = $this->thumbnailService
+                ->getDefault()->id;
+        }
+
+        $tags = null;
+
+        if (isset($data['tags'])) {
+            $tags = $data['tags'];
+            unset($data['tags']);
+        }
+
         $bookmark = Bookmark::find($id);
 
         if (

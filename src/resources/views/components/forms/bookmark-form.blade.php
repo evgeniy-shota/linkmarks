@@ -36,10 +36,10 @@
                 <x-slot:field>
                     <x-html.formcontrols.input x-on:change="linkInputFocusHandler($event)"
                         x-on:paste="linkInputFocusHandler($event)" required id="link" type="url"
-                        placeholder="https://www.youtube.com/" x-model="$store.bookmark.link" :state="true" />
+                        placeholder="https://example.com/" x-model="$store.bookmark.link" :state="true" />
                 </x-slot:field>
                 <x-slot:legend>
-                    <x-html.formcontrols.fieldset-legend text="Enter link" />
+                    <x-html.formcontrols.fieldset-legend text="Paste URL to autofill name and thumbnail" />
                 </x-slot:legend>
             </x-html.formcontrols.fieldset>
 

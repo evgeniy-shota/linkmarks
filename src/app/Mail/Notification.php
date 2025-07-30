@@ -29,7 +29,7 @@ class Notification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('notification@bookmarks.online', 'Bookmarks Team'),
+            from: new Address('notification@linkmarks.online', 'linkmarks Team'),
             subject: 'Notification',
         );
     }

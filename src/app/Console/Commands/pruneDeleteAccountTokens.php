@@ -32,6 +32,6 @@ class pruneDeleteAccountTokens extends Command
         DB::table('delete_account_tokens')
             ->where('created_at', '<', $date)->delete();
         Log::channel('tasksLog')
-            ->warning('Expired account deletion tokens removed.');
+            ->info('Expired account deletion tokens removed.');
     }
 }

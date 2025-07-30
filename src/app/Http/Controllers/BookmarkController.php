@@ -23,9 +23,7 @@ use Illuminate\Support\Facades\Storage;
 class BookmarkController extends Controller
 {
     public function __construct(
-        private BookmarkService $bookmarkService,
-        private ThumbnailService $thumbnailService,
-        private StorageService $storageService,
+        private BookmarkService $bookmarkService
     ) {}
 
     public function show(Request $request, int $id)
@@ -72,38 +70,8 @@ class BookmarkController extends Controller
             return isset($item);
         });
 
-        if (isset($validated['thumbnailFile'])) {
-            $parsedLink = parse_url($validated['link']);
-            $thumbnailFile = $this->storageService
-                ->save($validated['thumbnailFile']);
-            $thumbnail = $this->thumbnailService->create(
-                $thumbnailFile,
-                Auth::id(),
-                ThumbnailSource::UserLoad->value,
-                $parsedLink['host'] ?? '',
-            );
-            $validated['thumbnail_id'] = $thumbnail->id;
-
-            if (ImageService::fileCanProcessed($thumbnailFile)) {
-                ProcessThumbnail::dispatch($thumbnail)
-                    ->delay(now()->addMinutes(1));
-            }
-
-            unset($validated['thumbnailFile']);
-        } else if (!isset($validated['thumbnail_id'])) {
-            $validated['thumbnail_id'] = $this->thumbnailService
-                ->getDefault()->id;
-        }
-
-        $tags = null;
-
-        if (isset($validated['tags'])) {
-            $tags = $validated['tags'];
-            unset($validated['tags']);
-        }
-
         $updated = $this->bookmarkService
-            ->updateBookmark($id, $validated, $tags);
+            ->updateBookmark($id, $validated);
 
         if ($updated) {
             return new BookmarkResource(

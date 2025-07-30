@@ -89,7 +89,7 @@ class BookmarkScreen extends Screen
 
         $data = $validator->validated();
 
-        $this->bookmarkService->updateBookmark($bookmark->id, $data, null);
+        $this->bookmarkService->updateBookmark($bookmark->id, $data);
 
         Toast::info(__('Bookmark was saved'));
     }

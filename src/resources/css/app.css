@@ -9,6 +9,10 @@
     --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
+    --breakpoint-3xl: 112rem;
+    --breakpoint-4xl: 124rem;
+    --breakpoint-5xl: 160rem;
+    --breakpoint-6xl: 224rem;
 }
 
 @plugin "daisyui" {

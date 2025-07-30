@@ -13,8 +13,8 @@
             {{-- tags list --}}
             <template x-if="$store.{{ $targetStore }}.tags.length<3">
 
-                <x-html.dropdown dropdownPosition="dropdown-top dropdown-end"
-                    class="w-[30vw] max-h-[25vh] sm:w-[20vw] md:w-[15vw] lg:w-[10vw] xl:w-[8vw] py-1 px-2 overflow-y-auto">
+                <x-html.dropdown dropdownPosition="dropdown-top "
+                    class="w-[30vw] max-h-[22vh] sm:w-[20vw] md:w-[15vw] lg:w-[10vw] xl:w-[8vw] py-1 px-2 overflow-y-auto">
                     <x-slot:button>
                         <x-html.button-out-gray class="btn-sm text-base font-normal"
                             action="getTags(Alpine.store('tags').setTags)">
